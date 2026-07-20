@@ -1,3 +1,11 @@
 {
-  "js/ts.tsdk.path": "node_modules/typescript/lib"
+	"editor.formatOnSave": true,
+
+	"editor.codeActionsOnSave": {
+		"source.organizeImports.biome": "always",
+		"source.fixAll.biome": "always"
+	},
+
+	"biome.enabled": true,
+	"biome.requireConfiguration": true
 }

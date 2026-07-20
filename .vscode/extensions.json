@@ -1,3 +1,7 @@
 {
-	"recommendations": ["svelte.svelte-vscode", "typescriptteam.native-preview"]
+	"recommendations": [
+		"biomejs.biome",
+		"svelte.svelte-vscode",
+		"bradlc.vscode-tailwindcss"
+	]
 }
