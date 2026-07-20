@@ -49,6 +49,8 @@
 		}
 	},
 	"dependencies": {
+		"@tanstack/query-devtools": "5.101.3",
+		"@tanstack/svelte-query": "6.1.37",
 		"bits-ui": "2.18.1",
 		"lucide-svelte": "1.0.1"
 	}
