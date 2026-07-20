@@ -1,0 +1,22 @@
+services:
+  mariadb:
+    image: mariadb:12
+
+    container_name: f95list-form-v5-db
+
+    restart: unless-stopped
+
+    ports:
+      - "3306:3306"
+
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: f95list
+      MARIADB_USER: f95list
+      MARIADB_PASSWORD: password
+
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+volumes:
+  mariadb_data:

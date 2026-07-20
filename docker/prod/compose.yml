@@ -1,0 +1,19 @@
+services:
+  app:
+    image: ghcr.io/f95france/f95list-form-v5:latest
+    container_name: f95list-form-v5
+
+    restart: unless-stopped
+
+    env_file:
+      - ../../.env
+
+    ports:
+      - "3000:3000"
+
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
