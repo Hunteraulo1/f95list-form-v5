@@ -6,9 +6,7 @@ const config = {
 
 	compilerOptions: {
 		runes: ({ filename }: { filename: string }) =>
-			filename.split(/[/\\]/).includes('node_modules')
-				? undefined
-				: true,
+			filename.split(/[/\\]/).includes('node_modules') ? undefined : true,
 	},
 
 	kit: {
