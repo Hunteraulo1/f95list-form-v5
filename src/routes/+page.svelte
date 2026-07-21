@@ -1,8 +1,11 @@
 <script lang="ts">
+import { faker } from '@faker-js/faker';
 import homeBgDark from '$lib/assets/motif-dark.png';
 import homeBgLight from '$lib/assets/motif-light.png';
+import test from '$lib/assets/test.png';
 import Header from '$lib/components/Header.svelte';
 import Container from '$lib/components/ui/Container.svelte';
+import HomeList from '$lib/components/ui/HomeList.svelte';
 import { getTheme } from '$lib/stores/theme.svelte';
 
 const theme = $derived(getTheme() === 'dark');
@@ -30,9 +33,41 @@ const stats: Stat[] = [
     value: 1641,
   },
 ];
+
+interface Game {
+  title: string;
+  image: string | null;
+}
+
+const games: Game[] = [
+  {
+    title: 'test',
+    image: faker.image.personPortrait(),
+  },
+  {
+    title: 'test',
+    image: faker.image.personPortrait(),
+  },
+  {
+    title: 'test',
+    image: faker.image.personPortrait(),
+  },
+  {
+    title: 'test',
+    image: faker.image.personPortrait(),
+  },
+  {
+    title: 'test',
+    image: faker.image.personPortrait(),
+  },
+  {
+    title: 'test',
+    image: null,
+  },
+];
 </script>
 
-<div class="relative h-128 w-vw max-w-lvw overflow-hidden">
+<div class="relative h-150 w-vw max-w-lvw overflow-hidden">
 	<div
 		class="-inset-1/1 absolute -rotate-16 bg-repeat bg-size-[16rem_auto]"
 		style="background-image: url({theme ? homeBgDark : homeBgLight});"
@@ -87,15 +122,32 @@ const stats: Stat[] = [
 </div>
 
 <Container>
-	<section class="-translate-y-32 flex flex-col gap-4">
-		<h3 class="text-xl font-bold">Les dernière traductions</h3>
-		<div class="grid grid-cols-6 w-full h-60 gap-4">
-			<div class="bg-base-300 w-full h-full rounded-xl"></div>
-			<div class="bg-base-300 w-full h-full rounded-xl"></div>
-			<div class="bg-base-300 w-full h-full rounded-xl"></div>
-			<div class="bg-base-300 w-full h-full rounded-xl"></div>
-			<div class="bg-base-300 w-full h-full rounded-xl"></div>
-			<div class="bg-base-300 w-full h-full rounded-xl"></div>
-		</div>
-	</section>
+	<HomeList classes="md:-translate-y-32" title="Les dernière traductions">
+		{#snippet children(max)}
+			{#each games.slice(0, max) as { title, image }}
+				<article class="bg-base-300 w-full h-full rounded-xl relative">
+					<div
+						class="flex flex-col justify-end h-full p-4 z-10 relative"
+					>
+						<h4 class="font-bold text-md text-center">{title}</h4>
+					</div>
+					<div class="absolute top-0 h-full w-full">
+						{#if image}
+							<img
+								src={image}
+								alt={`image de ${title}`}
+								class="h-full w-full object-cover p-2 rounded-2xl opacity-40"
+							/>
+						{:else}
+							<div
+								class="h-full w-full flex justify-center items-center text-base-content/20 text-sm"
+							>
+								Aucune image
+							</div>
+						{/if}
+					</div>
+				</article>
+			{/each}
+		{/snippet}
+	</HomeList>
 </Container>
