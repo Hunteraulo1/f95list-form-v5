@@ -1,5 +1,6 @@
 <script lang="ts">
 import favicon from '$lib/assets/favicon.svg';
+import Header from '$lib/components/Header.svelte';
 import QueryProvider from '$lib/query/QueryProvider.svelte';
 import '../app.css';
 
@@ -11,5 +12,6 @@ let { children } = $props();
 </svelte:head>
 
 <QueryProvider>
+	<Header />
 	{@render children()}
 </QueryProvider>
