@@ -1,11 +1,11 @@
 {
-	"editor.formatOnSave": true,
+  "editor.formatOnSave": true,
 
-	"editor.codeActionsOnSave": {
-		"source.organizeImports.biome": "always",
-		"source.fixAll.biome": "always"
-	},
+  "editor.codeActionsOnSave": {
+    "source.organizeImports.biome": "always",
+    "source.fixAll.biome": "always"
+  },
 
-	"biome.enabled": true,
-	"biome.requireConfiguration": true
+  "biome.enabled": true,
+  "biome.requireConfiguration": true
 }

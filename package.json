@@ -1,84 +1,84 @@
 {
-	"name": "f95list-form-v5",
-	"private": false,
-	"version": "5.0.0",
-	"type": "module",
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"check": "svelte-kit sync && svelte-check",
-		"lint": "biome check .",
-		"format": "biome format --write .",
-		"db:generate": "drizzle-kit generate",
-		"db:migrate": "drizzle-kit migrate",
-		"db:push": "drizzle-kit push",
-		"db:studio": "drizzle-kit studio",
-		"test": "vitest",
-		"test:e2e": "playwright test"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.5.4",
-		"@playwright/test": "1.61.1",
-		"@sveltejs/adapter-node": "5.5.7",
-		"@sveltejs/kit": "2.70.1",
-		"@sveltejs/vite-plugin-svelte": "7.2.0",
-		"@tailwindcss/vite": "4.3.3",
-		"@types/node": "26.1.1",
-		"@vitest/browser": "4.1.10",
-		"clsx": "2.1.1",
-		"commitizen": "4.3.2",
-		"cz-emoji": "1.3.2-canary.2",
-		"dotenv": "17.4.2",
-		"dotenv-cli": "11.0.0",
-		"drizzle-kit": "0.31.10",
-		"husky": "9.1.7",
-		"lint-staged": "17.1.0",
-		"svelte": "5.56.6",
-		"svelte-check": "4.7.3",
-		"tailwind-merge": "3.6.0",
-		"tailwind-variants": "3.2.2",
-		"tailwindcss": "4.3.3",
-		"typescript": "6",
-		"valibot": "1.4.2",
-		"vite": "8.1.5",
-		"vitest": "4.1.10"
-	},
-	"overrides": {
-		"typescript": "~6"
-	},
-	"config": {
-		"commitizen": {
-			"path": "cz-emoji"
-		},
-		"cz-emoji": {
-			"scopes": [
-				"backend",
-				"frontend"
-			],
-			"skipQuestions": [
-				"body",
-				"breaking",
-				"issues"
-			]
-		}
-	},
-	"dependencies": {
-		"@tanstack/query-devtools": "5.101.3",
-		"@tanstack/svelte-query": "6.1.37",
-		"bits-ui": "2.18.1",
-		"drizzle-orm": "0.45.2",
-		"drizzle-valibot": "0.4.2",
-		"lucide-svelte": "1.0.1",
-		"mysql2": "3.23.1",
-		"pino": "10.3.1"
-	},
-	"lint-staged": {
-		"*.{js,ts,svelte}": [
-			"biome check --write"
-		],
-		"*.{json,md,yml,yaml}": [
-			"biome format --write"
-		]
-	}
+  "name": "f95list-form-v5",
+  "private": false,
+  "version": "5.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "test": "vitest",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.4",
+    "@playwright/test": "1.61.1",
+    "@sveltejs/adapter-node": "5.5.7",
+    "@sveltejs/kit": "2.70.1",
+    "@sveltejs/vite-plugin-svelte": "7.2.0",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "26.1.1",
+    "@vitest/browser": "4.1.10",
+    "clsx": "2.1.1",
+    "commitizen": "4.3.2",
+    "cz-emoji": "1.3.2-canary.2",
+    "dotenv": "17.4.2",
+    "dotenv-cli": "11.0.0",
+    "drizzle-kit": "0.31.10",
+    "husky": "9.1.7",
+    "lint-staged": "17.1.0",
+    "svelte": "5.56.6",
+    "svelte-check": "4.7.3",
+    "tailwind-merge": "3.6.0",
+    "tailwind-variants": "3.2.2",
+    "tailwindcss": "4.3.3",
+    "typescript": "6",
+    "valibot": "1.4.2",
+    "vite": "8.1.5",
+    "vitest": "4.1.10"
+  },
+  "dependencies": {
+    "@tanstack/query-devtools": "5.101.3",
+    "@tanstack/svelte-query": "6.1.37",
+    "bits-ui": "2.18.1",
+    "drizzle-orm": "0.45.2",
+    "drizzle-valibot": "0.4.2",
+    "lucide-svelte": "1.0.1",
+    "mysql2": "3.23.1",
+    "pino": "10.3.1"
+  },
+  "overrides": {
+    "typescript": "~6"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-emoji"
+    },
+    "cz-emoji": {
+      "scopes": [
+        "backend",
+        "frontend"
+      ],
+      "skipQuestions": [
+        "body",
+        "breaking",
+        "issues"
+      ]
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,svelte}": [
+      "biome check --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "biome format --write"
+    ]
+  }
 }

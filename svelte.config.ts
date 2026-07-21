@@ -2,20 +2,20 @@ import adapter from '@sveltejs/adapter-node';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 const config = {
-	preprocess: vitePreprocess(),
+  preprocess: vitePreprocess(),
 
-	compilerOptions: {
-		runes: ({ filename }: { filename: string }) =>
-			filename.split(/[/\\]/).includes('node_modules') ? undefined : true,
-	},
+  compilerOptions: {
+    runes: ({ filename }: { filename: string }) =>
+      filename.split(/[/\\]/).includes('node_modules') ? undefined : true,
+  },
 
-	kit: {
-		adapter: adapter(),
+  kit: {
+    adapter: adapter(),
 
-		alias: {
-			$features: './src/features',
-		},
-	},
+    alias: {
+      $features: './src/features',
+    },
+  },
 };
 
 export default config;
