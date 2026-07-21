@@ -1,4 +1,5 @@
 <script lang="ts">
+import { page } from '$app/state';
 import favicon from '$lib/assets/favicon.svg';
 import Header from '$lib/components/Header.svelte';
 import QueryProvider from '$lib/query/QueryProvider.svelte';
@@ -12,6 +13,10 @@ let { children } = $props();
 </svelte:head>
 
 <QueryProvider>
-	<Header />
-	{@render children()}
+	<main class="bg-base-200 min-h-screen h-full font-[Poppins]">
+		{#if page.url.pathname !== "/"}
+			<Header />
+		{/if}
+		{@render children()}
+	</main>
 </QueryProvider>
