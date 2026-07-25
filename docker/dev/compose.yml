@@ -1,17 +1,22 @@
+name: f95list-form-v5-dev
+
 services:
-  mariadb:
-    image: mariadb:12
-
-    container_name: f95list-form-v5-db
-
+  mariadb-dev:
+    image: mariadb:12.3
+    container_name: f95list-form-v5-mariadb
     restart: unless-stopped
+    env_file: ../../.env
+
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_uca1400_ai_ci
 
     ports:
       - "3306:3306"
 
     environment:
       MARIADB_ROOT_PASSWORD: root
-      MARIADB_DATABASE: f95list
+      MARIADB_DATABASE: f95list_form_dev
       MARIADB_USER: f95list
       MARIADB_PASSWORD: password
 

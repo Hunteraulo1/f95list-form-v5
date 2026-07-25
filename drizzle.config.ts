@@ -8,7 +8,7 @@ if (!process.env.DATABASE_URL) {
 }
 
 export default defineConfig({
-  schema: './src/lib/server/db/schema/index.ts',
+  schema: './src/lib/server/db/schema.ts',
   out: './src/lib/server/db/migrations',
 
   dialect: 'mysql',

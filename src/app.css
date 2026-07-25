@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Fustat:wght@200..800&display=swap");
 @import "tailwindcss";
 
 @theme inline {
@@ -26,6 +26,18 @@
   --radius-selector: var(--radius-selector-value);
   --radius-field: var(--radius-field-value);
   --radius-box: var(--radius-box-value);
+
+  --animate-float-sheet: floatSheet 8s ease-in-out infinite;
+
+  @keyframes floatSheet {
+    0%,
+    100% {
+      transform: rotateX(14deg) rotateY(-16deg) rotateZ(3deg) translateY(0);
+    }
+    50% {
+      transform: rotateX(12deg) rotateY(-8deg) rotateZ(2deg) translateY(-8px);
+    }
+  }
 }
 
 :root {

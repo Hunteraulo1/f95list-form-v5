@@ -1,11 +1,16 @@
 <script lang="ts">
 import { Moon, Sun } from 'lucide-svelte';
-import { page } from '$app/state';
-import banner from '$lib/assets/banner.webp';
+import bannerDark from '$lib/assets/banner-dark.webp';
+import bannerLight from '$lib/assets/banner-light.png';
 import { getTheme, toggleTheme } from '$lib/stores/theme.svelte';
 
-const { isHome = false } = $props();
+interface Props {
+  isHome?: boolean;
+}
 
+const { isHome = false }: Props = $props();
+
+const isDark = $derived(getTheme() === 'dark');
 interface Nav {
   title: string;
   href: string;
@@ -30,7 +35,15 @@ const nav: Nav[] = [
 	class:p-8={isHome}
 >
 	<a href="/" class="sm:h-full sm:aspect-8/1">
-		<img src={banner} alt="bannière de f95 france" class="h-full" />
+		{#if isDark}
+			<img src={bannerDark} alt="bannière de f95 france" class="h-full" />
+		{:else}
+			<img
+				src={bannerLight}
+				alt="bannière de f95 france"
+				class="h-full"
+			/>
+		{/if}
 	</a>
 
 	<ul class="flex gap-8 w-full px-16 font-bold">
@@ -47,7 +60,7 @@ const nav: Nav[] = [
 		aria-label="Basculer le thème"
 		class="rounded-field p-2 hover:bg-base-200"
 	>
-		{#if getTheme() === "dark"}
+		{#if isDark}
 			<Sun size={20} />
 		{:else}
 			<Moon size={20} />
