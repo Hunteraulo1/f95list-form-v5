@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { config } from 'dotenv';
+import { defineRelations } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/mysql2';
 import { reset, seed } from 'drizzle-seed';
 import * as schema from './schema';
@@ -20,13 +21,9 @@ if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set');
 }
 
-const db = drizzle({
-  connection: {
-    uri: process.env.DATABASE_URL,
-  },
-  schema,
-  mode: 'default',
-});
+const relations = defineRelations(schema);
+
+const db = drizzle(process.env.DATABASE_URL, { relations });
 
 export const main = async () => {
   await reset(db, schema);
