@@ -21,14 +21,14 @@
     "test:e2e": "playwright test"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.4",
+    "@biomejs/biome": "2.5.7",
     "@faker-js/faker": "10.5.0",
-    "@playwright/test": "1.61.1",
+    "@playwright/test": "1.62.1",
     "@sveltejs/adapter-node": "5.5.7",
-    "@sveltejs/kit": "2.70.1",
+    "@sveltejs/kit": "2.70.2",
     "@sveltejs/vite-plugin-svelte": "7.2.0",
     "@tailwindcss/vite": "4.3.3",
-    "@types/node": "26.1.1",
+    "@types/node": "26.1.2",
     "@vitest/browser": "4.1.10",
     "clsx": "2.1.1",
     "commitizen": "4.3.2",
@@ -38,29 +38,29 @@
     "drizzle-kit": "0.31.10",
     "drizzle-seed": "0.3.1",
     "husky": "9.1.7",
-    "lint-staged": "17.1.0",
-    "svelte": "5.56.6",
-    "svelte-check": "4.7.3",
+    "lint-staged": "17.3.0",
+    "svelte": "5.56.8",
+    "svelte-check": "4.7.4",
     "tailwind-merge": "3.6.0",
-    "tailwind-variants": "3.2.2",
+    "tailwind-variants": "3.3.1",
     "tailwindcss": "4.3.3",
-    "typescript": "6",
+    "typescript": "^6.0.3",
     "valibot": "1.4.2",
-    "vite": "8.1.5",
+    "vite": "8.2.0",
     "vitest": "4.1.10"
   },
   "dependencies": {
-    "@tanstack/query-devtools": "5.101.3",
-    "@tanstack/svelte-query": "6.1.37",
+    "@tanstack/query-devtools": "5.101.4",
+    "@tanstack/svelte-query": "6.1.38",
     "bits-ui": "2.18.1",
-    "drizzle-orm": "0.45.2",
-    "drizzle-valibot": "0.4.2",
+    "drizzle-orm": "1.0.0-rc.4",
     "lucide-svelte": "1.0.1",
-    "mysql2": "3.23.1",
+    "mysql2": "3.23.2",
     "pino": "10.3.1"
   },
   "overrides": {
-    "typescript": "~6"
+    "typescript": "~6",
+    "drizzle-orm": "rc"
   },
   "config": {
     "commitizen": {
