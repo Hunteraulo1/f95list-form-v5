@@ -117,7 +117,7 @@ export const GameTranslationSchema = createInsertSchema(gameTranslation, {
 
 export type GameTranslation = InferSelectModel<typeof gameTranslation>;
 
-export const gameTranslationFile = mysqlTable('game_translation', {
+export const gameTranslationFile = mysqlTable('game_translation_file', {
   id: char('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
   version: varchar('version', { length: 36 }).notNull(),
   externalLink: varchar('external_link', { length: 2048 }).notNull(),
@@ -215,9 +215,8 @@ export const TranslatorLinkSchema = createInsertSchema(translatorLink, {
 export type TranslatorLink = InferSelectModel<typeof translatorLink>;
 
 export const user = mysqlTable('user', {
-  //! Géré par Zitadel
-  //TODO: faire la table user
   id: char('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
+  zitadelId: varchar('zitadel_id', { length: 36 }).notNull().unique(), //! Zitadel's `sub` claim, set on first login
   discordNotification: boolean('discord_notification').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),

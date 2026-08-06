@@ -40,7 +40,6 @@ export const main = async () => {
   }).refine((funcs) => ({
     game: {
       columns: {
-        threadId: funcs.int({ minValue: 0, maxValue: 8388607 }),
         imageExternal: funcs.valuesFromArray({
           values: Array.from({ length: 50 }, () =>
             faker.image.personPortrait(),

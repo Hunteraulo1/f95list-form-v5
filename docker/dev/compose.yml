@@ -23,5 +23,54 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
 
+  zitadel-db-dev:
+    image: postgres:17-alpine
+    container_name: f95list-form-v5-zitadel-db
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: zitadel
+      POSTGRES_PASSWORD: zitadel
+      POSTGRES_DB: zitadel
+
+    volumes:
+      - zitadel_db_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zitadel"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  zitadel-dev:
+    image: ghcr.io/zitadel/zitadel:latest
+    container_name: f95list-form-v5-zitadel
+    restart: unless-stopped
+    command: start-from-init --masterkey "MasterkeyNeedsToHave32Characters" --tlsMode disabled
+
+    environment:
+      ZITADEL_DATABASE_POSTGRES_HOST: zitadel-db-dev
+      ZITADEL_DATABASE_POSTGRES_PORT: 5432
+      ZITADEL_DATABASE_POSTGRES_DATABASE: zitadel
+      ZITADEL_DATABASE_POSTGRES_USER_USERNAME: zitadel
+      ZITADEL_DATABASE_POSTGRES_USER_PASSWORD: zitadel
+      ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE: disable
+      ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME: zitadel
+      ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD: zitadel
+      ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE: disable
+      ZITADEL_EXTERNALDOMAIN: localhost
+      ZITADEL_EXTERNALPORT: 8080
+      ZITADEL_EXTERNALSECURE: "false"
+      ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME: admin@f95list.local
+      ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD: Password1!
+
+    depends_on:
+      zitadel-db-dev:
+        condition: service_healthy
+
+    ports:
+      - "8080:8080"
+
 volumes:
   mariadb_data:
+  zitadel_db_data:
