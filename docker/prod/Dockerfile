@@ -20,6 +20,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY --from=builder /app/build ./build
+COPY --from=builder /app/server.ts .
+COPY --from=builder /app/src/lib/server/ws ./src/lib/server/ws
 COPY --from=builder /app/package.json .
 COPY --from=builder /app/bun.lock .
 
@@ -27,4 +29,4 @@ RUN bun install --production --frozen-lockfile
 
 EXPOSE 3000
 
-CMD ["bun", "build"]
+CMD ["bun", "run", "start"]
