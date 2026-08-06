@@ -1,26 +1,66 @@
 {
   "version": "6",
-  "id": "796d65e7-165f-4117-a422-20084be2bc8e",
-  "prevIds": ["00000000-0000-0000-0000-000000000000"],
   "dialect": "mysql",
+  "id": "bb47af2e-d89d-4270-bbc2-1e62fb5d21b0",
+  "prevIds": ["00000000-0000-0000-0000-000000000000"],
   "ddl": [
+    {
+      "name": "config",
+      "entityType": "tables"
+    },
     {
       "name": "game",
       "entityType": "tables"
     },
     {
-      "type": "char(36)",
+      "name": "game_edition",
+      "entityType": "tables"
+    },
+    {
+      "name": "game_translation",
+      "entityType": "tables"
+    },
+    {
+      "name": "game_translation_file",
+      "entityType": "tables"
+    },
+    {
+      "name": "game_translation_translator",
+      "entityType": "tables"
+    },
+    {
+      "name": "origin-website",
+      "entityType": "tables"
+    },
+    {
+      "name": "role",
+      "entityType": "tables"
+    },
+    {
+      "name": "translator",
+      "entityType": "tables"
+    },
+    {
+      "name": "translator_link",
+      "entityType": "tables"
+    },
+    {
+      "name": "user",
+      "entityType": "tables"
+    },
+    {
+      "type": "tinyint",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(UUID())",
+      "default": "1",
       "onUpdateNow": false,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "id",
-      "table": "game",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "config"
     },
     {
       "type": "varchar(255)",
@@ -33,8 +73,78 @@
       "collation": null,
       "generated": null,
       "name": "name",
-      "table": "game",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "config"
+    },
+    {
+      "type": "boolean",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "false",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "maintenance_mode",
+      "entityType": "columns",
+      "table": "config"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "config"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": true,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "config"
+    },
+    {
+      "type": "mediumint unsigned",
+      "notNull": true,
+      "autoIncrement": true,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "game"
+    },
+    {
+      "type": "varchar(255)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "game"
     },
     {
       "type": "varchar(2048)",
@@ -47,8 +157,8 @@
       "collation": null,
       "generated": null,
       "name": "link",
-      "table": "game",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game"
     },
     {
       "type": "varchar(36)",
@@ -61,8 +171,8 @@
       "collation": null,
       "generated": null,
       "name": "website",
-      "table": "game",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game"
     },
     {
       "type": "mediumint unsigned",
@@ -75,22 +185,8 @@
       "collation": null,
       "generated": null,
       "name": "thread_id",
-      "table": "game",
-      "entityType": "columns"
-    },
-    {
-      "type": "varchar(32)",
-      "notNull": true,
-      "autoIncrement": false,
-      "default": null,
-      "onUpdateNow": false,
-      "onUpdateNowFsp": null,
-      "charSet": null,
-      "collation": null,
-      "generated": null,
-      "name": "version",
-      "table": "game",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game"
     },
     {
       "type": "varchar(2048)",
@@ -102,9 +198,23 @@
       "charSet": null,
       "collation": null,
       "generated": null,
-      "name": "image",
-      "table": "game",
-      "entityType": "columns"
+      "name": "image_internal",
+      "entityType": "columns",
+      "table": "game"
+    },
+    {
+      "type": "varchar(2048)",
+      "notNull": false,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "image_external",
+      "entityType": "columns",
+      "table": "game"
     },
     {
       "type": "text",
@@ -117,8 +227,8 @@
       "collation": null,
       "generated": null,
       "name": "tags",
-      "table": "game",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game"
     },
     {
       "type": "text",
@@ -131,8 +241,8 @@
       "collation": null,
       "generated": null,
       "name": "description",
-      "table": "game",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game"
     },
     {
       "type": "text",
@@ -145,8 +255,8 @@
       "collation": null,
       "generated": null,
       "name": "description_fr",
-      "table": "game",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game"
     },
     {
       "type": "boolean",
@@ -159,8 +269,8 @@
       "collation": null,
       "generated": null,
       "name": "auto_check",
-      "table": "game",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game"
     },
     {
       "type": "boolean",
@@ -173,40 +283,36 @@
       "collation": null,
       "generated": null,
       "name": "active",
-      "table": "game",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game"
     },
     {
-      "type": "datetime",
+      "type": "timestamp",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(NOW())",
+      "default": "(now())",
       "onUpdateNow": false,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "created_at",
-      "table": "game",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game"
     },
     {
-      "type": "datetime",
+      "type": "timestamp",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(NOW())",
-      "onUpdateNow": false,
+      "default": "(now())",
+      "onUpdateNow": true,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "updated_at",
-      "table": "game",
-      "entityType": "columns"
-    },
-    {
-      "name": "game_edition",
-      "entityType": "tables"
+      "entityType": "columns",
+      "table": "game"
     },
     {
       "type": "char(36)",
@@ -219,8 +325,8 @@
       "collation": null,
       "generated": null,
       "name": "id",
-      "table": "game_edition",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_edition"
     },
     {
       "type": "varchar(255)",
@@ -233,11 +339,11 @@
       "collation": null,
       "generated": null,
       "name": "name",
-      "table": "game_edition",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_edition"
     },
     {
-      "type": "varchar(32)",
+      "type": "varchar(36)",
       "notNull": true,
       "autoIncrement": false,
       "default": null,
@@ -247,8 +353,8 @@
       "collation": null,
       "generated": null,
       "name": "version",
-      "table": "game_edition",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_edition"
     },
     {
       "type": "enum('in_progress','completed','abandoned','on_hold')",
@@ -261,8 +367,8 @@
       "collation": null,
       "generated": null,
       "name": "status",
-      "table": "game_edition",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_edition"
     },
     {
       "type": "boolean",
@@ -275,8 +381,8 @@
       "collation": null,
       "generated": null,
       "name": "auto_check",
-      "table": "game_edition",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_edition"
     },
     {
       "type": "datetime",
@@ -289,8 +395,8 @@
       "collation": null,
       "generated": null,
       "name": "last_auto_check",
-      "table": "game_edition",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_edition"
     },
     {
       "type": "boolean",
@@ -303,40 +409,36 @@
       "collation": null,
       "generated": null,
       "name": "active",
-      "table": "game_edition",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_edition"
     },
     {
-      "type": "datetime",
+      "type": "timestamp",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(NOW())",
+      "default": "(now())",
       "onUpdateNow": false,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "created_at",
-      "table": "game_edition",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_edition"
     },
     {
-      "type": "datetime",
+      "type": "timestamp",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(NOW())",
-      "onUpdateNow": false,
+      "default": "(now())",
+      "onUpdateNow": true,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "updated_at",
-      "table": "game_edition",
-      "entityType": "columns"
-    },
-    {
-      "name": "game_translation",
-      "entityType": "tables"
+      "entityType": "columns",
+      "table": "game_edition"
     },
     {
       "type": "char(36)",
@@ -349,11 +451,11 @@
       "collation": null,
       "generated": null,
       "name": "id",
-      "table": "game_translation",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_translation"
     },
     {
-      "type": "varchar(32)",
+      "type": "varchar(36)",
       "notNull": true,
       "autoIncrement": false,
       "default": null,
@@ -363,22 +465,8 @@
       "collation": null,
       "generated": null,
       "name": "version",
-      "table": "game_translation",
-      "entityType": "columns"
-    },
-    {
-      "type": "varchar(2048)",
-      "notNull": true,
-      "autoIncrement": false,
-      "default": null,
-      "onUpdateNow": false,
-      "onUpdateNowFsp": null,
-      "charSet": null,
-      "collation": null,
-      "generated": null,
-      "name": "link",
-      "table": "game_translation",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_translation"
     },
     {
       "type": "char(36)",
@@ -390,9 +478,9 @@
       "charSet": null,
       "collation": null,
       "generated": null,
-      "name": "file",
-      "table": "game_translation",
-      "entityType": "columns"
+      "name": "file_id",
+      "entityType": "columns",
+      "table": "game_translation"
     },
     {
       "type": "enum('automatic','partial-proofreading','full-proofreading','original-french','unrated','not-working')",
@@ -405,8 +493,8 @@
       "collation": null,
       "generated": null,
       "name": "quality",
-      "table": "game_translation",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_translation"
     },
     {
       "type": "enum('no_translation','integrated','translation','translation_with_mods','mods')",
@@ -419,8 +507,8 @@
       "collation": null,
       "generated": null,
       "name": "type",
-      "table": "game_translation",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_translation"
     },
     {
       "type": "boolean",
@@ -433,40 +521,120 @@
       "collation": null,
       "generated": null,
       "name": "active",
-      "table": "game_translation",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_translation"
     },
     {
-      "type": "datetime",
+      "type": "timestamp",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(NOW())",
+      "default": "(now())",
       "onUpdateNow": false,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "created_at",
-      "table": "game_translation",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_translation"
     },
     {
-      "type": "datetime",
+      "type": "timestamp",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(NOW())",
-      "onUpdateNow": false,
+      "default": "(now())",
+      "onUpdateNow": true,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "updated_at",
-      "table": "game_translation",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_translation"
     },
     {
-      "name": "game_translation_translator",
-      "entityType": "tables"
+      "type": "char(36)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(UUID())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "game_translation_file"
+    },
+    {
+      "type": "varchar(36)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "version",
+      "entityType": "columns",
+      "table": "game_translation_file"
+    },
+    {
+      "type": "varchar(2048)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "external_link",
+      "entityType": "columns",
+      "table": "game_translation_file"
+    },
+    {
+      "type": "varchar(2048)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "internal_link",
+      "entityType": "columns",
+      "table": "game_translation_file"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "game_translation_file"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": true,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "game_translation_file"
     },
     {
       "type": "char(36)",
@@ -479,8 +647,8 @@
       "collation": null,
       "generated": null,
       "name": "game_translation_id",
-      "table": "game_translation_translator",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_translation_translator"
     },
     {
       "type": "char(36)",
@@ -493,8 +661,8 @@
       "collation": null,
       "generated": null,
       "name": "translator_id",
-      "table": "game_translation_translator",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_translation_translator"
     },
     {
       "type": "boolean",
@@ -507,8 +675,8 @@
       "collation": null,
       "generated": null,
       "name": "alert",
-      "table": "game_translation_translator",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_translation_translator"
     },
     {
       "type": "enum('translator','proofreader')",
@@ -521,12 +689,36 @@
       "collation": null,
       "generated": null,
       "name": "type",
-      "table": "game_translation_translator",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "game_translation_translator"
     },
     {
-      "name": "origin-website",
-      "entityType": "tables"
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "game_translation_translator"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": true,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "game_translation_translator"
     },
     {
       "type": "char(36)",
@@ -539,8 +731,8 @@
       "collation": null,
       "generated": null,
       "name": "id",
-      "table": "origin-website",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "origin-website"
     },
     {
       "type": "varchar(32)",
@@ -552,9 +744,9 @@
       "charSet": null,
       "collation": null,
       "generated": null,
-      "name": "website",
-      "table": "origin-website",
-      "entityType": "columns"
+      "name": "name",
+      "entityType": "columns",
+      "table": "origin-website"
     },
     {
       "type": "varchar(2048)",
@@ -567,8 +759,8 @@
       "collation": null,
       "generated": null,
       "name": "link",
-      "table": "origin-website",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "origin-website"
     },
     {
       "type": "varchar(2048)",
@@ -581,40 +773,36 @@
       "collation": null,
       "generated": null,
       "name": "image",
-      "table": "origin-website",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "origin-website"
     },
     {
-      "type": "datetime",
+      "type": "timestamp",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(NOW())",
+      "default": "(now())",
       "onUpdateNow": false,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "created_at",
-      "table": "origin-website",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "origin-website"
     },
     {
-      "type": "datetime",
+      "type": "timestamp",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(NOW())",
-      "onUpdateNow": false,
+      "default": "(now())",
+      "onUpdateNow": true,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "updated_at",
-      "table": "origin-website",
-      "entityType": "columns"
-    },
-    {
-      "name": "translator",
-      "entityType": "tables"
+      "entityType": "columns",
+      "table": "origin-website"
     },
     {
       "type": "char(36)",
@@ -627,8 +815,78 @@
       "collation": null,
       "generated": null,
       "name": "id",
-      "table": "translator",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "role"
+    },
+    {
+      "type": "varchar(64)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "role"
+    },
+    {
+      "type": "varchar(64)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "label",
+      "entityType": "columns",
+      "table": "role"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "role"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": true,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "role"
+    },
+    {
+      "type": "char(36)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(UUID())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "translator"
     },
     {
       "type": "varchar(255)",
@@ -641,8 +899,8 @@
       "collation": null,
       "generated": null,
       "name": "name",
-      "table": "translator",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "translator"
     },
     {
       "type": "varchar(36)",
@@ -655,8 +913,8 @@
       "collation": null,
       "generated": null,
       "name": "user_id",
-      "table": "translator",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "translator"
     },
     {
       "type": "varchar(36)",
@@ -669,8 +927,8 @@
       "collation": null,
       "generated": null,
       "name": "discord_id",
-      "table": "translator",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "translator"
     },
     {
       "type": "boolean",
@@ -683,40 +941,36 @@
       "collation": null,
       "generated": null,
       "name": "active",
-      "table": "translator",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "translator"
     },
     {
-      "type": "datetime",
+      "type": "timestamp",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(NOW())",
+      "default": "(now())",
       "onUpdateNow": false,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "created_at",
-      "table": "translator",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "translator"
     },
     {
-      "type": "datetime",
+      "type": "timestamp",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(NOW())",
-      "onUpdateNow": false,
+      "default": "(now())",
+      "onUpdateNow": true,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "updated_at",
-      "table": "translator",
-      "entityType": "columns"
-    },
-    {
-      "name": "translator_link",
-      "entityType": "tables"
+      "entityType": "columns",
+      "table": "translator"
     },
     {
       "type": "char(36)",
@@ -729,8 +983,8 @@
       "collation": null,
       "generated": null,
       "name": "id",
-      "table": "translator_link",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "translator_link"
     },
     {
       "type": "varchar(36)",
@@ -743,8 +997,8 @@
       "collation": null,
       "generated": null,
       "name": "translator_id",
-      "table": "translator_link",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "translator_link"
     },
     {
       "type": "varchar(255)",
@@ -757,8 +1011,8 @@
       "collation": null,
       "generated": null,
       "name": "name",
-      "table": "translator_link",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "translator_link"
     },
     {
       "type": "varchar(2048)",
@@ -771,8 +1025,8 @@
       "collation": null,
       "generated": null,
       "name": "link",
-      "table": "translator_link",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "translator_link"
     },
     {
       "type": "tinyint unsigned",
@@ -785,40 +1039,36 @@
       "collation": null,
       "generated": null,
       "name": "order",
-      "table": "translator_link",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "translator_link"
     },
     {
-      "type": "datetime",
+      "type": "timestamp",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(NOW())",
+      "default": "(now())",
       "onUpdateNow": false,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "created_at",
-      "table": "translator_link",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "translator_link"
     },
     {
-      "type": "datetime",
+      "type": "timestamp",
       "notNull": true,
       "autoIncrement": false,
-      "default": "(NOW())",
-      "onUpdateNow": false,
+      "default": "(now())",
+      "onUpdateNow": true,
       "onUpdateNowFsp": null,
       "charSet": null,
       "collation": null,
       "generated": null,
       "name": "updated_at",
-      "table": "translator_link",
-      "entityType": "columns"
-    },
-    {
-      "name": "user",
-      "entityType": "tables"
+      "entityType": "columns",
+      "table": "translator_link"
     },
     {
       "type": "char(36)",
@@ -831,8 +1081,22 @@
       "collation": null,
       "generated": null,
       "name": "id",
-      "table": "user",
-      "entityType": "columns"
+      "entityType": "columns",
+      "table": "user"
+    },
+    {
+      "type": "char(36)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "zitadel_id",
+      "entityType": "columns",
+      "table": "user"
     },
     {
       "type": "boolean",
@@ -844,20 +1108,49 @@
       "charSet": null,
       "collation": null,
       "generated": null,
-      "name": "discordNotification",
-      "table": "user",
-      "entityType": "columns"
+      "name": "discord_notification",
+      "entityType": "columns",
+      "table": "user"
     },
     {
-      "columns": ["website"],
-      "tableTo": "origin-website",
-      "columnsTo": ["id"],
-      "onUpdate": "NO ACTION",
-      "onDelete": "NO ACTION",
-      "nameExplicit": false,
-      "name": "game_website_origin-website_id_fk",
-      "table": "game",
-      "entityType": "fks"
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "user"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": true,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "user"
+    },
+    {
+      "columns": ["game_translation_id", "translator_id"],
+      "name": "PRIMARY",
+      "table": "game_translation_translator",
+      "entityType": "pks"
+    },
+    {
+      "columns": ["id"],
+      "name": "PRIMARY",
+      "table": "config",
+      "entityType": "pks"
     },
     {
       "columns": ["id"],
@@ -878,31 +1171,9 @@
       "entityType": "pks"
     },
     {
-      "columns": ["game_translation_id"],
-      "tableTo": "game_translation",
-      "columnsTo": ["id"],
-      "onUpdate": "NO ACTION",
-      "onDelete": "CASCADE",
-      "nameExplicit": true,
-      "name": "game_translation_translator_translation_fk",
-      "table": "game_translation_translator",
-      "entityType": "fks"
-    },
-    {
-      "columns": ["translator_id"],
-      "tableTo": "translator",
-      "columnsTo": ["id"],
-      "onUpdate": "NO ACTION",
-      "onDelete": "CASCADE",
-      "nameExplicit": true,
-      "name": "game_translation_translator_translator_fk",
-      "table": "game_translation_translator",
-      "entityType": "fks"
-    },
-    {
-      "columns": ["game_translation_id", "translator_id"],
+      "columns": ["id"],
       "name": "PRIMARY",
-      "table": "game_translation_translator",
+      "table": "game_translation_file",
       "entityType": "pks"
     },
     {
@@ -912,32 +1183,16 @@
       "entityType": "pks"
     },
     {
-      "columns": ["user_id"],
-      "tableTo": "user",
-      "columnsTo": ["id"],
-      "onUpdate": "NO ACTION",
-      "onDelete": "NO ACTION",
-      "nameExplicit": false,
-      "name": "translator_user_id_user_id_fk",
-      "table": "translator",
-      "entityType": "fks"
+      "columns": ["id"],
+      "name": "PRIMARY",
+      "table": "role",
+      "entityType": "pks"
     },
     {
       "columns": ["id"],
       "name": "PRIMARY",
       "table": "translator",
       "entityType": "pks"
-    },
-    {
-      "columns": ["translator_id"],
-      "tableTo": "translator",
-      "columnsTo": ["id"],
-      "onUpdate": "NO ACTION",
-      "onDelete": "NO ACTION",
-      "nameExplicit": false,
-      "name": "translator_link_translator_id_translator_id_fk",
-      "table": "translator_link",
-      "entityType": "fks"
     },
     {
       "columns": ["id"],
@@ -950,6 +1205,88 @@
       "name": "PRIMARY",
       "table": "user",
       "entityType": "pks"
+    },
+    {
+      "columns": [
+        {
+          "value": "zitadel_id",
+          "isExpression": false
+        }
+      ],
+      "isUnique": true,
+      "using": null,
+      "algorithm": null,
+      "lock": null,
+      "nameExplicit": false,
+      "name": "zitadel_id_unique",
+      "table": "user",
+      "entityType": "indexes"
+    },
+    {
+      "columns": ["website"],
+      "tableTo": "origin-website",
+      "columnsTo": ["id"],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "game_website_origin-website_id_fkey",
+      "entityType": "fks",
+      "table": "game"
+    },
+    {
+      "columns": ["file_id"],
+      "tableTo": "game_translation_file",
+      "columnsTo": ["id"],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "game_translation_file_id_game_translation_file_id_fkey",
+      "entityType": "fks",
+      "table": "game_translation"
+    },
+    {
+      "columns": ["game_translation_id"],
+      "tableTo": "game_translation",
+      "columnsTo": ["id"],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "nameExplicit": true,
+      "name": "game_translation_translator_translation_fk",
+      "entityType": "fks",
+      "table": "game_translation_translator"
+    },
+    {
+      "columns": ["translator_id"],
+      "tableTo": "translator",
+      "columnsTo": ["id"],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "nameExplicit": true,
+      "name": "game_translation_translator_translator_fk",
+      "entityType": "fks",
+      "table": "game_translation_translator"
+    },
+    {
+      "columns": ["user_id"],
+      "tableTo": "user",
+      "columnsTo": ["id"],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "translator_user_id_user_id_fkey",
+      "entityType": "fks",
+      "table": "translator"
+    },
+    {
+      "columns": ["translator_id"],
+      "tableTo": "translator",
+      "columnsTo": ["id"],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "translator_link_translator_id_translator_id_fkey",
+      "entityType": "fks",
+      "table": "translator_link"
     }
   ],
   "renames": []

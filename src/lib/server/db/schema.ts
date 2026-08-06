@@ -11,7 +11,6 @@ import {
   text,
   timestamp,
   tinyint,
-  tinytext,
   varchar,
 } from 'drizzle-orm/mysql-core';
 import { createInsertSchema } from 'drizzle-orm/valibot';
@@ -36,7 +35,7 @@ export type OriginWebsite = InferSelectModel<typeof originWebsite>;
 
 export const game = mysqlTable('game', {
   id: mediumint('id', { unsigned: true }).primaryKey().autoincrement(),
-  name: tinytext('name').notNull(),
+  name: varchar('name', { length: 255 }).notNull(),
   link: varchar('link', { length: 2048 }).notNull(),
   origin: varchar('website', { length: 36 })
     .notNull()
@@ -63,7 +62,7 @@ export type Game = InferSelectModel<typeof game>;
 
 export const gameEdition = mysqlTable('game_edition', {
   id: char('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
-  name: tinytext('name').notNull(),
+  name: varchar('name', { length: 255 }).notNull(),
   version: varchar('version', { length: 36 }).notNull(),
   status: mysqlEnum('status', [
     'in_progress',
@@ -139,7 +138,7 @@ export type GameTranslationFile = InferSelectModel<typeof gameTranslationFile>;
 
 export const translator = mysqlTable('translator', {
   id: char('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
-  name: tinytext('name').notNull(),
+  name: varchar('name', { length: 255 }).notNull(),
   userId: varchar('user_id', { length: 36 })
     .notNull()
     .references(() => user.id),
@@ -200,7 +199,7 @@ export const translatorLink = mysqlTable('translator_link', {
   translatorId: varchar('translator_id', { length: 36 })
     .notNull()
     .references(() => translator.id),
-  name: tinytext('name').notNull(),
+  name: varchar('name', { length: 255 }).notNull(),
   link: varchar('link', { length: 2048 }).notNull(),
   order: tinyint('order', { unsigned: true }).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -230,7 +229,7 @@ export type User = InferSelectModel<typeof user>;
 
 export const config = mysqlTable('config', {
   id: tinyint('id').primaryKey().default(1), //! Unique ID for the config
-  name: tinytext('name').notNull(),
+  name: varchar('name', { length: 255 }).notNull(),
   maintenanceMode: boolean('maintenance_mode').notNull().default(false),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
@@ -242,12 +241,12 @@ export type Config = InferSelectModel<typeof config>;
 
 export const role = mysqlTable('role', {
   id: char('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
-  name: tinytext('name').notNull(),
-  label: tinytext('label').notNull(),
+  name: varchar('name', { length: 64 }).notNull(),
+  label: varchar('label', { length: 64 }).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
 });
 
 export const RoleSchema = createInsertSchema(role);
 
-export type Role = InferSelectModel<typeof config>;
+export type Role = InferSelectModel<typeof role>;
