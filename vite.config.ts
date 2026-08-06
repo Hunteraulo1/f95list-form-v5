@@ -37,13 +37,16 @@ export default defineConfig(({ command }) => {
           mode: 'auto',
           directives: {
             'default-src': ['self'],
-            'script-src': ['self'],
+            'script-src': ['self', 'https://insight.f95france.site'],
             'style-src': ['self', 'https://fonts.googleapis.com'],
-            'img-src': dev
-              ? ['self', 'data:', 'https://cdn.jsdelivr.net']
-              : ['self', 'data:'],
+            'img-src': [
+              'self',
+              'data:',
+              'https://cdn.f95france.site',
+              ...(dev ? (['https://cdn.jsdelivr.net'] as const) : []),
+            ],
             'font-src': ['self', 'https://fonts.gstatic.com'],
-            'connect-src': ['self'],
+            'connect-src': ['self', 'https://insight.f95france.site'],
             'object-src': ['none'],
             'base-uri': ['self'],
             'form-action': ['self'],
