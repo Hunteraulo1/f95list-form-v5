@@ -1,16 +1,26 @@
 <script lang="ts">
 import { ArrowRight } from 'lucide-svelte';
-import type { Game } from '$lib/server/db/schema';
+import { onMount } from 'svelte';
+import type { Game, GameEdition, GameTranslation } from '$lib/server/db/schema';
 import { cn } from '$lib/utils/cn';
+
+interface LatestTranslation {
+  id: GameTranslation['id'];
+  name: Game['name'];
+  editionName: GameEdition['name'];
+  image: Game['imageExternal'];
+}
 
 interface Props {
   title: string;
   classes?: string;
   aboutLink?: string;
-  games: Game[];
+  games: LatestTranslation[];
 }
 
 const { title, classes, aboutLink, games }: Props = $props();
+
+onMount(() => console.log([games]));
 
 const maxItemList: Record<number, number> = {
   0: 2,
@@ -42,18 +52,20 @@ const max = $derived(
 	<div
 		class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 w-full min-h-60 gap-4"
 	>
-		{#each games.slice(0, max) as { name, imageExternal }}
+		{#each games.slice(0, max) as { name, editionName, image }}
 			<article
 				class="bg-base-300 w-full h-60 rounded-xl relative hover:-rotate-1 hover:md:-rotate-2 transition-all cursor-pointer shadow hover:shadow-md"
 			>
 				<div class="flex flex-col justify-end h-full p-4 z-10 relative">
-					<h4 class="font-bold text-md text-center">{name}</h4>
+					<h4 class="font-bold text-md text-center">
+						{name} - {editionName}
+					</h4>
 				</div>
 				<div class="absolute top-0 h-full w-full">
-					{#if imageExternal}
+					{#if image}
 						<img
-							src={imageExternal}
-							alt={`image de ${name}`}
+							src={image}
+							alt={`image de ${name} - ${editionName}`}
 							class="h-full w-full object-cover p-2 rounded-2xl opacity-90"
 						/>
 					{:else}

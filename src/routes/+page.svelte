@@ -32,7 +32,7 @@ const { data }: Props = $props();
 	<div class="relative h-full">
 		<Header isHome />
 
-		<HomeHero />
+		<HomeHero stats={data.stats} />
 	</div>
 </div>
 

@@ -48,6 +48,7 @@ export const main = async () => {
     user,
   }).refine((funcs) => ({
     game: {
+      count: 50,
       columns: {
         threadId: funcs.int({ minValue: 0, maxValue: 16_777_215 }),
         name: funcs.valuesFromArray({
@@ -63,6 +64,7 @@ export const main = async () => {
       },
     },
     gameEdition: {
+      count: 75,
       columns: {
         name: funcs.valuesFromArray({
           values: Array.from({ length: 50 }, () =>
@@ -114,6 +116,7 @@ export const main = async () => {
       },
     },
     gameTranslation: {
+      count: 100,
       columns: {
         type: funcs.valuesFromArray({
           values: [

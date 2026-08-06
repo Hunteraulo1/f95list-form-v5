@@ -62,6 +62,9 @@ export type Game = InferSelectModel<typeof game>;
 
 export const gameEdition = mysqlTable('game_edition', {
   id: char('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
+  gameId: mediumint('game_id', { unsigned: true })
+    .notNull()
+    .references(() => game.id),
   name: varchar('name', { length: 255 }).notNull(),
   version: varchar('version', { length: 36 }).notNull(),
   status: mysqlEnum('status', [
@@ -85,10 +88,10 @@ export type GameEdition = InferSelectModel<typeof gameEdition>;
 
 export const gameTranslation = mysqlTable('game_translation', {
   id: char('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
-  version: varchar('version', { length: 36 }).notNull(),
-  fileId: char('file_id', { length: 36 })
+  gameEditionId: char('game_edition_id', { length: 36 })
     .notNull()
-    .references(() => gameTranslationFile.id),
+    .references(() => gameEdition.id),
+  version: varchar('version', { length: 36 }).notNull(),
   quality: mysqlEnum('quality', [
     'automatic',
     'partial-proofreading',
@@ -111,13 +114,15 @@ export const gameTranslation = mysqlTable('game_translation', {
 
 export const GameTranslationSchema = createInsertSchema(gameTranslation, {
   id: (schema) => pipe(schema, uuid()),
-  fileId: (schema) => pipe(schema, uuid()),
 });
 
 export type GameTranslation = InferSelectModel<typeof gameTranslation>;
 
 export const gameTranslationFile = mysqlTable('game_translation_file', {
   id: char('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
+  gameTranslationId: char('game_translation_id', { length: 36 })
+    .notNull()
+    .references(() => gameTranslation.id),
   version: varchar('version', { length: 36 }).notNull(),
   externalLink: varchar('external_link', { length: 2048 }).notNull(),
   internalLink: varchar('internal_link', { length: 2048 }).notNull(),
@@ -158,7 +163,6 @@ export const gameTranslationTranslator = mysqlTable(
   'game_translation_translator',
   {
     gameTranslationId: char('game_translation_id', { length: 36 }).notNull(),
-
     translatorId: char('translator_id', { length: 36 }).notNull(),
     alert: boolean('alert').notNull().default(true),
     type: mysqlEnum('type', ['translator', 'proofreader']),
@@ -215,6 +219,9 @@ export type TranslatorLink = InferSelectModel<typeof translatorLink>;
 
 export const user = mysqlTable('user', {
   id: char('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
+  roleId: char('role_id', { length: 36 })
+    .notNull()
+    .references(() => role.id),
   zitadelId: char('zitadel_id', { length: 36 }).notNull().unique(), //! Zitadel's `sub` claim, set on first login
   discordNotification: boolean('discord_notification').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow().notNull(),

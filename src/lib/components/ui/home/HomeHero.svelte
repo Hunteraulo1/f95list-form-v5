@@ -1,27 +1,12 @@
 <script lang="ts">
-interface Stat {
-  title: string;
-  value: number;
+interface Props {
+  stats: {
+    title: string;
+    value: number;
+  }[];
 }
 
-const stats: Stat[] = [
-  {
-    title: 'traducteur',
-    value: 115,
-  },
-  {
-    title: 'traductions',
-    value: 2048,
-  },
-  {
-    title: 'téléchargements',
-    value: 3012,
-  },
-  {
-    title: 'visites',
-    value: 1641,
-  },
-];
+const { stats }: Props = $props();
 </script>
 
 <section class="py-8 px-16 xl:px-32 md:h-1/2 flex items-center">
