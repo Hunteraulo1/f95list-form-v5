@@ -9,7 +9,7 @@
     "dev:down": "docker compose -f ./docker/dev/compose.yml down",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "bun run server.ts",
+    "start": "bun run scripts/start.ts",
     "check": "svelte-kit sync && svelte-check",
     "lint": "biome check .",
     "format": "biome format --write .",
