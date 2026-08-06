@@ -3,7 +3,7 @@ import { error, type Handle } from '@sveltejs/kit';
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS_PER_WINDOW = 120;
 
-// In-memory: resets on restart and isn't shared across instances. Move to Redis if the app scales horizontally.
+//? In-memory: resets on restart and isn't shared across instances. Move to Redis if the app scales horizontally.
 const hits = new Map<string, { count: number; resetAt: number }>();
 
 setInterval(() => {
