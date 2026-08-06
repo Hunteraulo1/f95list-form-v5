@@ -15,6 +15,22 @@ const config = {
     alias: {
       $features: './src/features',
     },
+
+    csp: {
+      mode: 'auto',
+      directives: {
+        'default-src': ['self'],
+        'script-src': ['self'],
+        'style-src': ['self'],
+        'img-src': ['self', 'data:'],
+        'font-src': ['self'],
+        'connect-src': ['self'],
+        'object-src': ['none'],
+        'base-uri': ['self'],
+        'form-action': ['self'],
+        'frame-ancestors': ['none'],
+      },
+    },
   },
 };
 
