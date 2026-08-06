@@ -216,7 +216,7 @@ export type TranslatorLink = InferSelectModel<typeof translatorLink>;
 
 export const user = mysqlTable('user', {
   id: char('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
-  zitadelId: varchar('zitadel_id', { length: 36 }).notNull().unique(), //! Zitadel's `sub` claim, set on first login
+  zitadelId: char('zitadel_id', { length: 36 }).notNull().unique(), //! Zitadel's `sub` claim, set on first login
   discordNotification: boolean('discord_notification').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
