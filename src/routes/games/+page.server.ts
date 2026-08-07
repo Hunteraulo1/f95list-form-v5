@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { game, gameEdition, gameTranslation } from '$lib/server/db/schema';
 
@@ -10,11 +10,10 @@ export const load = async () => {
         name: game.name,
         editionName: gameEdition.name,
         image: game.imageExternal,
-        date: gameTranslation.updatedAt,
       })
       .from(gameTranslation)
       .innerJoin(gameEdition, eq(gameTranslation.gameEditionId, gameEdition.id))
       .innerJoin(game, eq(gameEdition.gameId, game.id))
-      .orderBy(desc(gameTranslation.updatedAt)),
+      .orderBy(asc(game.name), asc(gameEdition.name)),
   };
 };

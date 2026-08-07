@@ -1,8 +1,9 @@
 <script lang="ts">
-import { Moon, Sun } from 'lucide-svelte';
+import { List, Menu, Moon, Sun, X } from 'lucide-svelte';
 import bannerDark from '$lib/assets/banner-dark.webp';
 import bannerLight from '$lib/assets/banner-light.png';
 import { getTheme, toggleTheme } from '$lib/stores/theme.svelte';
+import { cn } from '$lib/utils/cn';
 
 interface Props {
   isHome?: boolean;
@@ -30,6 +31,7 @@ const nav: Nav[] = [
     href: '/updates',
   },
 ];
+let isOpen = $state(true);
 </script>
 
 <header
@@ -38,7 +40,14 @@ const nav: Nav[] = [
 	class:h-24={isHome}
 	class:p-8={isHome}
 >
-	<a href="/" class="sm:h-full sm:aspect-8/1">
+	<Menu
+		onclick={() => (isOpen = true)}
+		class={cn(
+			isOpen && "hidden",
+			"md:hidden hover:bg-base-300 rounded-lg p-1 size-8 cursor-pointer",
+		)}
+	/>
+	<a href="/" class="h-1/2 sm:h-full aspect-8/1">
 		{#if isDark}
 			<img src={bannerDark} alt="bannière de f95 france" class="h-full" />
 		{:else}
@@ -50,7 +59,23 @@ const nav: Nav[] = [
 		{/if}
 	</a>
 
-	<ul class="flex gap-8 w-full px-16 font-bold">
+	<ul
+		class="flex not-md:flex-col md:gap-8 gap-4 md:w-full px-16 font-bold not-md:fixed not-md:bg-base-200 top-0 left-0 w-75 not-md:h-screen z-50 not-md:pt-20"
+		class:not-md:hidden={!isOpen}
+	>
+		<X
+			class="left-8 top-8 absolute md:hidden hover:bg-base-300 rounded-lg p-1 size-8 cursor-pointer"
+			onclick={() => {
+				isOpen = false;
+			}}
+		/>
+		<div class="w-full md:hidden mb-4 flex">
+			{#if isDark}
+				<img src={bannerDark} alt="bannière de f95 france" />
+			{:else}
+				<img src={bannerLight} alt="bannière de f95 france" />
+			{/if}
+		</div>
 		{#each nav as { title, href }}
 			<li>
 				<a {href}>{title}</a>

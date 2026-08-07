@@ -7,7 +7,7 @@ import HomeBoxMockup from '$lib/components/ui/home/HomeBoxMockups.svelte';
 import HomeList from '$lib/components/ui/home/HomeGameList.svelte';
 import HomeHero from '$lib/components/ui/home/HomeHero.svelte';
 import { getTheme } from '$lib/stores/theme.svelte';
-import type { PageData } from './$types.js';
+import type { PageData } from './$types';
 
 const isDark = $derived(getTheme() === 'dark');
 
