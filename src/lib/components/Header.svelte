@@ -22,8 +22,12 @@ const nav: Nav[] = [
     href: '/',
   },
   {
-    title: 'Test',
-    href: '/test',
+    title: 'Jeux',
+    href: '/games',
+  },
+  {
+    title: 'Mises à jour',
+    href: '/updates',
   },
 ];
 </script>
