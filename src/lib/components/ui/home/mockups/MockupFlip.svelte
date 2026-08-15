@@ -8,10 +8,8 @@ import {
   runProductCardFlipAnimation,
 } from './mockup-animation';
 
-type MockupKind = 'sheet' | 'discord' | 'wiki';
-
 interface SlideMockup {
-  mockup: MockupKind;
+  mockup: string;
 }
 
 interface Props {

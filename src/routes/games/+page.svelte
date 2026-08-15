@@ -15,18 +15,28 @@ let isOpen = $state(false);
 	<div
 		class="w-full bg-base-100 flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 rounded-xl overflow-hidden"
 	>
-		{#each data.games as { id, editionName, image, name } (id)}
-			<div class="bg-base-200 h-60 rounded-lg overflow-hidden relative">
-				<img
-					src={image}
-					loading="lazy"
-					alt="image de {editionName} - {name}"
-					class="object-cover w-full h-full"
-				/>
-				<div class="bg-base-200/50 h-full p-4 absolute top-0">
-					{editionName} - {name}
+		{#each data.games as { id, translationId, editionName, image, name } (translationId)}
+			<a href={`/games/${id}`}>
+				<div
+					class="bg-base-200 h-60 rounded-lg overflow-hidden relative"
+				>
+					<img
+						src={image}
+						loading="lazy"
+						alt="image de {editionName &&
+							`${editionName} - `} {name}"
+						class="object-cover w-full h-full"
+					/>
+					<div
+						class="bg-base-200/50 h-full w-full p-4 absolute top-0"
+					>
+						{#if editionName}
+							{editionName} -
+						{/if}
+						{name}
+					</div>
 				</div>
-			</div>
+			</a>
 		{/each}
 	</div>
 	<div

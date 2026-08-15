@@ -26,7 +26,6 @@ export const originWebsite = mysqlTable('origin-website', {
 });
 
 export const OriginWebsiteSchema = createInsertSchema(originWebsite, {
-  id: (schema) => pipe(schema, uuid()),
   link: (schema) => pipe(schema, url()),
   image: (schema) => pipe(schema, url()),
 });
@@ -43,7 +42,7 @@ export const game = mysqlTable('game', {
   threadId: mediumint('thread_id', { unsigned: true }),
   imageInternal: varchar('image_internal', { length: 2048 }), //? Lien CDN F95 France
   imageExternal: varchar('image_external', { length: 2048 }), //? Exemple: Lien F95 Attachments
-  tags: text('tags').notNull(),
+  // tags: text('tags').notNull(),
   description: text('description'),
   descriptionFr: text('description_fr'),
   autoCheck: boolean('auto_check').notNull(),
@@ -60,12 +59,52 @@ export const GameSchema = createInsertSchema(game, {
 
 export type Game = InferSelectModel<typeof game>;
 
+export const gameTags = mysqlTable('game_tags', {
+  id: mediumint('id', { unsigned: true }).primaryKey().autoincrement(),
+  name: varchar('name', { length: 255 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
+});
+
+export const GameTagsSchema = createInsertSchema(gameTags);
+
+export type GameTags = InferSelectModel<typeof gameTags>;
+
+export const gameGameTags = mysqlTable(
+  'game_game_tags',
+  {
+    gameId: mediumint('game_id', { unsigned: true }).notNull(),
+    gameTagId: mediumint('game_tag_id', { unsigned: true }).notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.gameId, table.gameTagId],
+    }),
+    foreignKey({
+      columns: [table.gameId],
+      foreignColumns: [game.id],
+      name: 'game_game_tags_game_fk',
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.gameTagId],
+      foreignColumns: [gameTags.id],
+      name: 'game_game_tags_game_tag_fk',
+    }).onDelete('cascade'),
+  ],
+);
+
+export const GameGameTagsSchema = createInsertSchema(gameGameTags);
+
+export type GameGameTags = InferSelectModel<typeof gameGameTags>;
+
 export const gameEdition = mysqlTable('game_edition', {
   id: char('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
   gameId: mediumint('game_id', { unsigned: true })
     .notNull()
     .references(() => game.id),
-  name: varchar('name', { length: 255 }).notNull(),
+  name: varchar('name', { length: 255 }),
   version: varchar('version', { length: 36 }).notNull(),
   status: mysqlEnum('status', [
     'in_progress',
@@ -80,9 +119,7 @@ export const gameEdition = mysqlTable('game_edition', {
   updatedAt: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
 });
 
-export const GameEditionSchema = createInsertSchema(gameEdition, {
-  id: (schema) => pipe(schema, uuid()),
-});
+export const GameEditionSchema = createInsertSchema(gameEdition);
 
 export type GameEdition = InferSelectModel<typeof gameEdition>;
 
@@ -112,9 +149,7 @@ export const gameTranslation = mysqlTable('game_translation', {
   updatedAt: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
 });
 
-export const GameTranslationSchema = createInsertSchema(gameTranslation, {
-  id: (schema) => pipe(schema, uuid()),
-});
+export const GameTranslationSchema = createInsertSchema(gameTranslation);
 
 export type GameTranslation = InferSelectModel<typeof gameTranslation>;
 
@@ -124,8 +159,8 @@ export const gameTranslationFile = mysqlTable('game_translation_file', {
     .notNull()
     .references(() => gameTranslation.id),
   version: varchar('version', { length: 36 }).notNull(),
-  externalLink: varchar('external_link', { length: 2048 }).notNull(),
-  internalLink: varchar('internal_link', { length: 2048 }).notNull(),
+  externalLink: varchar('external_link', { length: 2048 }),
+  internalLink: varchar('internal_link', { length: 2048 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
 });
@@ -133,7 +168,6 @@ export const gameTranslationFile = mysqlTable('game_translation_file', {
 export const GameTranslationFileSchema = createInsertSchema(
   gameTranslationFile,
   {
-    id: (schema) => pipe(schema, uuid()),
     externalLink: (schema) => pipe(schema, url()),
     internalLink: (schema) => pipe(schema, url()),
   },
@@ -144,18 +178,14 @@ export type GameTranslationFile = InferSelectModel<typeof gameTranslationFile>;
 export const translator = mysqlTable('translator', {
   id: char('id', { length: 36 }).primaryKey().default(sql`(UUID())`),
   name: varchar('name', { length: 255 }).notNull(),
-  userId: varchar('user_id', { length: 36 })
-    .notNull()
-    .references(() => user.id),
+  userId: varchar('user_id', { length: 36 }).references(() => user.id),
   discordId: varchar('discord_id', { length: 36 }), // TODO: pas sur de la garder ici
   active: boolean('active').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
 });
 
-export const TranslatorSchema = createInsertSchema(translator, {
-  id: (schema) => pipe(schema, uuid()),
-});
+export const TranslatorSchema = createInsertSchema(translator);
 
 export type Translator = InferSelectModel<typeof translator>;
 
@@ -211,7 +241,6 @@ export const translatorLink = mysqlTable('translator_link', {
 });
 
 export const TranslatorLinkSchema = createInsertSchema(translatorLink, {
-  id: (schema) => pipe(schema, uuid()),
   link: (schema) => pipe(schema, url()),
 });
 
@@ -228,9 +257,7 @@ export const user = mysqlTable('user', {
   updatedAt: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
 });
 
-export const UserSchema = createInsertSchema(user, {
-  id: (schema) => pipe(schema, uuid()),
-});
+export const UserSchema = createInsertSchema(user);
 
 export type User = InferSelectModel<typeof user>;
 

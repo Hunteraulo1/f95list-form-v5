@@ -51,7 +51,7 @@ const gamesByDay = $derived.by(() => {
 								class="object-cover w-full h-full"
 							/>
 							<div
-								class="bg-base-200/30 h-full p-4 absolute top-0"
+								class="bg-base-200/30 h-full w-full p-4 absolute top-0"
 							>
 								{editionName} - {name}
 							</div>

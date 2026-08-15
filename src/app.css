@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Fustat:wght@200..800&display=swap");
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme inline {
   --color-base-100: var(--base-100);
   --color-base-200: var(--base-200);

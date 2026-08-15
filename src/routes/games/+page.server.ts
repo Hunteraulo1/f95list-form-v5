@@ -6,14 +6,18 @@ export const load = async () => {
   return {
     games: await db
       .select({
-        id: gameTranslation.id,
+        id: game.id,
+        translationId: gameTranslation.id,
         name: game.name,
         editionName: gameEdition.name,
         image: game.imageExternal,
       })
-      .from(gameTranslation)
-      .innerJoin(gameEdition, eq(gameTranslation.gameEditionId, gameEdition.id))
-      .innerJoin(game, eq(gameEdition.gameId, game.id))
+      .from(game)
+      .innerJoin(gameEdition, eq(game.id, gameEdition.gameId))
+      .innerJoin(
+        gameTranslation,
+        eq(gameTranslation.gameEditionId, gameEdition.id),
+      )
       .orderBy(asc(game.name), asc(gameEdition.name)),
   };
 };

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "dev:up": "docker compose -f ./docker/dev/compose.yml up -d mariadb-dev zitadel-db-dev zitadel-dev",
+    "dev:up": "docker compose -f ./docker/dev/compose.yml up -d mariadb-dev",
     "dev:down": "docker compose -f ./docker/dev/compose.yml down",
     "build": "vite build",
     "preview": "vite preview",
@@ -18,6 +18,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "bun run src/lib/server/db/seed.ts",
+    "db:migrate-v4": "bun run src/lib/server/db/migrate-v4.ts",
     "test": "vitest",
     "test:e2e": "playwright test"
   },

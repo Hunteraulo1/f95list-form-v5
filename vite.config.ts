@@ -42,8 +42,9 @@ export default defineConfig(({ command }) => {
             'img-src': [
               'self',
               'data:',
+              'https://attachments.f95zone.to',
               'https://cdn.f95france.site',
-              ...(dev ? (['https://cdn.jsdelivr.net'] as const) : []),
+              'https://cdn.jsdelivr.net',
             ],
             'font-src': ['self', 'https://fonts.gstatic.com'],
             'connect-src': ['self', 'https://insight.f95france.site'],

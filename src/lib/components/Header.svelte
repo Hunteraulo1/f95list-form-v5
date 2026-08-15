@@ -31,7 +31,7 @@ const nav: Nav[] = [
     href: '/updates',
   },
 ];
-let isOpen = $state(true);
+let isOpen = $state(false);
 </script>
 
 <header
@@ -44,12 +44,17 @@ let isOpen = $state(true);
 		onclick={() => (isOpen = true)}
 		class={cn(
 			isOpen && "hidden",
-			"md:hidden hover:bg-base-300 rounded-lg p-1 size-8 cursor-pointer",
+			"md:hidden dark:hover:bg-base-300 hover:bg-base-100 rounded-lg p-1 size-8 cursor-pointer",
 		)}
 	/>
 	<a href="/" class="h-1/2 sm:h-full aspect-8/1">
 		{#if isDark}
-			<img src={bannerDark} alt="bannière de f95 france" class="h-full" />
+			<img
+				src={bannerDark}
+				alt="bannière de f95 france"
+				class="h-full"
+				draggable="false"
+			/>
 		{:else}
 			<img
 				src={bannerLight}
@@ -87,7 +92,7 @@ let isOpen = $state(true);
 		type="button"
 		onclick={toggleTheme}
 		aria-label="Basculer le thème"
-		class="rounded-field p-2 hover:bg-base-200"
+		class="rounded-field p-2 dark:hover:bg-base-300 hover:bg-base-100"
 	>
 		{#if isDark}
 			<Sun size={20} />

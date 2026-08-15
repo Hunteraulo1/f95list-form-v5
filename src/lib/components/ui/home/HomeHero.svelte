@@ -7,6 +7,8 @@ interface Props {
 }
 
 const { stats }: Props = $props();
+
+const { format } = new Intl.NumberFormat('fr', { notation: 'compact' });
 </script>
 
 <section class="py-8 px-16 xl:px-32 md:h-1/2 flex items-center">
@@ -38,9 +40,9 @@ const { stats }: Props = $props();
 							{title}
 						</h6>
 						<p
-							class="text-[5vw] md:text-[4vw] lg:text-[3vw] xl:text-3xl font-bold text-base-content"
+							class="text-[clamp(1.5rem,4vw,2rem)] font-bold text-base-content"
 						>
-							{value}
+							{format(value)}
 						</p>
 					</div>
 				{/each}

@@ -30,7 +30,7 @@ interface HeroSlide {
   title: string;
   lead: string;
   buttons: HeroCta[];
-  mockup: 'sheet' | 'discord' | 'wiki';
+  mockup: string;
 }
 
 const slides: HeroSlide[] = [
@@ -86,14 +86,14 @@ const slides: HeroSlide[] = [
 	description={slides[activeSlide].lead}
 	buttons={slides[activeSlide].buttons}
 	classes="pb-4 flex lg:flex-col flex-col-reverse"
-	masterClasses="min-h-110"
+	masterClasses="min-h-120 overflow-hidden"
 >
 	<div
-		class="max-lg:absolute lg:relative max-lg:top-0 max-lg:left-0 w-full h-full max-lg:opacity-20 max-lg:-z-1"
+		class="max-lg:absolute lg:relative max-lg:top-0 max-lg:left-0 w-full h-full max-lg:opacity-20 max-lg:-z-1 p-8"
 	>
 		<MockupFlip {slides} {activeSlide}></MockupFlip>
 	</div>
-	<div class="flex gap-2 w-full justify-center">
+	<div class="flex gap-2 w-full justify-center absolute bottom-8 left-0">
 		{#each slides as _, index}
 			<button
 				aria-label="slide {index}"
