@@ -1,26 +1,40 @@
 <script lang="ts">
-import type { ClassValue } from 'clsx';
-import { cn } from '$lib/utils/cn';
+	import type { ClassValue } from "clsx";
+	import type { MouseEventHandler } from "svelte/elements";
+	import { cn } from "$lib/utils/cn";
 
-interface Props {
-  label: string;
-  classes?: ClassValue;
-  inline?: boolean;
-}
+	interface Props {
+		label: string;
+		classes?: ClassValue;
+		inline?: boolean;
+		size?: "tiny" | "small" | "normal" | "big";
+		onclick?: MouseEventHandler<HTMLButtonElement>;
+	}
 
-const { label, classes, inline = false }: Props = $props();
+	const {
+		label,
+		classes,
+		inline = false,
+		size = "normal",
+		onclick,
+	}: Props = $props();
 
-const inlineStyle =
-  'border-base-content text-base-content hover:border-transparent';
-const classicStyle = 'bg-base-content';
+	const inlineStyle =
+		"border-base-content text-base-content hover:border-transparent";
+	const classicStyle = "bg-neutral-content";
 </script>
 
 <button
 	class={cn(
-		"rounded-xl text-primary shadow-mini border-2 border-transparent inline-flex mx-auto h-12 items-center justify-center px-5.25 text-sm font-bold transition-all hover:bg-primary hover:text-base-content cursor-pointer",
+		"rounded-xl text-primary shadow-mini border-2 border-transparent inline-flex items-center justify-center text-sm font-bold transition-all hover:bg-primary hover:text-neutral-content cursor-pointer",
 		inline ? inlineStyle : classicStyle,
+		size === "tiny" && "h-5 px-2 text-[.75rem] capitalize",
+		size === "small" && "h-6 px-3 capitalize",
+		size === "normal" && "h-9 px-4 capitalize",
+		size === "big" && "h-12 px-5.25 uppercase",
 		classes,
 	)}
+	{onclick}
 >
 	{label}
 </button>

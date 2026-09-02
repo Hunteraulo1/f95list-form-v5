@@ -131,8 +131,8 @@
     --success: oklch(76% 0.177 163.223);
     --success-content: oklch(37% 0.077 168.94);
     --warning: oklch(82% 0.189 84.429);
-    --warning-content: oklch(41% 0.112 45.904);
+    /*     --warning-content: oklch(41% 0.112 45.904);
     --error: oklch(71% 0.194 13.428);
-    --error-content: oklch(27% 0.105 12.094);
+    --error-content: oklch(27% 0.105 12.094); */
   }
 }

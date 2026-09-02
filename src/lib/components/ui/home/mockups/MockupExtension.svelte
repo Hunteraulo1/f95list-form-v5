@@ -1,51 +1,51 @@
 <script lang="ts">
-import {
-  Bell,
-  ChevronDown,
-  ClipboardCheck,
-  Maximize2,
-  ScanText,
-  Settings,
-} from 'lucide-svelte';
+	import {
+		Bell,
+		ChevronDown,
+		ClipboardCheck,
+		Maximize2,
+		ScanText,
+		Settings,
+	} from "@lucide/svelte";
 
-interface HomeExtensionMockupGame {
-  id: string;
-  name: string;
-  image: string;
-  tversion: string;
-  upToDate: boolean;
-}
+	interface HomeExtensionMockupGame {
+		id: string;
+		name: string;
+		image: string;
+		tversion: string;
+		upToDate: boolean;
+	}
 
-interface Props {
-  games: HomeExtensionMockupGame[];
-  /** Dans le hero : pas de perspective/flottement propres (gérés par le parent). */
-  heroEmbed?: boolean;
-}
+	interface Props {
+		games: HomeExtensionMockupGame[];
+		/** Dans le hero : pas de perspective/flottement propres (gérés par le parent). */
+		heroEmbed?: boolean;
+	}
 
-let { games, heroEmbed = false }: Props = $props();
+	let { games, heroEmbed = false }: Props = $props();
 
-const fallbackGames: HomeExtensionMockupGame[] = [
-  {
-    id: 'fallback-1',
-    name: 'Jeu exemple',
-    image: 'https://picsum.photos/seed/f95ext-fallback/480/176',
-    tversion: 'v1.0',
-    upToDate: true,
-  },
-];
+	const fallbackGames: HomeExtensionMockupGame[] = [
+		{
+			id: "fallback-1",
+			name: "Jeu exemple",
+			image: "https://picsum.photos/seed/f95ext-fallback/480/176",
+			tversion: "v1.0",
+			upToDate: true,
+		},
+	];
 
-const displayGames = $derived(
-  games.filter((g) => g.image?.trim() && g.name?.trim()).length > 0
-    ? games.filter((g) => g.image?.trim() && g.name?.trim())
-    : fallbackGames,
-);
+	const displayGames = $derived(
+		games.filter((g) => g.image?.trim() && g.name?.trim()).length > 0
+			? games.filter((g) => g.image?.trim() && g.name?.trim())
+			: fallbackGames,
+	);
 
-const navItems = [
-  { icon: ScanText, active: true, badge: 0 },
-  { icon: Bell, active: false, badge: 764 },
-  { icon: Settings, active: false, badge: 0 },
-  { icon: Maximize2, active: false, badge: 0 },
-] as const;
+	const navItems = [
+		{ icon: ScanText, active: true, badge: 0 },
+		{ icon: Bell, active: false, badge: 764 },
+		{ icon: Settings, active: false, badge: 0 },
+		{ icon: Maximize2, active: false, badge: 0 },
+	] as const;
 </script>
 
 <div

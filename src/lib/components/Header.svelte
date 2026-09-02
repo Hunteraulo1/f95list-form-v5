@@ -1,37 +1,42 @@
 <script lang="ts">
-import { List, Menu, Moon, Sun, X } from 'lucide-svelte';
-import bannerDark from '$lib/assets/banner-dark.webp';
-import bannerLight from '$lib/assets/banner-light.png';
-import { getTheme, toggleTheme } from '$lib/stores/theme.svelte';
-import { cn } from '$lib/utils/cn';
+	import { List, Menu, Moon, Sun, X } from "@lucide/svelte";
+	import bannerDark from "$lib/assets/banner-dark.webp";
+	import bannerLight from "$lib/assets/banner-light.png";
+	import { getTheme, toggleTheme } from "$lib/stores/theme.svelte";
+	import { cn } from "$lib/utils/cn";
 
-interface Props {
-  isHome?: boolean;
-}
+	interface Props {
+		isHome?: boolean;
+	}
 
-const { isHome = false }: Props = $props();
+	const { isHome = false }: Props = $props();
 
-const isDark = $derived(getTheme() === 'dark');
-interface Nav {
-  title: string;
-  href: string;
-}
+	const isDark = $derived(getTheme() === "dark");
+	interface Nav {
+		title: string;
+		href: string;
+	}
 
-const nav: Nav[] = [
-  {
-    title: 'Home',
-    href: '/',
-  },
-  {
-    title: 'Jeux',
-    href: '/games',
-  },
-  {
-    title: 'Mises à jour',
-    href: '/updates',
-  },
-];
-let isOpen = $state(false);
+	const nav: Nav[] = [
+		{
+			title: "Home",
+			href: "/",
+		},
+		{
+			title: "Jeux",
+			href: "/games",
+		},
+		{
+			title: "Mises à jour",
+			href: "/updates",
+		},
+		{
+			title: "Tableau de bord",
+			href: "/dashboard",
+		},
+	];
+
+	let isOpen = $state(false);
 </script>
 
 <header
