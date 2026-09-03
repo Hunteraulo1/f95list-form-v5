@@ -45,6 +45,7 @@ export default defineConfig(({ command }) => {
               'https://attachments.f95zone.to',
               'https://cdn.f95france.site',
               'https://cdn.jsdelivr.net',
+              'https://cdn.discordapp.com',
             ],
             'font-src': ['self', 'https://fonts.gstatic.com'],
             'connect-src': ['self', 'https://insight.f95france.site'],

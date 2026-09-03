@@ -29,7 +29,7 @@
 		{
 			label: "Ma page",
 			icon: UserPen,
-			href: "/dashboard/page",
+			href: "/profile",
 		},
 		{
 			label: "Administration",
