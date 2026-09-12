@@ -1,20 +1,27 @@
-import { desc, eq } from 'drizzle-orm';
-import { db } from '$lib/server/db';
-import { game, gameEdition, gameTranslation } from '$lib/server/db/schema';
+import { GameTranslation, orm } from '$lib/server/db';
+
+interface UpdateRow {
+  id: string;
+  name: string;
+  editionName: string | null;
+  image: string | null;
+  date: Date;
+}
 
 export const load = async () => {
-  return {
-    games: await db
-      .select({
-        id: gameTranslation.id,
-        name: game.name,
-        editionName: gameEdition.name,
-        image: game.imageExternal,
-        date: gameTranslation.updatedAt,
-      })
-      .from(gameTranslation)
-      .innerJoin(gameEdition, eq(gameTranslation.gameEditionId, gameEdition.id))
-      .innerJoin(game, eq(gameEdition.gameId, game.id))
-      .orderBy(desc(gameTranslation.updatedAt)),
-  };
+  const games = await orm.em
+    .createQueryBuilder(GameTranslation, 'gt')
+    .join('gt.gameEdition', 'ge')
+    .join('ge.game', 'g')
+    .select([
+      'gt.id as id',
+      'g.name as name',
+      'ge.name as editionName',
+      'g.imageExternal as image',
+      'gt.updatedAt as date',
+    ])
+    .orderBy({ 'gt.updatedAt': 'desc' })
+    .execute<UpdateRow[]>();
+
+  return { games };
 };

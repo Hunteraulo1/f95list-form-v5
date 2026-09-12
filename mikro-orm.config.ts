@@ -1,0 +1,45 @@
+import { defineConfig } from '@mikro-orm/mariadb';
+import { Migrator } from '@mikro-orm/migrations';
+import { config } from 'dotenv';
+import {
+  Config,
+  Game,
+  GameEdition,
+  GameGameTags,
+  GameTags,
+  GameTranslation,
+  GameTranslationFile,
+  GameTranslationTranslator,
+  OriginWebsite,
+  Role,
+  Translator,
+  TranslatorLink,
+  User,
+} from './src/lib/server/db/entities';
+
+config();
+
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL is not set');
+}
+
+export default defineConfig({
+  clientUrl: process.env.DATABASE_URL,
+  entities: [
+    Config,
+    Game,
+    GameEdition,
+    GameGameTags,
+    GameTags,
+    GameTranslation,
+    GameTranslationFile,
+    GameTranslationTranslator,
+    OriginWebsite,
+    Role,
+    Translator,
+    TranslatorLink,
+    User,
+  ],
+  extensions: [Migrator],
+  migrations: { path: './src/lib/server/db/migrations' },
+});

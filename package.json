@@ -13,10 +13,9 @@
     "check": "svelte-kit sync && svelte-check",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio",
+    "db:migration:create": "mikro-orm migration:create",
+    "db:migration:up": "mikro-orm migration:up",
+    "db:schema:update": "mikro-orm schema:update --run",
     "db:seed": "bun run src/lib/server/db/seed.ts",
     "db:migrate-v4": "bun run src/lib/server/db/migrate-v4.ts",
     "test": "vitest",
@@ -25,6 +24,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.11",
     "@faker-js/faker": "10.6.0",
+    "@mikro-orm/cli": "7.2.0",
     "@playwright/test": "1.62.1",
     "@sveltejs/adapter-node": "5.5.7",
     "@sveltejs/kit": "2.70.3",
@@ -38,8 +38,6 @@
     "cz-emoji": "1.3.2-canary.2",
     "dotenv": "17.4.2",
     "dotenv-cli": "11.0.0",
-    "drizzle-kit": "1.0.0-rc.4",
-    "drizzle-seed": "1.0.0-rc.4",
     "husky": "9.1.7",
     "lint-staged": "17.4.1",
     "svelte": "5.57.0",
@@ -54,17 +52,18 @@
   },
   "dependencies": {
     "@lucide/svelte": "1.39.0",
+    "@mikro-orm/core": "7.2.0",
+    "@mikro-orm/mariadb": "7.2.0",
+    "@mikro-orm/migrations": "7.2.0",
     "@tanstack/query-devtools": "5.102.8",
     "@tanstack/svelte-query": "6.1.48",
     "bits-ui": "2.19.0",
-    "drizzle-orm": "1.0.0-rc.4",
     "mysql2": "3.24.3",
     "pino": "10.3.1",
     "ws": "^8.21.3"
   },
   "overrides": {
-    "typescript": "~6",
-    "drizzle-orm": "rc"
+    "typescript": "~6"
   },
   "config": {
     "commitizen": {

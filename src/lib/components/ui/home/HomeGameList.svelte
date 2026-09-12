@@ -5,7 +5,7 @@
 		Game,
 		GameEdition,
 		GameTranslation,
-	} from "$lib/server/db/schema";
+	} from "$lib/server/db/entities";
 	import { cn } from "$lib/utils/cn";
 
 	interface LatestTranslation {

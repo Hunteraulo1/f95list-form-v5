@@ -1,85 +1,71 @@
 import { error } from '@sveltejs/kit';
-import { asc, eq } from 'drizzle-orm';
-import { db } from '$lib/server/db';
-import {
-  type GameEdition,
-  type GameTranslation,
-  game,
-  gameEdition,
-  gameTranslation,
-  gameTranslationTranslator,
-  type Translator,
-  translator,
-} from '$lib/server/db/schema';
+import { Game, orm } from '$lib/server/db';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
-  const slug = parseInt(params.id, 10);
+  const id = parseInt(params.id, 10);
 
-  const rows = await db
-    .select({ game, gameEdition, gameTranslation, translator })
-    .from(game)
-    .where(eq(game.id, slug))
-    .leftJoin(gameEdition, eq(gameEdition.gameId, game.id))
-    .leftJoin(
-      gameTranslation,
-      eq(gameTranslation.gameEditionId, gameEdition.id),
-    )
-    .leftJoin(
-      gameTranslationTranslator,
-      eq(gameTranslationTranslator.gameTranslationId, gameTranslation.id),
-    )
-    .leftJoin(
-      translator,
-      eq(translator.id, gameTranslationTranslator.translatorId),
-    )
-    .orderBy(asc(gameEdition.name), asc(gameTranslation.version));
+  const game = await orm.em.findOne(
+    Game,
+    { id },
+    {
+      populate: [
+        'gameEditions.gameTranslations.gameTranslationTranslators.translator',
+      ],
+      orderBy: {
+        gameEditions: { name: 'asc', gameTranslations: { version: 'asc' } },
+      },
+    },
+  );
 
-  const first = rows[0];
-  if (!first) error(404, 'Not found');
-
-  type TranslationWithTranslators = GameTranslation & {
-    translators: Translator[];
-  };
-
-  const editions = new Map<
-    string,
-    GameEdition & { gameTranslations: TranslationWithTranslators[] }
-  >();
-  for (const row of rows) {
-    const rowGameEdition = row.gameEdition;
-    if (!rowGameEdition) continue;
-
-    let edition = editions.get(rowGameEdition.id);
-    if (!edition) {
-      edition = { ...rowGameEdition, gameTranslations: [] };
-      editions.set(rowGameEdition.id, edition);
-    }
-
-    const rowGameTranslation = row.gameTranslation;
-    if (!rowGameTranslation) continue;
-
-    let translation = edition.gameTranslations.find(
-      (t) => t.id === rowGameTranslation.id,
-    );
-    if (!translation) {
-      translation = { ...rowGameTranslation, translators: [] };
-      edition.gameTranslations.push(translation);
-    }
-
-    const rowTranslator = row.translator;
-    if (
-      rowTranslator &&
-      !translation.translators.some((t) => t.id === rowTranslator.id)
-    ) {
-      translation.translators.push(rowTranslator);
-    }
-  }
+  if (!game) error(404, 'Not found');
 
   return {
     game: {
-      ...first.game,
-      gameEditions: [...editions.values()],
+      id: game.id,
+      name: game.name,
+      link: game.link,
+      threadId: game.threadId,
+      imageInternal: game.imageInternal,
+      imageExternal: game.imageExternal,
+      description: game.description,
+      descriptionFr: game.descriptionFr,
+      autoCheck: game.autoCheck,
+      active: game.active,
+      createdAt: game.createdAt,
+      updatedAt: game.updatedAt,
+      gameEditions: game.gameEditions.getItems().map((edition) => ({
+        id: edition.id,
+        name: edition.name,
+        version: edition.version,
+        status: edition.status,
+        autoCheck: edition.autoCheck,
+        lastAutoCheck: edition.lastAutoCheck,
+        active: edition.active,
+        createdAt: edition.createdAt,
+        updatedAt: edition.updatedAt,
+        gameTranslations: edition.gameTranslations
+          .getItems()
+          .map((translation) => ({
+            id: translation.id,
+            version: translation.version,
+            quality: translation.quality,
+            type: translation.type,
+            active: translation.active,
+            createdAt: translation.createdAt,
+            updatedAt: translation.updatedAt,
+            translators: translation.gameTranslationTranslators
+              .getItems()
+              .map(({ translator }) => ({
+                id: translator.id,
+                name: translator.name,
+                discordId: translator.discordId,
+                active: translator.active,
+                createdAt: translator.createdAt,
+                updatedAt: translator.updatedAt,
+              })),
+          })),
+      })),
     },
   };
 };
