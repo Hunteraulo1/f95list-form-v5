@@ -3,6 +3,7 @@
 		BrickWallShield,
 		Languages,
 		LayoutDashboard,
+		LogOut,
 		UserPen,
 	} from "@lucide/svelte";
 	import type { Snippet } from "svelte";
@@ -36,6 +37,12 @@
 			icon: BrickWallShield,
 			href: "/admin",
 			permission: "manage.game",
+		},
+		{
+			label: "Se déconnecter",
+			icon: LogOut,
+			href: "/logout",
+			class: "text-red-500 font-bold",
 		},
 	];
 </script>

@@ -105,7 +105,7 @@
 
 <div class="flex justify-end my-4">
 	<Input
-		placeholder="Rechercher..."
+		placeholder="Rechercher un nom..."
 		value={search}
 		oninput={(e) => (search = e.currentTarget.value)}
 	/>

@@ -11,7 +11,7 @@
 		image: "https://cdn.discordapp.com/avatars/521092563042828297/84a0e6cc5576d6395643c8d32e8a2c75.webp?size=256",
 		rank: "Super admin",
 		banner: null,
-		description: "Salut les boys !",
+		description: "Salut les donateurs !",
 	});
 
 	type SortKey = "name" | "version" | "tversion";
@@ -203,7 +203,7 @@
 
 				<div class="flex justify-end my-4">
 					<Input
-						placeholder="Rechercher..."
+						placeholder="Rechercher un nom..."
 						value={search}
 						oninput={(e) => (search = e.currentTarget.value)}
 					/>

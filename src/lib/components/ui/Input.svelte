@@ -27,7 +27,7 @@
 
 <input
 	class={cn(
-		"rounded-xl text-primary shadow-mini border-2 border-transparent inline-flex items-center justify-center text-sm font-bold transition-all hover:border-primary cursor-pointer h-9 px-4 capitalize",
+		"rounded-xl text-primary shadow-mini border-2 border-transparent inline-flex items-center justify-center text-sm font-bold transition-all hover:border-primary cursor-pointer h-9 px-4",
 		inline ? inlineStyle : classicStyle,
 		classes,
 	)}

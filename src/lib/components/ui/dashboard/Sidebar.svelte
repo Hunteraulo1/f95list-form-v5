@@ -1,12 +1,15 @@
 <script lang="ts">
 	import type { LucideIcon } from "@lucide/svelte";
+	import type { ClassValue } from "svelte/elements";
 	import { page } from "$app/state";
+	import { cn } from "$lib/utils/cn";
 
 	export interface Item {
 		label: string;
 		icon: LucideIcon;
 		href: string;
 		permission?: string;
+		class?: ClassValue;
 	}
 
 	interface Props {
@@ -23,7 +26,10 @@
 		<li>
 			<a
 				href={item.href}
-				class="flex items-center gap-2 p-2 rounded-lg hover:bg-base-100"
+				class={cn(
+					"flex items-center gap-2 p-2 rounded-lg hover:bg-base-100",
+					item.class,
+				)}
 				class:bg-base-300={active}
 			>
 				<Icon />
