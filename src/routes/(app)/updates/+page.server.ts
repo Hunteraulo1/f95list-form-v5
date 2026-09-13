@@ -1,3 +1,4 @@
+import { VIEW_ACTIVE_ONLY } from '$lib/server/config';
 import { GameTranslation, orm } from '$lib/server/db';
 
 interface UpdateRow {
@@ -20,6 +21,11 @@ export const load = async () => {
       'g.imageExternal as image',
       'gt.updatedAt as date',
     ])
+    .where(
+      VIEW_ACTIVE_ONLY
+        ? { 'gt.active': true, 'ge.active': true, 'g.active': true }
+        : {},
+    )
     .orderBy({ 'gt.updatedAt': 'desc' })
     .execute<UpdateRow[]>();
 

@@ -1,3 +1,4 @@
+import { VIEW_ACTIVE_ONLY } from '$lib/server/config';
 import { Game, orm } from '$lib/server/db';
 
 interface GameListRow {
@@ -20,6 +21,11 @@ export const load = async () => {
       'ge.name as editionName',
       'g.imageExternal as image',
     ])
+    .where(
+      VIEW_ACTIVE_ONLY
+        ? { 'g.active': true, 'ge.active': true, 'gt.active': true }
+        : {},
+    )
     .orderBy({ 'g.name': 'asc', 'ge.name': 'asc' })
     .execute<GameListRow[]>();
 

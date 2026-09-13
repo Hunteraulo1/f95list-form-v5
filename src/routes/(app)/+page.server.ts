@@ -1,4 +1,5 @@
 import { randomInt } from 'node:crypto';
+import { VIEW_ACTIVE_ONLY } from '$lib/server/config';
 import { GameTranslation, orm, Translator } from '$lib/server/db';
 
 interface LatestTranslationRow {
@@ -21,6 +22,11 @@ export const load = async () => {
       'ge.name as editionName',
       'g.imageExternal as image',
     ])
+    .where(
+      VIEW_ACTIVE_ONLY
+        ? { 'gt.active': true, 'ge.active': true, 'g.active': true }
+        : {},
+    )
     .orderBy({ 'gt.updatedAt': 'desc' })
     .limit(5)
     .execute<LatestTranslationRow[]>();
@@ -30,11 +36,17 @@ export const load = async () => {
     stats: [
       {
         title: 'traducteur',
-        value: await orm.em.count(Translator),
+        value: await orm.em.count(
+          Translator,
+          VIEW_ACTIVE_ONLY ? { active: true } : {},
+        ),
       },
       {
         title: 'traductions',
-        value: await orm.em.count(GameTranslation),
+        value: await orm.em.count(
+          GameTranslation,
+          VIEW_ACTIVE_ONLY ? { active: true } : {},
+        ),
       },
       {
         title: 'téléchargements',
