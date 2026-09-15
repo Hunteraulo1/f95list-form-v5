@@ -1,85 +1,84 @@
 <script lang="ts">
-	import { Pause, Play } from "@lucide/svelte";
-	import HomeBox from "$lib/components/ui/home/HomeBox.svelte";
-	import MockupFlip from "$lib/components/ui/home/mockups/MockupFlip.svelte";
+import { Pause, Play } from '@lucide/svelte';
+import HomeBox from '$lib/components/ui/home/HomeBox.svelte';
+import MockupFlip from '$lib/components/ui/home/mockups/MockupFlip.svelte';
 
-	let activeSlide = $state(0);
-	let toogleSlide = $state(true);
+let activeSlide = $state(0);
+let toogleSlide = $state(true);
 
-	let interval: ReturnType<typeof setInterval> | undefined;
+let interval: ReturnType<typeof setInterval> | undefined;
 
-	$effect(() => {
-		if (toogleSlide) {
-			interval = setInterval(() => {
-				activeSlide =
-					activeSlide < slides.length - 1 ? activeSlide + 1 : 0;
-			}, 10 * 1000);
-		}
+$effect(() => {
+  if (toogleSlide) {
+    interval = setInterval(() => {
+      activeSlide = activeSlide < slides.length - 1 ? activeSlide + 1 : 0;
+    }, 10 * 1000);
+  }
 
-		return () => clearInterval(interval);
-	});
+  return () => clearInterval(interval);
+});
 
-	interface HeroCta {
-		href: string;
-		label: string;
-		external?: boolean;
-	}
+interface HeroCta {
+  href: string;
+  label: string;
+  external?: boolean;
+}
 
-	interface HeroSlide {
-		id: string;
-		label: string;
-		title: string;
-		lead: string;
-		buttons: HeroCta[];
-		mockup: string;
-	}
+interface HeroSlide {
+  id: string;
+  label: string;
+  title: string;
+  lead: string;
+  buttons: HeroCta[];
+  mockup: string;
+}
 
-	const slides: HeroSlide[] = [
-		{
-			id: "vf",
-			label: "Traductions",
-			title: "La communauté française qui fait vivre vos LewdGames en VF",
-			lead: "F95 France rassemble traducteurs, relecteurs et joueurs pour suivre les sorties, améliorer les traductions et partager chaque avancée en français.",
-			buttons: [
-				{ href: "/games", label: "Explorer les jeux" },
-				{
-					href: "https://tableau-traduction.f95france.site",
-					label: "Accèder au tableur",
-					external: true,
-				},
-			],
-			mockup: "sheet",
-		},
-		{
-			id: "discord",
-			label: "Discord",
-			title: "Échangez avec la communauté sur notre Discord",
-			lead: "Annonces des mises à jour, entraide traduction, discussions entre joueurs et suivi des sorties en temps réel avec l’équipe.",
-			buttons: [
-				{
-					href: "https://discord.f95france.site",
-					label: "Rejoindre le serveur",
-					external: true,
-				},
-			],
-			mockup: "discord",
-		},
-		// TODO: Uncomment when Wiki is back online
-		{
-			id: "wiki",
-			label: "Wiki",
-			title: "Tout savoir grace au wiki de F95 France",
-			lead: "Guides, tutoriels et documentation pour comprendre le site, contribuer aux traductions et tirer le meilleur parti des outils de la communauté.",
-			buttons: [
-				{
-					href: "https://wiki.f95france.site",
-					label: "Consulter le wiki",
-					external: true,
-				},
-			],
-			mockup: "wiki",
-		},
-	];
+const slides: HeroSlide[] = [
+  {
+    id: 'vf',
+    label: 'Traductions',
+    title: 'La communauté française qui fait vivre vos LewdGames en VF',
+    lead: 'F95 France rassemble traducteurs, relecteurs et joueurs pour suivre les sorties, améliorer les traductions et partager chaque avancée en français.',
+    buttons: [
+      { href: '/games', label: 'Explorer les jeux' },
+      {
+        href: 'https://tableau-traduction.f95france.site',
+        label: 'Accèder au tableur',
+        external: true,
+      },
+    ],
+    mockup: 'sheet',
+  },
+  {
+    id: 'discord',
+    label: 'Discord',
+    title: 'Échangez avec la communauté sur notre Discord',
+    lead: 'Annonces des mises à jour, entraide traduction, discussions entre joueurs et suivi des sorties en temps réel avec l’équipe.',
+    buttons: [
+      {
+        href: 'https://discord.f95france.site',
+        label: 'Rejoindre le serveur',
+        external: true,
+      },
+    ],
+    mockup: 'discord',
+  },
+  // TODO: Uncomment when Wiki is back online
+  {
+    id: 'wiki',
+    label: 'Wiki',
+    title: 'Tout savoir grace au wiki de F95 France',
+    lead: 'Guides, tutoriels et documentation pour comprendre le site, contribuer aux traductions et tirer le meilleur parti des outils de la communauté.',
+    buttons: [
+      {
+        href: 'https://wiki.f95france.site',
+        label: 'Consulter le wiki',
+        external: true,
+      },
+    ],
+    mockup: 'wiki',
+  },
+];
 </script>
 
 <HomeBox

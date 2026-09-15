@@ -93,9 +93,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -336,9 +334,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -346,9 +342,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "website"
-          ],
+          "columnNames": ["website"],
           "composite": false,
           "constraint": false,
           "keyName": "game_website_index",
@@ -360,14 +354,10 @@
       "triggers": [],
       "foreignKeys": {
         "game_website_origin-website_id_fkey": {
-          "columnNames": [
-            "website"
-          ],
+          "columnNames": ["website"],
           "constraintName": "game_website_origin-website_id_fkey",
           "localTableName": "game",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "origin-website"
         }
       },
@@ -509,12 +499,7 @@
           "default": null,
           "comment": null,
           "collation": null,
-          "enumItems": [
-            "in_progress",
-            "completed",
-            "abandoned",
-            "on_hold"
-          ],
+          "enumItems": ["in_progress", "completed", "abandoned", "on_hold"],
           "mappedType": "enum"
         },
         "updated_at": {
@@ -555,9 +540,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -565,9 +548,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "game_id"
-          ],
+          "columnNames": ["game_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_edition_game_id_index",
@@ -579,14 +560,10 @@
       "triggers": [],
       "foreignKeys": {
         "game_edition_game_id_game_id_fkey": {
-          "columnNames": [
-            "game_id"
-          ],
+          "columnNames": ["game_id"],
           "constraintName": "game_edition_game_id_game_id_fkey",
           "localTableName": "game_edition",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game"
         }
       },
@@ -667,10 +644,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "game_id",
-            "game_tag_id"
-          ],
+          "columnNames": ["game_id", "game_tag_id"],
           "composite": true,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -678,9 +652,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "game_id"
-          ],
+          "columnNames": ["game_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_game_tags_game_id_index",
@@ -688,9 +660,7 @@
           "unique": false
         },
         {
-          "columnNames": [
-            "game_tag_id"
-          ],
+          "columnNames": ["game_tag_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_game_tags_game_tag_id_index",
@@ -702,27 +672,19 @@
       "triggers": [],
       "foreignKeys": {
         "game_game_tags_game_fk": {
-          "columnNames": [
-            "game_id"
-          ],
+          "columnNames": ["game_id"],
           "constraintName": "game_game_tags_game_fk",
           "localTableName": "game_game_tags",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game",
           "updateRule": "restrict",
           "deleteRule": "cascade"
         },
         "game_game_tags_game_tag_fk": {
-          "columnNames": [
-            "game_tag_id"
-          ],
+          "columnNames": ["game_tag_id"],
           "constraintName": "game_game_tags_game_tag_fk",
           "localTableName": "game_game_tags",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game_tags",
           "updateRule": "restrict",
           "deleteRule": "cascade"
@@ -805,9 +767,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -976,9 +936,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -986,9 +944,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "game_edition_id"
-          ],
+          "columnNames": ["game_edition_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_translation_game_edition_id_index",
@@ -1000,14 +956,10 @@
       "triggers": [],
       "foreignKeys": {
         "game_translation_game_edition_id_game_edition_id_fkey": {
-          "columnNames": [
-            "game_edition_id"
-          ],
+          "columnNames": ["game_edition_id"],
           "constraintName": "game_translation_game_edition_id_game_edition_id_fkey",
           "localTableName": "game_translation",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game_edition"
         }
       },
@@ -1139,9 +1091,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1149,9 +1099,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "game_translation_id"
-          ],
+          "columnNames": ["game_translation_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_translation_file_game_translation_id_index",
@@ -1163,14 +1111,10 @@
       "triggers": [],
       "foreignKeys": {
         "game_translation_file_q2YzPs4xJIF9_fkey": {
-          "columnNames": [
-            "game_translation_id"
-          ],
+          "columnNames": ["game_translation_id"],
           "constraintName": "game_translation_file_q2YzPs4xJIF9_fkey",
           "localTableName": "game_translation_file",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game_translation"
         }
       },
@@ -1261,10 +1205,7 @@
           "default": null,
           "comment": null,
           "collation": null,
-          "enumItems": [
-            "translator",
-            "proofreader"
-          ],
+          "enumItems": ["translator", "proofreader"],
           "mappedType": "enum"
         },
         "updated_at": {
@@ -1288,10 +1229,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "game_translation_id",
-            "translator_id"
-          ],
+          "columnNames": ["game_translation_id", "translator_id"],
           "composite": true,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1299,9 +1237,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "game_translation_id"
-          ],
+          "columnNames": ["game_translation_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_translation_translator_game_translation_id_index",
@@ -1309,9 +1245,7 @@
           "unique": false
         },
         {
-          "columnNames": [
-            "translator_id"
-          ],
+          "columnNames": ["translator_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_translation_translator_translator_id_index",
@@ -1323,27 +1257,19 @@
       "triggers": [],
       "foreignKeys": {
         "game_translation_translator_translation_fk": {
-          "columnNames": [
-            "game_translation_id"
-          ],
+          "columnNames": ["game_translation_id"],
           "constraintName": "game_translation_translator_translation_fk",
           "localTableName": "game_translation_translator",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game_translation",
           "updateRule": "restrict",
           "deleteRule": "cascade"
         },
         "game_translation_translator_translator_fk": {
-          "columnNames": [
-            "translator_id"
-          ],
+          "columnNames": ["translator_id"],
           "constraintName": "game_translation_translator_translator_fk",
           "localTableName": "game_translation_translator",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "translator",
           "updateRule": "restrict",
           "deleteRule": "cascade"
@@ -1460,9 +1386,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1567,9 +1491,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1708,9 +1630,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1718,9 +1638,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "composite": false,
           "constraint": false,
           "keyName": "translator_user_id_index",
@@ -1732,14 +1650,10 @@
       "triggers": [],
       "foreignKeys": {
         "translator_user_id_user_id_fkey": {
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "constraintName": "translator_user_id_user_id_fkey",
           "localTableName": "translator",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "user",
           "deleteRule": "restrict"
         }
@@ -1872,9 +1786,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1882,9 +1794,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "translator_id"
-          ],
+          "columnNames": ["translator_id"],
           "composite": false,
           "constraint": false,
           "keyName": "translator_link_translator_id_index",
@@ -1896,14 +1806,10 @@
       "triggers": [],
       "foreignKeys": {
         "translator_link_translator_id_translator_id_fkey": {
-          "columnNames": [
-            "translator_id"
-          ],
+          "columnNames": ["translator_id"],
           "constraintName": "translator_link_translator_id_translator_id_fkey",
           "localTableName": "translator_link",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "translator"
         }
       },
@@ -2018,9 +1924,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -2028,9 +1932,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "role_id"
-          ],
+          "columnNames": ["role_id"],
           "composite": false,
           "constraint": false,
           "keyName": "user_role_id_index",
@@ -2038,9 +1940,7 @@
           "unique": false
         },
         {
-          "columnNames": [
-            "zitadel_id"
-          ],
+          "columnNames": ["zitadel_id"],
           "composite": false,
           "constraint": true,
           "keyName": "user_zitadel_id_unique",
@@ -2052,14 +1952,10 @@
       "triggers": [],
       "foreignKeys": {
         "user_role_id_role_id_fkey": {
-          "columnNames": [
-            "role_id"
-          ],
+          "columnNames": ["role_id"],
           "constraintName": "user_role_id_role_id_fkey",
           "localTableName": "user",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "role"
         }
       },

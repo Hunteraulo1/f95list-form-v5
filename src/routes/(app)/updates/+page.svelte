@@ -1,33 +1,33 @@
 <script lang="ts">
-	import { Funnel, X } from "@lucide/svelte";
-	import { cn } from "$lib/utils/cn.js";
-	import type { PageData } from "./$types";
+import { Funnel, X } from '@lucide/svelte';
+import { cn } from '$lib/utils/cn.js';
+import type { PageData } from './$types';
 
-	interface Props {
-		data: PageData;
-	}
-	const { data }: Props = $props();
+interface Props {
+  data: PageData;
+}
+const { data }: Props = $props();
 
-	let isOpen = $state(false);
+let isOpen = $state(false);
 
-	const gamesByDay = $derived.by(() => {
-		const groups = new Map<string, typeof data.games>();
-		for (const item of data.games) {
-			const key = new Date(item.date).toLocaleDateString("fr-FR", {
-				weekday: "long",
-				day: "numeric",
-				month: "long",
-				year: "numeric",
-			});
-			const group = groups.get(key);
-			if (group) {
-				group.push(item);
-			} else {
-				groups.set(key, [item]);
-			}
-		}
-		return groups;
-	});
+const gamesByDay = $derived.by(() => {
+  const groups = new Map<string, typeof data.games>();
+  for (const item of data.games) {
+    const key = new Date(item.date).toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+    const group = groups.get(key);
+    if (group) {
+      group.push(item);
+    } else {
+      groups.set(key, [item]);
+    }
+  }
+  return groups;
+});
 </script>
 
 <section class="md:grid md:grid-cols-[1fr_20rem] w-full gap-4">

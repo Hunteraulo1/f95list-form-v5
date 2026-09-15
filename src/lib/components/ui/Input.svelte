@@ -1,28 +1,28 @@
 <script lang="ts">
-	import type { ClassValue } from "clsx";
-	import type { FormEventHandler } from "svelte/elements";
-	import { cn } from "$lib/utils/cn";
+import type { ClassValue } from 'clsx';
+import type { FormEventHandler } from 'svelte/elements';
+import { cn } from '$lib/utils/cn';
 
-	interface Props {
-		placeholder?: string;
-		classes?: ClassValue;
-		inline?: boolean;
-		size?: "tiny" | "small" | "normal" | "big";
-		oninput?: FormEventHandler<HTMLInputElement>;
-		value?: string;
-	}
+interface Props {
+  placeholder?: string;
+  classes?: ClassValue;
+  inline?: boolean;
+  size?: 'tiny' | 'small' | 'normal' | 'big';
+  oninput?: FormEventHandler<HTMLInputElement>;
+  value?: string;
+}
 
-	const {
-		placeholder,
-		classes,
-		inline = false,
-		oninput,
-		value,
-	}: Props = $props();
+const {
+  placeholder,
+  classes,
+  inline = false,
+  oninput,
+  value,
+}: Props = $props();
 
-	const inlineStyle =
-		"border-base-content text-base-content hover:border-transparent";
-	const classicStyle = "bg-neutral-content";
+const inlineStyle =
+  'border-base-content text-base-content hover:border-transparent';
+const classicStyle = 'bg-neutral-content';
 </script>
 
 <input

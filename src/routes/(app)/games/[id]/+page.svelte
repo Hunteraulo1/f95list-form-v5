@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import type { PageData } from "./$types.js";
+import { onMount } from 'svelte';
+import type { PageData } from './$types.js';
 
-	interface Props {
-		data: PageData;
-	}
+interface Props {
+  data: PageData;
+}
 
-	const { data }: Props = $props();
+const { data }: Props = $props();
 
-	onMount(() => console.log("🚀 ~ data:", data));
+onMount(() => console.log('🚀 ~ data:', data));
 </script>
 
 <section class="mb-4">

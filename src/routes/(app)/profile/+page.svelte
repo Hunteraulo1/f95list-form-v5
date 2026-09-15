@@ -1,108 +1,109 @@
 <script lang="ts">
-	import { ArrowDownAZ, ArrowUpAZ, ImageOff, PenOff } from "@lucide/svelte";
-	import Button from "$lib/components/ui/Button.svelte";
-	import Input from "$lib/components/ui/Input.svelte";
-	import { cn } from "$lib/utils/cn";
+import { ArrowDownAZ, ArrowUpAZ, ImageOff, PenOff } from '@lucide/svelte';
+import Button from '$lib/components/ui/Button.svelte';
+import Input from '$lib/components/ui/Input.svelte';
+import { cn } from '$lib/utils/cn';
 
-	let editMode = $state(false);
+let editMode = $state(false);
 
-	const user = $state({
-		name: "Hunteraulo",
-		image: "https://cdn.discordapp.com/avatars/521092563042828297/84a0e6cc5576d6395643c8d32e8a2c75.webp?size=256",
-		rank: "Super admin",
-		banner: null,
-		description: "Salut les donateurs !",
-	});
+const user = $state({
+  name: 'Hunteraulo',
+  image:
+    'https://cdn.discordapp.com/avatars/521092563042828297/84a0e6cc5576d6395643c8d32e8a2c75.webp?size=256',
+  rank: 'Super admin',
+  banner: null,
+  description: 'Salut les donateurs !',
+});
 
-	type SortKey = "name" | "version" | "tversion";
+type SortKey = 'name' | 'version' | 'tversion';
 
-	const columns: { label: string; key: SortKey | null }[] = [
-		{ label: "Nom", key: "name" },
-		{ label: "Version", key: "version" },
-		{ label: "Trad. Ver.", key: "tversion" },
-		{ label: "Actions", key: null },
-	];
+const columns: { label: string; key: SortKey | null }[] = [
+  { label: 'Nom', key: 'name' },
+  { label: 'Version', key: 'version' },
+  { label: 'Trad. Ver.', key: 'tversion' },
+  { label: 'Actions', key: null },
+];
 
-	const items = [
-		{
-			id: "1",
-			name: "Gloup",
-			version: "v1.2.0",
-			tversion: "v1.1.0",
-			abandoned: false,
-		},
-		{
-			id: "2",
-			name: "Shloupe",
-			version: "v0.4.0",
-			tversion: "v0.4.0",
-			abandoned: false,
-		},
-		{
-			id: "3",
-			name: "Scrounch",
-			version: "v2.8.2",
-			tversion: "v1.6.1",
-			abandoned: false,
-		},
-		{
-			id: "4",
-			name: "Wroup",
-			version: "v1.6.1",
-			tversion: "v1.6.1",
-			abandoned: false,
-		},
-		{
-			id: "5",
-			name: "Swoom",
-			version: "v4.5.8",
-			tversion: "v4.5.8",
-			abandoned: false,
-		},
-		{
-			id: "6",
-			name: "Slappy",
-			version: "v0.8.2",
-			tversion: "v0.6.1",
-			abandoned: true,
-		},
-		{
-			id: "7",
-			name: "Buyrp",
-			version: "v1.4.8",
-			tversion: "v0.9.6",
-			abandoned: true,
-		},
-	];
+const items = [
+  {
+    id: '1',
+    name: 'Gloup',
+    version: 'v1.2.0',
+    tversion: 'v1.1.0',
+    abandoned: false,
+  },
+  {
+    id: '2',
+    name: 'Shloupe',
+    version: 'v0.4.0',
+    tversion: 'v0.4.0',
+    abandoned: false,
+  },
+  {
+    id: '3',
+    name: 'Scrounch',
+    version: 'v2.8.2',
+    tversion: 'v1.6.1',
+    abandoned: false,
+  },
+  {
+    id: '4',
+    name: 'Wroup',
+    version: 'v1.6.1',
+    tversion: 'v1.6.1',
+    abandoned: false,
+  },
+  {
+    id: '5',
+    name: 'Swoom',
+    version: 'v4.5.8',
+    tversion: 'v4.5.8',
+    abandoned: false,
+  },
+  {
+    id: '6',
+    name: 'Slappy',
+    version: 'v0.8.2',
+    tversion: 'v0.6.1',
+    abandoned: true,
+  },
+  {
+    id: '7',
+    name: 'Buyrp',
+    version: 'v1.4.8',
+    tversion: 'v0.9.6',
+    abandoned: true,
+  },
+];
 
-	let search = $state("");
-	let sortKey = $state<SortKey | null>("name");
-	let sortAsc = $state(true);
+let search = $state('');
+let sortKey = $state<SortKey | null>('name');
+let sortAsc = $state(true);
 
-	function sortBy(key: SortKey | null) {
-		if (!key) return;
-		if (sortKey === key) {
-			sortAsc = !sortAsc;
-		} else {
-			sortKey = key;
-			sortAsc = true;
-		}
-	}
+function sortBy(key: SortKey | null) {
+  if (!key) return;
+  if (sortKey === key) {
+    sortAsc = !sortAsc;
+  } else {
+    sortKey = key;
+    sortAsc = true;
+  }
+}
 
-	const filteredItems = $derived.by(() => {
-		const query = search.trim().toLowerCase();
+const filteredItems = $derived.by(() => {
+  const query = search.trim().toLowerCase();
 
-		const filtered = query
-			? items.filter((item) => item.name.toLowerCase().includes(query))
-			: items;
+  const filtered = query
+    ? items.filter((item) => item.name.toLowerCase().includes(query))
+    : items;
 
-		return [...filtered].sort((a, b) => {
-			if (!sortKey) return 0;
+  return [...filtered].sort((a, b) => {
+    if (!sortKey) return 0;
 
-			const cmp = a[sortKey].localeCompare(b[sortKey]);
-			return sortAsc ? cmp : -cmp;
-		});
-	});
+    const cmp = a[sortKey].localeCompare(b[sortKey]);
+    return sortAsc ? cmp : -cmp;
+  });
+});
 </script>
 
 <div

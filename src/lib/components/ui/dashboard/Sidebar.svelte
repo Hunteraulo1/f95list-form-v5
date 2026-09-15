@@ -1,22 +1,22 @@
 <script lang="ts">
-	import type { LucideIcon } from "@lucide/svelte";
-	import type { ClassValue } from "svelte/elements";
-	import { page } from "$app/state";
-	import { cn } from "$lib/utils/cn";
+import type { LucideIcon } from '@lucide/svelte';
+import type { ClassValue } from 'svelte/elements';
+import { page } from '$app/state';
+import { cn } from '$lib/utils/cn';
 
-	export interface Item {
-		label: string;
-		icon: LucideIcon;
-		href: string;
-		permission?: string;
-		class?: ClassValue;
-	}
+export interface Item {
+  label: string;
+  icon: LucideIcon;
+  href: string;
+  permission?: string;
+  class?: ClassValue;
+}
 
-	interface Props {
-		items: Item[];
-	}
+interface Props {
+  items: Item[];
+}
 
-	const { items }: Props = $props();
+const { items }: Props = $props();
 </script>
 
 <ul class="w-64 h-full max-w-full flex flex-col gap-2 p-2">

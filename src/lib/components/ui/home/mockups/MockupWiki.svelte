@@ -1,23 +1,23 @@
 <script lang="ts">
-	import { BookOpen, FileText } from "@lucide/svelte";
-	import MockupShell from "./MockupShell.svelte";
+import { BookOpen, FileText } from '@lucide/svelte';
+import MockupShell from './MockupShell.svelte';
 
-	const tocItems = [
-		{ label: "Installation", active: true },
-		{ label: "Premiers pas", active: false },
-		{ label: "Traductions VF", active: false },
-		{ label: "FAQ", active: false },
-	] as const;
+const tocItems = [
+  { label: 'Installation', active: true },
+  { label: 'Premiers pas', active: false },
+  { label: 'Traductions VF', active: false },
+  { label: 'FAQ', active: false },
+] as const;
 
-	const sections = [
-		{ width: "w-[88%]", delay: "before:[animation-delay:-0.3s]" },
-		{ width: "w-[72%]", delay: "before:[animation-delay:-1.1s]" },
-		{ width: "w-[80%]", delay: "before:[animation-delay:-2s]" },
-		{ width: "w-[60%]", delay: "before:[animation-delay:-2.8s]" },
-	] as const;
+const sections = [
+  { width: 'w-[88%]', delay: 'before:[animation-delay:-0.3s]' },
+  { width: 'w-[72%]', delay: 'before:[animation-delay:-1.1s]' },
+  { width: 'w-[80%]', delay: 'before:[animation-delay:-2s]' },
+  { width: 'w-[60%]', delay: 'before:[animation-delay:-2.8s]' },
+] as const;
 
-	const lineClass =
-		'relative h-[0.7rem] overflow-hidden rounded-sm bg-base-content/16 before:absolute before:inset-y-0 before:left-0 before:w-[35%] before:bg-primary/28 before:opacity-50 before:animate-drift before:content-[""]';
+const lineClass =
+  'relative h-[0.7rem] overflow-hidden rounded-sm bg-base-content/16 before:absolute before:inset-y-0 before:left-0 before:w-[35%] before:bg-primary/28 before:opacity-50 before:animate-drift before:content-[""]';
 </script>
 
 <MockupShell badge="Wiki F95 France">

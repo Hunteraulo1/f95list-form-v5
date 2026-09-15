@@ -1,84 +1,87 @@
 <script lang="ts">
-	import { faker } from "@faker-js/faker";
-	import { ArrowDownAZ, ArrowUpAZ } from "@lucide/svelte";
-	import Button from "$lib/components/ui/Button.svelte";
-	import Input from "$lib/components/ui/Input.svelte";
-	import { cn } from "$lib/utils/cn";
+import { faker } from '@faker-js/faker';
+import { ArrowDownAZ, ArrowUpAZ } from '@lucide/svelte';
+import Button from '$lib/components/ui/Button.svelte';
+import Input from '$lib/components/ui/Input.svelte';
+import { cn } from '$lib/utils/cn';
 
-	type SortKey = "name" | "rank" | "createdAt";
+type SortKey = 'name' | 'rank' | 'createdAt';
 
-	const columns: { label: string; key: SortKey | null }[] = [
-		{ label: "Nom", key: "name" },
-		{ label: "Rang", key: "rank" },
-		{ label: "Inscrit le", key: "createdAt" },
-		{ label: "Actions", key: null },
-	];
+const columns: { label: string; key: SortKey | null }[] = [
+  { label: 'Nom', key: 'name' },
+  { label: 'Rang', key: 'rank' },
+  { label: 'Inscrit le', key: 'createdAt' },
+  { label: 'Actions', key: null },
+];
 
-	const items = $state([
-		{
-			id: "1",
-			name: "Hunteraulo",
-			image: "https://cdn.discordapp.com/avatars/521092563042828297/84a0e6cc5576d6395643c8d32e8a2c75.webp?size=256",
-			rank: "Super admin",
-			banner: null,
-			description: "Salut les boys !",
-			createdAt: faker.date.recent(),
-		},
-		{
-			id: "2",
-			name: "Rory",
-			image: "https://cdn.discordapp.com/avatars/521092563042828297/84a0e6cc5576d6395643c8d32e8a2c75.webp?size=256",
-			rank: "Super admin",
-			banner: null,
-			description: "Salut les girls !",
-			createdAt: faker.date.recent(),
-		},
-		{
-			id: "3",
-			name: "Le Chat",
-			image: "https://cdn.discordapp.com/avatars/521092563042828297/84a0e6cc5576d6395643c8d32e8a2c75.webp?size=256",
-			rank: "Sys admin",
-			banner: null,
-			description: "Salut les chats !",
-			createdAt: faker.date.recent(),
-		},
-	]);
+const items = $state([
+  {
+    id: '1',
+    name: 'Hunteraulo',
+    image:
+      'https://cdn.discordapp.com/avatars/521092563042828297/84a0e6cc5576d6395643c8d32e8a2c75.webp?size=256',
+    rank: 'Super admin',
+    banner: null,
+    description: 'Salut les boys !',
+    createdAt: faker.date.recent(),
+  },
+  {
+    id: '2',
+    name: 'Rory',
+    image:
+      'https://cdn.discordapp.com/avatars/521092563042828297/84a0e6cc5576d6395643c8d32e8a2c75.webp?size=256',
+    rank: 'Super admin',
+    banner: null,
+    description: 'Salut les girls !',
+    createdAt: faker.date.recent(),
+  },
+  {
+    id: '3',
+    name: 'Le Chat',
+    image:
+      'https://cdn.discordapp.com/avatars/521092563042828297/84a0e6cc5576d6395643c8d32e8a2c75.webp?size=256',
+    rank: 'Sys admin',
+    banner: null,
+    description: 'Salut les chats !',
+    createdAt: faker.date.recent(),
+  },
+]);
 
-	let search = $state("");
-	let sortKey = $state<SortKey | null>("name");
-	let sortAsc = $state(true);
+let search = $state('');
+let sortKey = $state<SortKey | null>('name');
+let sortAsc = $state(true);
 
-	function sortBy(key: SortKey | null) {
-		if (!key) return;
-		if (sortKey === key) {
-			sortAsc = !sortAsc;
-		} else {
-			sortKey = key;
-			sortAsc = true;
-		}
-	}
+function sortBy(key: SortKey | null) {
+  if (!key) return;
+  if (sortKey === key) {
+    sortAsc = !sortAsc;
+  } else {
+    sortKey = key;
+    sortAsc = true;
+  }
+}
 
-	const filteredItems = $derived.by(() => {
-		const query = search.trim().toLowerCase();
+const filteredItems = $derived.by(() => {
+  const query = search.trim().toLowerCase();
 
-		const filtered = query
-			? items.filter((item) => item.name.toLowerCase().includes(query))
-			: items;
+  const filtered = query
+    ? items.filter((item) => item.name.toLowerCase().includes(query))
+    : items;
 
-		return [...filtered].sort((a, b) => {
-			if (!sortKey) return 0;
+  return [...filtered].sort((a, b) => {
+    if (!sortKey) return 0;
 
-			const valueA = a[sortKey];
-			const valueB = b[sortKey];
+    const valueA = a[sortKey];
+    const valueB = b[sortKey];
 
-			const cmp =
-				valueA instanceof Date && valueB instanceof Date
-					? valueA.getTime() - valueB.getTime()
-					: String(valueA).localeCompare(String(valueB));
+    const cmp =
+      valueA instanceof Date && valueB instanceof Date
+        ? valueA.getTime() - valueB.getTime()
+        : String(valueA).localeCompare(String(valueB));
 
-			return sortAsc ? cmp : -cmp;
-		});
-	});
+    return sortAsc ? cmp : -cmp;
+  });
+});
 </script>
 
 <div class="rounded-xl p-2 flex flex-col relative">

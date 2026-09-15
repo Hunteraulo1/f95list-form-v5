@@ -1,27 +1,27 @@
 <script lang="ts">
-	import type { ClassValue } from "clsx";
-	import type { MouseEventHandler } from "svelte/elements";
-	import { cn } from "$lib/utils/cn";
+import type { ClassValue } from 'clsx';
+import type { MouseEventHandler } from 'svelte/elements';
+import { cn } from '$lib/utils/cn';
 
-	interface Props {
-		label: string;
-		classes?: ClassValue;
-		inline?: boolean;
-		size?: "tiny" | "small" | "normal" | "big";
-		onclick?: MouseEventHandler<HTMLButtonElement>;
-	}
+interface Props {
+  label: string;
+  classes?: ClassValue;
+  inline?: boolean;
+  size?: 'tiny' | 'small' | 'normal' | 'big';
+  onclick?: MouseEventHandler<HTMLButtonElement>;
+}
 
-	const {
-		label,
-		classes,
-		inline = false,
-		size = "normal",
-		onclick,
-	}: Props = $props();
+const {
+  label,
+  classes,
+  inline = false,
+  size = 'normal',
+  onclick,
+}: Props = $props();
 
-	const inlineStyle =
-		"border-base-content text-base-content hover:border-transparent";
-	const classicStyle = "bg-neutral-content";
+const inlineStyle =
+  'border-base-content text-base-content hover:border-transparent';
+const classicStyle = 'bg-neutral-content';
 </script>
 
 <button

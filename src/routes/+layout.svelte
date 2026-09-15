@@ -1,14 +1,14 @@
 <script lang="ts">
-	import type { Snippet } from "svelte";
-	import favicon from "$lib/assets/favicon.svg";
-	import QueryProvider from "$lib/query/QueryProvider.svelte";
-	import "../app.css";
+import type { Snippet } from 'svelte';
+import favicon from '$lib/assets/favicon.svg';
+import QueryProvider from '$lib/query/QueryProvider.svelte';
+import '../app.css';
 
-	interface Props {
-		children: Snippet;
-	}
+interface Props {
+  children: Snippet;
+}
 
-	let { children }: Props = $props();
+let { children }: Props = $props();
 </script>
 
 <svelte:head>

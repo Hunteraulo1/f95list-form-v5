@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { Hash, Volume2 } from "@lucide/svelte";
-	import { cn } from "$lib/utils/cn";
-	import MockupShell from "./MockupShell.svelte";
+import { Hash, Volume2 } from '@lucide/svelte';
+import { cn } from '$lib/utils/cn';
+import MockupShell from './MockupShell.svelte';
 
-	const channels = [
-		{ name: "discussion", active: true, icon: Hash },
-		{ name: "mises-a-jour", active: false, icon: Hash },
-		{ name: "traducteurs", active: false, icon: Hash },
-		{ name: "Canal vocal 1", active: false, icon: Volume2 },
-	] as const;
+const channels = [
+  { name: 'discussion', active: true, icon: Hash },
+  { name: 'mises-a-jour', active: false, icon: Hash },
+  { name: 'traducteurs', active: false, icon: Hash },
+  { name: 'Canal vocal 1', active: false, icon: Volume2 },
+] as const;
 
-	const messages = [
-		{ color: "bg-primary/35", pSize: "w-[78%]", sSize: "w-[49%]" },
-		{ color: "bg-secondary/30", pSize: "w-[64%]", sSize: "w-[42%]" },
-		{ color: "bg-accent/25", pSize: "w-[72%]", sSize: "w-[46%]" },
-		{ color: "bg-info/25", pSize: "w-[58%]", sSize: "w-[39%]" },
-	] as const;
+const messages = [
+  { color: 'bg-primary/35', pSize: 'w-[78%]', sSize: 'w-[49%]' },
+  { color: 'bg-secondary/30', pSize: 'w-[64%]', sSize: 'w-[42%]' },
+  { color: 'bg-accent/25', pSize: 'w-[72%]', sSize: 'w-[46%]' },
+  { color: 'bg-info/25', pSize: 'w-[58%]', sSize: 'w-[39%]' },
+] as const;
 </script>
 
 <MockupShell badge="Serveur Discord">
