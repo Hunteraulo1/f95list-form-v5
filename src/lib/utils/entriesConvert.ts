@@ -1,4 +1,17 @@
-import type { GameTranslation } from '$lib/server/db';
+import type { GameEdition, GameTranslation } from '$lib/server/db';
+
+export const editionStatusName = (status: GameEdition['status']) => {
+  switch (status) {
+    case 'in_progress':
+      return 'En cours';
+    case 'completed':
+      return 'Terminée';
+    case 'abandoned':
+      return 'Abandonnée';
+    case 'on_hold':
+      return 'En pause';
+  }
+};
 
 export const translationQualityName = (quality: GameTranslation['quality']) => {
   switch (quality) {
@@ -17,8 +30,8 @@ export const translationQualityName = (quality: GameTranslation['quality']) => {
   }
 };
 
-export const translationTypeName = (quality: GameTranslation['type']) => {
-  switch (quality) {
+export const translationTypeName = (type: GameTranslation['type']) => {
+  switch (type) {
     case 'integrated':
       return 'Intégrée';
     case 'mods':
