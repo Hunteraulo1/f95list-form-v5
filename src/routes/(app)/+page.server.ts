@@ -12,7 +12,7 @@ interface LatestTranslationRow {
 export const load = async () => {
   const random = randomInt(1000000);
 
-  const games = await orm.em
+  const rows = await orm.em
     .createQueryBuilder(GameTranslation, 'gt')
     .join('gt.gameEdition', 'ge')
     .join('ge.game', 'g')
@@ -31,6 +31,13 @@ export const load = async () => {
     .limit(5)
     .execute<LatestTranslationRow[]>();
 
+  const games = rows.map(({ id, image, name, editionName }) => {
+    return {
+      id,
+      image,
+      name: editionName ? `${editionName} - ${name}` : name,
+    };
+  });
   return {
     games,
     stats: [

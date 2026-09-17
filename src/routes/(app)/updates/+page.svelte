@@ -1,71 +1,71 @@
 <script lang="ts">
-import { Funnel, X } from '@lucide/svelte';
-import { untrack } from 'svelte';
-import GamesFilterGroup from '$lib/components/ui/games/GamesFilterGroup.svelte';
-import Input from '$lib/components/ui/Input.svelte';
-import {
-  createGamesFilterGroups,
-  type GamesFilterGroupState,
-  gameMatchesFilters,
-  gameMatchesQuery,
-  hasActiveGamesFilters,
-  toggleGamesFilterValue,
-} from '$lib/games/games-filter';
-import { cn } from '$lib/utils/cn.js';
-import type { PageData } from './$types';
+	import { Funnel, X } from "@lucide/svelte";
+	import { untrack } from "svelte";
+	import GamesFilterGroup from "$lib/components/ui/games/GamesFilterGroup.svelte";
+	import Input from "$lib/components/ui/Input.svelte";
+	import {
+		createGamesFilterGroups,
+		type GamesFilterGroupState,
+		gameMatchesFilters,
+		gameMatchesQuery,
+		hasActiveGamesFilters,
+		toggleGamesFilterValue,
+	} from "$lib/games/games-filter";
+	import { cn } from "$lib/utils/cn.js";
+	import type { PageData } from "./$types";
 
-interface Props {
-  data: PageData;
-}
-const { data }: Props = $props();
+	interface Props {
+		data: PageData;
+	}
+	const { data }: Props = $props();
 
-let isOpen = $state(false);
-let query = $state('');
-//? Snapshot volontaire au montage : filterGroups reste mutable localement et ne doit
-//? pas se resynchroniser si `data` change (voir untrack).
-let filterGroups = $state<GamesFilterGroupState[]>(
-  untrack(() => createGamesFilterGroups(data.filterOptions)),
-);
+	let isOpen = $state(false);
+	let query = $state("");
+	//? Snapshot volontaire au montage : filterGroups reste mutable localement et ne doit
+	//? pas se resynchroniser si `data` change (voir untrack).
+	let filterGroups = $state<GamesFilterGroupState[]>(
+		untrack(() => createGamesFilterGroups(data.filterOptions)),
+	);
 
-const filteredGames = $derived(
-  data.games
-    .filter((game) => gameMatchesQuery(game, query))
-    .filter((game) => gameMatchesFilters(game, filterGroups)),
-);
-const hasFilters = $derived(
-  Boolean(query.trim()) || hasActiveGamesFilters(filterGroups),
-);
+	const filteredGames = $derived(
+		data.games
+			.filter((game) => gameMatchesQuery(game, query))
+			.filter((game) => gameMatchesFilters(game, filterGroups)),
+	);
+	const hasFilters = $derived(
+		Boolean(query.trim()) || hasActiveGamesFilters(filterGroups),
+	);
 
-const toggleValue = (
-  groupName: GamesFilterGroupState['name'],
-  value: string,
-) => {
-  filterGroups = toggleGamesFilterValue(filterGroups, groupName, value);
-};
+	const toggleValue = (
+		groupName: GamesFilterGroupState["name"],
+		value: string,
+	) => {
+		filterGroups = toggleGamesFilterValue(filterGroups, groupName, value);
+	};
 
-const resetFilters = () => {
-  query = '';
-  filterGroups = createGamesFilterGroups(data.filterOptions);
-};
+	const resetFilters = () => {
+		query = "";
+		filterGroups = createGamesFilterGroups(data.filterOptions);
+	};
 
-const gamesByDay = $derived.by(() => {
-  const groups = new Map<string, typeof filteredGames>();
-  for (const item of filteredGames) {
-    const key = new Date(item.date).toLocaleDateString('fr-FR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
-    const group = groups.get(key);
-    if (group) {
-      group.push(item);
-    } else {
-      groups.set(key, [item]);
-    }
-  }
-  return groups;
-});
+	const gamesByDay = $derived.by(() => {
+		const groups = new Map<string, typeof filteredGames>();
+		for (const item of filteredGames) {
+			const key = new Date(item.date).toLocaleDateString("fr-FR", {
+				weekday: "long",
+				day: "numeric",
+				month: "long",
+				year: "numeric",
+			});
+			const group = groups.get(key);
+			if (group) {
+				group.push(item);
+			} else {
+				groups.set(key, [item]);
+			}
+		}
+		return groups;
+	});
 </script>
 
 <section class="md:grid md:grid-cols-[1fr_20rem] w-full gap-4">
@@ -78,7 +78,7 @@ const gamesByDay = $derived.by(() => {
 				<div
 					class="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
 				>
-					{#each games as { id, image, name, gameId } (id)}
+					{#each games as { id, image, name, gameId, updateType } (id)}
 						<a href={`/games/${gameId}`}>
 							<div
 								class="bg-base-200 h-60 rounded-lg overflow-hidden relative"
@@ -90,8 +90,13 @@ const gamesByDay = $derived.by(() => {
 									class="object-cover w-full h-full"
 								/>
 								<div
-									class="bg-base-200/30 h-full w-full p-4 absolute top-0"
+									class="bg-base-200/20 hover:bg-base-200/10 h-full w-full p-4 absolute top-0 flex flex-col gap-2"
 								>
+									<span
+										class="bg-green-700 w-fit rounded-xl px-2 text-xs font-black uppercase"
+									>
+										{updateType}
+									</span>
 									{name}
 								</div>
 							</div>

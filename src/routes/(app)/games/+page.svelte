@@ -1,52 +1,52 @@
 <script lang="ts">
-import { Funnel, X } from '@lucide/svelte';
-import { untrack } from 'svelte';
-import GamesFilterGroup from '$lib/components/ui/games/GamesFilterGroup.svelte';
-import Input from '$lib/components/ui/Input.svelte';
-import {
-  createGamesFilterGroups,
-  type GamesFilterGroupState,
-  gameMatchesFilters,
-  gameMatchesQuery,
-  hasActiveGamesFilters,
-  toggleGamesFilterValue,
-} from '$lib/games/games-filter';
-import { cn } from '$lib/utils/cn.js';
-import type { PageData } from './$types';
+	import { Funnel, X } from "@lucide/svelte";
+	import { untrack } from "svelte";
+	import GamesFilterGroup from "$lib/components/ui/games/GamesFilterGroup.svelte";
+	import Input from "$lib/components/ui/Input.svelte";
+	import {
+		createGamesFilterGroups,
+		type GamesFilterGroupState,
+		gameMatchesFilters,
+		gameMatchesQuery,
+		hasActiveGamesFilters,
+		toggleGamesFilterValue,
+	} from "$lib/games/games-filter";
+	import { cn } from "$lib/utils/cn.js";
+	import type { PageData } from "./$types";
 
-interface Props {
-  data: PageData;
-}
-const { data }: Props = $props();
+	interface Props {
+		data: PageData;
+	}
+	const { data }: Props = $props();
 
-let isOpen = $state(false);
-let query = $state('');
-//? Snapshot volontaire au montage : filterGroups reste mutable localement et ne doit
-//? pas se resynchroniser si `data` change (voir untrack).
-let filterGroups = $state<GamesFilterGroupState[]>(
-  untrack(() => createGamesFilterGroups(data.filterOptions)),
-);
+	let isOpen = $state(false);
+	let query = $state("");
+	//? Snapshot volontaire au montage : filterGroups reste mutable localement et ne doit
+	//? pas se resynchroniser si `data` change (voir untrack).
+	let filterGroups = $state<GamesFilterGroupState[]>(
+		untrack(() => createGamesFilterGroups(data.filterOptions)),
+	);
 
-const filteredGames = $derived(
-  data.games
-    .filter((game) => gameMatchesQuery(game, query))
-    .filter((game) => gameMatchesFilters(game, filterGroups)),
-);
-const hasFilters = $derived(
-  Boolean(query.trim()) || hasActiveGamesFilters(filterGroups),
-);
+	const filteredGames = $derived(
+		data.games
+			.filter((game) => gameMatchesQuery(game, query))
+			.filter((game) => gameMatchesFilters(game, filterGroups)),
+	);
+	const hasFilters = $derived(
+		Boolean(query.trim()) || hasActiveGamesFilters(filterGroups),
+	);
 
-const toggleValue = (
-  groupName: GamesFilterGroupState['name'],
-  value: string,
-) => {
-  filterGroups = toggleGamesFilterValue(filterGroups, groupName, value);
-};
+	const toggleValue = (
+		groupName: GamesFilterGroupState["name"],
+		value: string,
+	) => {
+		filterGroups = toggleGamesFilterValue(filterGroups, groupName, value);
+	};
 
-const resetFilters = () => {
-  query = '';
-  filterGroups = createGamesFilterGroups(data.filterOptions);
-};
+	const resetFilters = () => {
+		query = "";
+		filterGroups = createGamesFilterGroups(data.filterOptions);
+	};
 </script>
 
 <section class="md:grid md:grid-cols-[1fr_20rem] w-full gap-4">
@@ -65,7 +65,7 @@ const resetFilters = () => {
 						class="object-cover w-full h-full"
 					/>
 					<div
-						class="bg-base-200/50 h-full w-full p-4 absolute top-0"
+						class="bg-base-200/20 hover:bg-base-200/10 h-full w-full p-4 absolute top-0"
 					>
 						{name}
 					</div>
