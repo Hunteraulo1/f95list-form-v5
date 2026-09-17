@@ -2,7 +2,7 @@ import type {
   GamesFilterableGame,
   GamesFilterOptions,
 } from '$lib/games/games-filter';
-import { VIEW_ACTIVE_ONLY } from '$lib/server/config';
+import { UNKNOWN_HISTORY_DATE, VIEW_ACTIVE_ONLY } from '$lib/server/config';
 import {
   GameTags,
   GameTranslation,
@@ -63,8 +63,11 @@ export const load = async () => {
       types: translation.type ? [translation.type] : [],
       translatorIds: [...new Set(translatorIds)],
       tagIds: game.gameGameTags.getItems().map(({ gameTag }) => gameTag.id),
+      //? égalité de valeur (pas de référence, ce sont deux instances Date distinctes) ;
+      //? on exclut le repli UNKNOWN_HISTORY_DATE, dont on ne sait rien de réel.
       updateType:
-        translation.updatedAt === translation.createdAt
+        translation.updatedAt.getTime() === translation.createdAt.getTime() &&
+        translation.createdAt.getTime() !== UNKNOWN_HISTORY_DATE.getTime()
           ? 'ajout'
           : 'mise à jour',
     };
