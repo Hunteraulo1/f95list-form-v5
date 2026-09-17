@@ -1,6 +1,10 @@
 import { error } from '@sveltejs/kit';
 import { VIEW_ACTIVE_ONLY } from '$lib/server/config';
 import { Game, orm } from '$lib/server/db';
+import {
+  translationQualityName,
+  translationTypeName,
+} from '$lib/utils/entriesConvert';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -12,9 +16,12 @@ export const load: PageServerLoad = async ({ params }) => {
     {
       populate: [
         'gameEditions.gameTranslations.gameTranslationTranslators.translator',
+        'gameEditions.gameTranslations.gameTranslationFiles',
+        'gameGameTags.gameTag',
       ],
       orderBy: {
         gameEditions: { name: 'asc', gameTranslations: { version: 'asc' } },
+        gameGameTags: { updatedAt: 'desc' },
       },
     },
   );
@@ -29,18 +36,23 @@ export const load: PageServerLoad = async ({ params }) => {
       link: game.link,
       threadId: game.threadId,
       image: game.imageInternal ?? game.imageExternal,
-      description: game.description,
-      descriptionFr: game.descriptionFr,
+      description: game.descriptionFr ?? game.description,
       // autoCheck: game.autoCheck,
       active: game.active,
       // createdAt: game.createdAt,
       // updatedAt: game.updatedAt,
+      tags: game.gameGameTags
+        .getItems()
+        .map(({ gameTag }) => ({ id: gameTag.id, name: gameTag.name })),
       gameEditions: game.gameEditions
         .getItems()
         .filter((edition) => !VIEW_ACTIVE_ONLY || edition.active)
         .map((edition) => ({
           id: edition.id,
-          name: edition.name,
+          name:
+            !edition.name && game.gameEditions.length === 1
+              ? 'Édition de base'
+              : (edition.name ?? `Non nommé (${edition.version})`),
           version: edition.version,
           status: edition.status,
           // autoCheck: edition.autoCheck,
@@ -54,8 +66,8 @@ export const load: PageServerLoad = async ({ params }) => {
             .map((translation) => ({
               id: translation.id,
               version: translation.version,
-              quality: translation.quality,
-              type: translation.type,
+              quality: translationQualityName(translation.quality),
+              type: translationTypeName(translation.type),
               active: translation.active,
               // createdAt: translation.createdAt,
               // updatedAt: translation.updatedAt,
@@ -71,6 +83,14 @@ export const load: PageServerLoad = async ({ params }) => {
                   active: translator.active,
                   // createdAt: translator.createdAt,
                   // updatedAt: translator.updatedAt,
+                })),
+              files: translation.gameTranslationFiles
+                .getItems()
+                .filter((file) => file.active)
+                .map((file) => ({
+                  id: file.id,
+                  internalLink: file.internalLink,
+                  externalLink: file.externalLink,
                 })),
             })),
         })),

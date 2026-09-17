@@ -187,6 +187,7 @@ export const GameTranslationFileSchema = defineEntity({
         .columnType('char(36)')
         .foreignKeyName('game_translation_file_q2YzPs4xJIF9_fkey'),
     version: p.string().length(36),
+    active: p.boolean().default(true),
     externalLink: p.string().length(2048).nullable(),
     internalLink: p.string().length(2048).nullable(),
     ...timestamps(),

@@ -2,11 +2,117 @@
   "namespaces": [],
   "tables": [
     {
+      "name": "__drizzle_migrations",
+      "columns": {
+        "applied_at": {
+          "name": "applied_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "bigint",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "bigint"
+        },
+        "hash": {
+          "name": "hash",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "bigint"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "PRIMARY",
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "triggers": [],
+      "foreignKeys": {},
+      "comment": null
+    },
+    {
       "name": "config",
       "columns": {
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -24,8 +130,8 @@
         "id": {
           "name": "id",
           "type": "tinyint",
-          "unsigned": true,
-          "autoincrement": true,
+          "unsigned": false,
+          "autoincrement": false,
           "primary": true,
           "nullable": false,
           "unique": false,
@@ -47,8 +153,8 @@
           "nullable": false,
           "unique": false,
           "length": null,
-          "precision": null,
-          "scale": null,
+          "precision": 3,
+          "scale": 0,
           "default": "false",
           "comment": null,
           "collation": null,
@@ -74,7 +180,7 @@
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -93,7 +199,9 @@
       },
       "indexes": [
         {
-          "columnNames": ["id"],
+          "columnNames": [
+            "id"
+          ],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -118,8 +226,8 @@
           "nullable": false,
           "unique": false,
           "length": null,
-          "precision": null,
-          "scale": null,
+          "precision": 3,
+          "scale": 0,
           "default": null,
           "comment": null,
           "collation": null,
@@ -135,8 +243,8 @@
           "nullable": false,
           "unique": false,
           "length": null,
-          "precision": null,
-          "scale": null,
+          "precision": 3,
+          "scale": 0,
           "default": null,
           "comment": null,
           "collation": null,
@@ -145,7 +253,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -298,7 +406,7 @@
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -316,7 +424,7 @@
         },
         "website": {
           "name": "website",
-          "type": "char(36)",
+          "type": "varchar(36)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -329,12 +437,14 @@
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "character"
+          "mappedType": "string"
         }
       },
       "indexes": [
         {
-          "columnNames": ["id"],
+          "columnNames": [
+            "id"
+          ],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -342,10 +452,12 @@
           "unique": true
         },
         {
-          "columnNames": ["website"],
+          "columnNames": [
+            "website"
+          ],
           "composite": false,
           "constraint": false,
-          "keyName": "game_website_index",
+          "keyName": "game_website_origin-website_id_fkey",
           "primary": false,
           "unique": false
         }
@@ -354,11 +466,17 @@
       "triggers": [],
       "foreignKeys": {
         "game_website_origin-website_id_fkey": {
-          "columnNames": ["website"],
+          "columnNames": [
+            "website"
+          ],
           "constraintName": "game_website_origin-website_id_fkey",
           "localTableName": "game",
-          "referencedColumnNames": ["id"],
-          "referencedTableName": "origin-website"
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "origin-website",
+          "updateRule": "restrict",
+          "deleteRule": "restrict"
         }
       },
       "comment": null
@@ -375,8 +493,8 @@
           "nullable": false,
           "unique": false,
           "length": null,
-          "precision": null,
-          "scale": null,
+          "precision": 3,
+          "scale": 0,
           "default": null,
           "comment": null,
           "collation": null,
@@ -392,8 +510,8 @@
           "nullable": false,
           "unique": false,
           "length": null,
-          "precision": null,
-          "scale": null,
+          "precision": 3,
+          "scale": 0,
           "default": null,
           "comment": null,
           "collation": null,
@@ -402,7 +520,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -445,7 +563,7 @@
           "length": 36,
           "precision": null,
           "scale": null,
-          "default": null,
+          "default": "uuid()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -499,12 +617,17 @@
           "default": null,
           "comment": null,
           "collation": null,
-          "enumItems": ["in_progress", "completed", "abandoned", "on_hold"],
+          "enumItems": [
+            "in_progress",
+            "completed",
+            "abandoned",
+            "on_hold"
+          ],
           "mappedType": "enum"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -540,7 +663,9 @@
       },
       "indexes": [
         {
-          "columnNames": ["id"],
+          "columnNames": [
+            "id"
+          ],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -548,10 +673,12 @@
           "unique": true
         },
         {
-          "columnNames": ["game_id"],
+          "columnNames": [
+            "game_id"
+          ],
           "composite": false,
           "constraint": false,
-          "keyName": "game_edition_game_id_index",
+          "keyName": "game_edition_game_id_game_id_fkey",
           "primary": false,
           "unique": false
         }
@@ -560,11 +687,17 @@
       "triggers": [],
       "foreignKeys": {
         "game_edition_game_id_game_id_fkey": {
-          "columnNames": ["game_id"],
+          "columnNames": [
+            "game_id"
+          ],
           "constraintName": "game_edition_game_id_game_id_fkey",
           "localTableName": "game_edition",
-          "referencedColumnNames": ["id"],
-          "referencedTableName": "game"
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "game",
+          "updateRule": "restrict",
+          "deleteRule": "restrict"
         }
       },
       "comment": null
@@ -574,7 +707,7 @@
       "columns": {
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -625,7 +758,7 @@
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -644,7 +777,10 @@
       },
       "indexes": [
         {
-          "columnNames": ["game_id", "game_tag_id"],
+          "columnNames": [
+            "game_id",
+            "game_tag_id"
+          ],
           "composite": true,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -652,18 +788,12 @@
           "unique": true
         },
         {
-          "columnNames": ["game_id"],
+          "columnNames": [
+            "game_tag_id"
+          ],
           "composite": false,
           "constraint": false,
-          "keyName": "game_game_tags_game_id_index",
-          "primary": false,
-          "unique": false
-        },
-        {
-          "columnNames": ["game_tag_id"],
-          "composite": false,
-          "constraint": false,
-          "keyName": "game_game_tags_game_tag_id_index",
+          "keyName": "game_game_tags_game_tag_fk",
           "primary": false,
           "unique": false
         }
@@ -672,19 +802,27 @@
       "triggers": [],
       "foreignKeys": {
         "game_game_tags_game_fk": {
-          "columnNames": ["game_id"],
+          "columnNames": [
+            "game_id"
+          ],
           "constraintName": "game_game_tags_game_fk",
           "localTableName": "game_game_tags",
-          "referencedColumnNames": ["id"],
+          "referencedColumnNames": [
+            "id"
+          ],
           "referencedTableName": "game",
           "updateRule": "restrict",
           "deleteRule": "cascade"
         },
         "game_game_tags_game_tag_fk": {
-          "columnNames": ["game_tag_id"],
+          "columnNames": [
+            "game_tag_id"
+          ],
           "constraintName": "game_game_tags_game_tag_fk",
           "localTableName": "game_game_tags",
-          "referencedColumnNames": ["id"],
+          "referencedColumnNames": [
+            "id"
+          ],
           "referencedTableName": "game_tags",
           "updateRule": "restrict",
           "deleteRule": "cascade"
@@ -697,7 +835,7 @@
       "columns": {
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -748,7 +886,7 @@
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -767,7 +905,9 @@
       },
       "indexes": [
         {
-          "columnNames": ["id"],
+          "columnNames": [
+            "id"
+          ],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -792,8 +932,8 @@
           "nullable": false,
           "unique": false,
           "length": null,
-          "precision": null,
-          "scale": null,
+          "precision": 3,
+          "scale": 0,
           "default": null,
           "comment": null,
           "collation": null,
@@ -802,7 +942,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -845,7 +985,7 @@
           "length": 36,
           "precision": null,
           "scale": null,
-          "default": null,
+          "default": "uuid()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -900,7 +1040,7 @@
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -936,7 +1076,9 @@
       },
       "indexes": [
         {
-          "columnNames": ["id"],
+          "columnNames": [
+            "id"
+          ],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -944,10 +1086,12 @@
           "unique": true
         },
         {
-          "columnNames": ["game_edition_id"],
+          "columnNames": [
+            "game_edition_id"
+          ],
           "composite": false,
           "constraint": false,
-          "keyName": "game_translation_game_edition_id_index",
+          "keyName": "game_translation_game_edition_id_game_edition_id_fkey",
           "primary": false,
           "unique": false
         }
@@ -956,11 +1100,17 @@
       "triggers": [],
       "foreignKeys": {
         "game_translation_game_edition_id_game_edition_id_fkey": {
-          "columnNames": ["game_edition_id"],
+          "columnNames": [
+            "game_edition_id"
+          ],
           "constraintName": "game_translation_game_edition_id_game_edition_id_fkey",
           "localTableName": "game_translation",
-          "referencedColumnNames": ["id"],
-          "referencedTableName": "game_edition"
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "game_edition",
+          "updateRule": "restrict",
+          "deleteRule": "restrict"
         }
       },
       "comment": null
@@ -968,9 +1118,26 @@
     {
       "name": "game_translation_file",
       "columns": {
+        "active": {
+          "name": "active",
+          "type": "tinyint(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 3,
+          "scale": 0,
+          "default": "true",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "boolean"
+        },
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1030,7 +1197,7 @@
           "length": 36,
           "precision": null,
           "scale": null,
-          "default": null,
+          "default": "uuid()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1055,7 +1222,7 @@
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1091,7 +1258,9 @@
       },
       "indexes": [
         {
-          "columnNames": ["id"],
+          "columnNames": [
+            "id"
+          ],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1099,10 +1268,12 @@
           "unique": true
         },
         {
-          "columnNames": ["game_translation_id"],
+          "columnNames": [
+            "game_translation_id"
+          ],
           "composite": false,
           "constraint": false,
-          "keyName": "game_translation_file_game_translation_id_index",
+          "keyName": "game_translation_file_q2YzPs4xJIF9_fkey",
           "primary": false,
           "unique": false
         }
@@ -1111,11 +1282,17 @@
       "triggers": [],
       "foreignKeys": {
         "game_translation_file_q2YzPs4xJIF9_fkey": {
-          "columnNames": ["game_translation_id"],
+          "columnNames": [
+            "game_translation_id"
+          ],
           "constraintName": "game_translation_file_q2YzPs4xJIF9_fkey",
           "localTableName": "game_translation_file",
-          "referencedColumnNames": ["id"],
-          "referencedTableName": "game_translation"
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "game_translation",
+          "updateRule": "restrict",
+          "deleteRule": "restrict"
         }
       },
       "comment": null
@@ -1132,8 +1309,8 @@
           "nullable": false,
           "unique": false,
           "length": null,
-          "precision": null,
-          "scale": null,
+          "precision": 3,
+          "scale": 0,
           "default": "true",
           "comment": null,
           "collation": null,
@@ -1142,7 +1319,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1205,12 +1382,15 @@
           "default": null,
           "comment": null,
           "collation": null,
-          "enumItems": ["translator", "proofreader"],
+          "enumItems": [
+            "translator",
+            "proofreader"
+          ],
           "mappedType": "enum"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1229,7 +1409,10 @@
       },
       "indexes": [
         {
-          "columnNames": ["game_translation_id", "translator_id"],
+          "columnNames": [
+            "game_translation_id",
+            "translator_id"
+          ],
           "composite": true,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1237,18 +1420,12 @@
           "unique": true
         },
         {
-          "columnNames": ["game_translation_id"],
+          "columnNames": [
+            "translator_id"
+          ],
           "composite": false,
           "constraint": false,
-          "keyName": "game_translation_translator_game_translation_id_index",
-          "primary": false,
-          "unique": false
-        },
-        {
-          "columnNames": ["translator_id"],
-          "composite": false,
-          "constraint": false,
-          "keyName": "game_translation_translator_translator_id_index",
+          "keyName": "game_translation_translator_translator_fk",
           "primary": false,
           "unique": false
         }
@@ -1257,19 +1434,27 @@
       "triggers": [],
       "foreignKeys": {
         "game_translation_translator_translation_fk": {
-          "columnNames": ["game_translation_id"],
+          "columnNames": [
+            "game_translation_id"
+          ],
           "constraintName": "game_translation_translator_translation_fk",
           "localTableName": "game_translation_translator",
-          "referencedColumnNames": ["id"],
+          "referencedColumnNames": [
+            "id"
+          ],
           "referencedTableName": "game_translation",
           "updateRule": "restrict",
           "deleteRule": "cascade"
         },
         "game_translation_translator_translator_fk": {
-          "columnNames": ["translator_id"],
+          "columnNames": [
+            "translator_id"
+          ],
           "constraintName": "game_translation_translator_translator_fk",
           "localTableName": "game_translation_translator",
-          "referencedColumnNames": ["id"],
+          "referencedColumnNames": [
+            "id"
+          ],
           "referencedTableName": "translator",
           "updateRule": "restrict",
           "deleteRule": "cascade"
@@ -1282,7 +1467,7 @@
       "columns": {
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1308,7 +1493,7 @@
           "length": 36,
           "precision": null,
           "scale": null,
-          "default": null,
+          "default": "uuid()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1367,7 +1552,7 @@
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1386,7 +1571,9 @@
       },
       "indexes": [
         {
-          "columnNames": ["id"],
+          "columnNames": [
+            "id"
+          ],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1404,7 +1591,7 @@
       "columns": {
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1430,7 +1617,7 @@
           "length": 36,
           "precision": null,
           "scale": null,
-          "default": null,
+          "default": "uuid()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1472,7 +1659,7 @@
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1491,7 +1678,9 @@
       },
       "indexes": [
         {
-          "columnNames": ["id"],
+          "columnNames": [
+            "id"
+          ],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1516,8 +1705,8 @@
           "nullable": false,
           "unique": false,
           "length": null,
-          "precision": null,
-          "scale": null,
+          "precision": 3,
+          "scale": 0,
           "default": null,
           "comment": null,
           "collation": null,
@@ -1526,7 +1715,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1569,7 +1758,7 @@
           "length": 36,
           "precision": null,
           "scale": null,
-          "default": null,
+          "default": "uuid()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1594,7 +1783,7 @@
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1612,7 +1801,7 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "char(36)",
+          "type": "varchar(36)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1625,12 +1814,14 @@
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "character"
+          "mappedType": "string"
         }
       },
       "indexes": [
         {
-          "columnNames": ["id"],
+          "columnNames": [
+            "id"
+          ],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1638,10 +1829,12 @@
           "unique": true
         },
         {
-          "columnNames": ["user_id"],
+          "columnNames": [
+            "user_id"
+          ],
           "composite": false,
           "constraint": false,
-          "keyName": "translator_user_id_index",
+          "keyName": "translator_user_id_user_id_fkey",
           "primary": false,
           "unique": false
         }
@@ -1650,11 +1843,16 @@
       "triggers": [],
       "foreignKeys": {
         "translator_user_id_user_id_fkey": {
-          "columnNames": ["user_id"],
+          "columnNames": [
+            "user_id"
+          ],
           "constraintName": "translator_user_id_user_id_fkey",
           "localTableName": "translator",
-          "referencedColumnNames": ["id"],
+          "referencedColumnNames": [
+            "id"
+          ],
           "referencedTableName": "user",
+          "updateRule": "restrict",
           "deleteRule": "restrict"
         }
       },
@@ -1665,7 +1863,7 @@
       "columns": {
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1691,7 +1889,7 @@
           "length": 36,
           "precision": null,
           "scale": null,
-          "default": null,
+          "default": "uuid()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1750,7 +1948,7 @@
         },
         "translator_id": {
           "name": "translator_id",
-          "type": "char(36)",
+          "type": "varchar(36)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1763,11 +1961,11 @@
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "character"
+          "mappedType": "string"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1786,7 +1984,9 @@
       },
       "indexes": [
         {
-          "columnNames": ["id"],
+          "columnNames": [
+            "id"
+          ],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1794,10 +1994,12 @@
           "unique": true
         },
         {
-          "columnNames": ["translator_id"],
+          "columnNames": [
+            "translator_id"
+          ],
           "composite": false,
           "constraint": false,
-          "keyName": "translator_link_translator_id_index",
+          "keyName": "translator_link_translator_id_translator_id_fkey",
           "primary": false,
           "unique": false
         }
@@ -1806,11 +2008,17 @@
       "triggers": [],
       "foreignKeys": {
         "translator_link_translator_id_translator_id_fkey": {
-          "columnNames": ["translator_id"],
+          "columnNames": [
+            "translator_id"
+          ],
           "constraintName": "translator_link_translator_id_translator_id_fkey",
           "localTableName": "translator_link",
-          "referencedColumnNames": ["id"],
-          "referencedTableName": "translator"
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "translator",
+          "updateRule": "restrict",
+          "deleteRule": "restrict"
         }
       },
       "comment": null
@@ -1820,7 +2028,7 @@
       "columns": {
         "created_at": {
           "name": "created_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1844,8 +2052,8 @@
           "nullable": false,
           "unique": false,
           "length": null,
-          "precision": null,
-          "scale": null,
+          "precision": 3,
+          "scale": 0,
           "default": "true",
           "comment": null,
           "collation": null,
@@ -1863,7 +2071,7 @@
           "length": 36,
           "precision": null,
           "scale": null,
-          "default": null,
+          "default": "uuid()",
           "comment": null,
           "collation": null,
           "enumItems": [],
@@ -1888,7 +2096,7 @@
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "datetime",
+          "type": "timestamp",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -1924,7 +2132,9 @@
       },
       "indexes": [
         {
-          "columnNames": ["id"],
+          "columnNames": [
+            "id"
+          ],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1932,18 +2142,22 @@
           "unique": true
         },
         {
-          "columnNames": ["role_id"],
+          "columnNames": [
+            "role_id"
+          ],
           "composite": false,
           "constraint": false,
-          "keyName": "user_role_id_index",
+          "keyName": "user_role_id_role_id_fkey",
           "primary": false,
           "unique": false
         },
         {
-          "columnNames": ["zitadel_id"],
+          "columnNames": [
+            "zitadel_id"
+          ],
           "composite": false,
           "constraint": true,
-          "keyName": "user_zitadel_id_unique",
+          "keyName": "zitadel_id_unique",
           "primary": false,
           "unique": true
         }
@@ -1952,11 +2166,17 @@
       "triggers": [],
       "foreignKeys": {
         "user_role_id_role_id_fkey": {
-          "columnNames": ["role_id"],
+          "columnNames": [
+            "role_id"
+          ],
           "constraintName": "user_role_id_role_id_fkey",
           "localTableName": "user",
-          "referencedColumnNames": ["id"],
-          "referencedTableName": "role"
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "role",
+          "updateRule": "restrict",
+          "deleteRule": "restrict"
         }
       },
       "comment": null

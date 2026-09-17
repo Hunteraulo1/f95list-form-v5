@@ -1,33 +1,33 @@
 <script lang="ts">
-import { Funnel, X } from '@lucide/svelte';
-import { cn } from '$lib/utils/cn.js';
-import type { PageData } from './$types';
+	import { Funnel, X } from "@lucide/svelte";
+	import { cn } from "$lib/utils/cn.js";
+	import type { PageData } from "./$types";
 
-interface Props {
-  data: PageData;
-}
-const { data }: Props = $props();
+	interface Props {
+		data: PageData;
+	}
+	const { data }: Props = $props();
 
-let isOpen = $state(false);
+	let isOpen = $state(false);
 
-const gamesByDay = $derived.by(() => {
-  const groups = new Map<string, typeof data.games>();
-  for (const item of data.games) {
-    const key = new Date(item.date).toLocaleDateString('fr-FR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
-    const group = groups.get(key);
-    if (group) {
-      group.push(item);
-    } else {
-      groups.set(key, [item]);
-    }
-  }
-  return groups;
-});
+	const gamesByDay = $derived.by(() => {
+		const groups = new Map<string, typeof data.games>();
+		for (const item of data.games) {
+			const key = new Date(item.date).toLocaleDateString("fr-FR", {
+				weekday: "long",
+				day: "numeric",
+				month: "long",
+				year: "numeric",
+			});
+			const group = groups.get(key);
+			if (group) {
+				group.push(item);
+			} else {
+				groups.set(key, [item]);
+			}
+		}
+		return groups;
+	});
 </script>
 
 <section class="md:grid md:grid-cols-[1fr_20rem] w-full gap-4">
@@ -40,20 +40,20 @@ const gamesByDay = $derived.by(() => {
 				<div
 					class="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
 				>
-					{#each games as { id, editionName, image, name } (id)}
+					{#each games as { id, image, name } (id)}
 						<div
 							class="bg-base-200 h-60 rounded-lg overflow-hidden relative"
 						>
 							<img
 								src={image}
 								loading="lazy"
-								alt="image de {editionName} - {name}"
+								alt="image de {name}"
 								class="object-cover w-full h-full"
 							/>
 							<div
 								class="bg-base-200/30 h-full w-full p-4 absolute top-0"
 							>
-								{editionName} - {name}
+								{name}
 							</div>
 						</div>
 					{/each}

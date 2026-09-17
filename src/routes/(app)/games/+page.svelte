@@ -1,21 +1,21 @@
 <script lang="ts">
-import { Funnel, X } from '@lucide/svelte';
-import { cn } from '$lib/utils/cn.js';
-import type { PageData } from './$types';
+	import { Funnel, X } from "@lucide/svelte";
+	import { cn } from "$lib/utils/cn.js";
+	import type { PageData } from "./$types";
 
-interface Props {
-  data: PageData;
-}
-const { data }: Props = $props();
+	interface Props {
+		data: PageData;
+	}
+	const { data }: Props = $props();
 
-let isOpen = $state(false);
+	let isOpen = $state(false);
 </script>
 
 <section class="md:grid md:grid-cols-[1fr_20rem] w-full gap-4">
 	<div
 		class="w-full bg-base-100 flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 rounded-xl overflow-hidden"
 	>
-		{#each data.games as { id, translationId, editionName, image, name } (translationId)}
+		{#each data.games as { id, image, name } (id)}
 			<a href={`/games/${id}`}>
 				<div
 					class="bg-base-200 h-60 rounded-lg overflow-hidden relative"
@@ -23,16 +23,12 @@ let isOpen = $state(false);
 					<img
 						src={image}
 						loading="lazy"
-						alt="image de {editionName &&
-							`${editionName} - `} {name}"
+						alt="image de {name}"
 						class="object-cover w-full h-full"
 					/>
 					<div
 						class="bg-base-200/50 h-full w-full p-4 absolute top-0"
 					>
-						{#if editionName}
-							{editionName} -
-						{/if}
 						{name}
 					</div>
 				</div>
