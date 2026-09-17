@@ -1,5 +1,6 @@
 <script lang="ts">
 import { Funnel, X } from '@lucide/svelte';
+import { untrack } from 'svelte';
 import GamesFilterGroup from '$lib/components/ui/games/GamesFilterGroup.svelte';
 import Input from '$lib/components/ui/Input.svelte';
 import {
@@ -20,8 +21,10 @@ const { data }: Props = $props();
 
 let isOpen = $state(false);
 let query = $state('');
+//? Snapshot volontaire au montage : filterGroups reste mutable localement et ne doit
+//? pas se resynchroniser si `data` change (voir untrack).
 let filterGroups = $state<GamesFilterGroupState[]>(
-  createGamesFilterGroups(data.filterOptions),
+  untrack(() => createGamesFilterGroups(data.filterOptions)),
 );
 
 const filteredGames = $derived(

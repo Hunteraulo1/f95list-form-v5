@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import Button from "$lib/components/ui/Button.svelte";
-	import type { PageData } from "./$types.js";
+import { onMount } from 'svelte';
+import Button from '$lib/components/ui/Button.svelte';
+import type { PageData } from './$types.js';
 
-	interface Props {
-		data: PageData;
-	}
+interface Props {
+  data: PageData;
+}
 
-	const { data }: Props = $props();
+const { data }: Props = $props();
 
-	const getHostname = (link: string) => {
-		try {
-			return `${new URL(link).hostname}`;
-		} catch {
-			return "un site externe";
-		}
-	};
+const getHostname = (link: string) => {
+  try {
+    return `${new URL(link).hostname}`;
+  } catch {
+    return 'un site externe';
+  }
+};
 </script>
 
 <section

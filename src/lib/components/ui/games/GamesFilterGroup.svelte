@@ -1,27 +1,27 @@
 <script lang="ts">
-	import { Check, ChevronDown, Minus } from "@lucide/svelte";
-	import {
-		type GamesFilterGroupState,
-		gamesFilterGroupSummary,
-	} from "$lib/games/games-filter";
-	import { cn } from "$lib/utils/cn.js";
+import { Check, ChevronDown, Minus } from '@lucide/svelte';
+import {
+  type GamesFilterGroupState,
+  gamesFilterGroupSummary,
+} from '$lib/games/games-filter';
+import { cn } from '$lib/utils/cn.js';
 
-	interface Props {
-		group: GamesFilterGroupState;
-		onToggle: (value: string) => void;
-	}
+interface Props {
+  group: GamesFilterGroupState;
+  onToggle: (value: string) => void;
+}
 
-	const { group, onToggle }: Props = $props();
+const { group, onToggle }: Props = $props();
 
-	let details: HTMLDetailsElement | undefined = $state();
-	const summary = $derived(gamesFilterGroupSummary(group));
-	const hasSelection = $derived(group.values.some((v) => v.checked));
+let details: HTMLDetailsElement | undefined = $state();
+const summary = $derived(gamesFilterGroupSummary(group));
+const hasSelection = $derived(group.values.some((v) => v.checked));
 
-	const closeOnOutsideClick = (event: MouseEvent) => {
-		if (details && !details.contains(event.target as Node)) {
-			details.open = false;
-		}
-	};
+const closeOnOutsideClick = (event: MouseEvent) => {
+  if (details && !details.contains(event.target as Node)) {
+    details.open = false;
+  }
+};
 </script>
 
 <svelte:window onclick={closeOnOutsideClick} />
