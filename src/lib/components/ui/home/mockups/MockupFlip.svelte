@@ -96,11 +96,11 @@ $effect(() => {
 {#snippet mockupFace(
   slide: SlideMockup,
 )}
-  <div class="flex relative justify-center items-stretch w-full h-full">
+  <div class="relative flex h-full w-full items-stretch justify-center">
     <div
-      class="absolute rounded-2xl opacity-50 pointer-events-none inset-[12%_-6%_-12%] bg-[radial-gradient(circle_at_50%_50%,color-mix(in_oklab,var(--color-primary)_42%,transparent),transparent_70%)] blur-[20px]"
+      class="pointer-events-none absolute inset-[12%_-6%_-12%] rounded-2xl bg-[radial-gradient(circle_at_50%_50%,color-mix(in_oklab,var(--color-primary)_42%,transparent),transparent_70%)] opacity-50 blur-[20px]"
     ></div>
-    <div class="flex relative w-full max-w-2xl h-full antialiased z-1">
+    <div class="relative z-1 flex h-full w-full max-w-2xl antialiased">
       {#if slide.mockup === 'sheet'}
         <MockupSheet />
       {:else if slide.mockup === 'discord'}
@@ -113,15 +113,15 @@ $effect(() => {
 {/snippet}
 
 <div
-  class="relative w-full h-92 md:h-full perspective-origin-[50%_50%] perspective-midrange"
+  class="relative h-92 w-full perspective-midrange perspective-origin-[50%_50%] md:h-full"
 >
   <div
-    class="w-full h-full origin-[50%_50%] animate-float-sheet transform-3d"
+    class="h-full w-full origin-[50%_50%] animate-float-sheet transform-3d"
     class:paused={isSpinning}
   >
     <div
       bind:this={flipperEl}
-      class="relative w-full h-full origin-[50%_50%] transform-[rotateY(0deg)] will-change-transform transform-3d"
+      class="relative h-full w-full origin-[50%_50%] transform-[rotateY(0deg)] will-change-transform transform-3d"
     >
       <div
         class="{faceBaseClass} transform-[rotateY(0deg)_translateZ(1px)]"

@@ -49,29 +49,29 @@ const max = $derived(
 <section class={cn('flex flex-col gap-4', classes)}>
   <h3 class="text-xl font-bold">{title}</h3>
   <div
-    class="grid grid-cols-1 gap-4 w-full sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 min-h-60"
+    class="grid min-h-60 w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
   >
     {#each games.slice(0, max) as { name, image }}
       <article
-        class="relative w-full h-60 rounded-xl shadow transition-all cursor-pointer bg-base-300 hover:-rotate-1 hover:md:-rotate-2 hover:shadow-md"
+        class="relative h-60 w-full cursor-pointer rounded-xl bg-base-300 shadow transition-all hover:-rotate-1 hover:shadow-md hover:md:-rotate-2"
       >
         <div
-          class="flex relative z-10 flex-col justify-end p-4 h-full bg-base-300/20 hover:bg-base-300/0"
+          class="relative z-10 flex h-full flex-col justify-end bg-base-300/20 p-4 hover:bg-base-300/0"
         >
-          <h4 class="font-bold text-center text-md">
+          <h4 class="text-md text-center font-bold">
             {name}
           </h4>
         </div>
-        <div class="absolute top-0 w-full h-full">
+        <div class="absolute top-0 h-full w-full">
           {#if image}
             <img
               src={image}
               alt={`image de ${name}`}
-              class="object-cover p-2 w-full h-full rounded-2xl opacity-100"
+              class="h-full w-full rounded-2xl object-cover p-2 opacity-100"
             >
           {:else}
             <div
-              class="flex justify-center items-center w-full h-full text-sm text-base-content/20"
+              class="flex h-full w-full items-center justify-center text-sm text-base-content/20"
             >
               Aucune image
             </div>
@@ -82,15 +82,15 @@ const max = $derived(
     {#if aboutLink}
       <a href={aboutLink}>
         <article
-          class="relative w-full h-60 rounded-xl shadow transition-all cursor-pointer bg-base-300 hover:-rotate-1 hover:md:-rotate-2 hover:shadow-md"
+          class="relative h-60 w-full cursor-pointer rounded-xl bg-base-300 shadow transition-all hover:-rotate-1 hover:shadow-md hover:md:-rotate-2"
         >
-          <div class="absolute top-0 w-full h-full">
+          <div class="absolute top-0 h-full w-full">
             <div
-              class="flex flex-col gap-2 justify-center items-center w-full h-full text-sm font-bold text-base-content/20"
+              class="flex h-full w-full flex-col items-center justify-center gap-2 text-sm font-bold text-base-content/20"
             >
               En voir plus
 
-              <div class="p-2 rounded-full bg-base-200">
+              <div class="rounded-full bg-base-200 p-2">
                 <ArrowRight />
               </div>
             </div>

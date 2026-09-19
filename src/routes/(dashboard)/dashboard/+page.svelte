@@ -37,7 +37,7 @@ const translationStatusLabel = (status: TranslationStatus) => {
   <section class="grid grid-cols-2 gap-4">
     <a
       href="/dashboard/translates"
-      class="flex relative justify-between items-center p-4 rounded-xl bg-base-100"
+      class="relative flex items-center justify-between rounded-xl bg-base-100 p-4"
     >
       <div>
         <h2 class="font-bold">Mes traduction plus à jour</h2>
@@ -54,7 +54,7 @@ const translationStatusLabel = (status: TranslationStatus) => {
     </a>
     <a
       href="/dashboard/translates"
-      class="flex relative justify-between items-center p-4 rounded-xl bg-base-100"
+      class="relative flex items-center justify-between rounded-xl bg-base-100 p-4"
     >
       <div>
         <h2 class="font-bold">Mes message non lu</h2>
@@ -70,7 +70,7 @@ const translationStatusLabel = (status: TranslationStatus) => {
     </a>
   </section>
 
-  <section class="flex flex-col gap-2 p-4 rounded-xl bg-base-100">
+  <section class="flex flex-col gap-2 rounded-xl bg-base-100 p-4">
     <h2 class="font-bold">Rechercher un jeu</h2>
     <div class="flex gap-2">
       <Input
@@ -85,23 +85,23 @@ const translationStatusLabel = (status: TranslationStatus) => {
       <Button label="Ajouter un jeu" classes="w-50" inline />
     </div>
     {#if query.trim()}
-      <div class="flex flex-col gap-1 mt-2">
+      <div class="mt-2 flex flex-col gap-1">
         {#each results as game (game.id)}
           <a
             href={`/games/${game.id}`}
-            class="flex gap-2 justify-between items-center px-3 py-2 rounded-lg hover:bg-base-200"
+            class="flex items-center justify-between gap-2 rounded-lg px-3 py-2 hover:bg-base-200"
           >
-            <span class="flex gap-2 items-center min-w-0">
+            <span class="flex min-w-0 items-center gap-2">
               <img
                 src={game.image}
                 loading="lazy"
                 alt={game.name}
-                class="object-cover rounded-lg size-10 shrink-0 bg-base-200"
+                class="size-10 shrink-0 rounded-lg bg-base-200 object-cover"
               >
               <span class="truncate">{game.name}</span>
             </span>
             <span
-              class="px-2 py-1 text-xs font-bold uppercase rounded-lg shrink-0"
+              class="shrink-0 rounded-lg px-2 py-1 text-xs font-bold uppercase"
               class:bg-success={game.translationStatus === 'up_to_date'}
               class:text-success-content={game.translationStatus === 'up_to_date'}
               class:bg-warning={game.translationStatus === 'outdated'}

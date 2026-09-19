@@ -22,11 +22,11 @@ const lineClass =
 
 <MockupShell badge="Wiki F95 France">
   <div
-    class="grid overflow-hidden gap-2 h-full min-h-0 rounded-lg border grid-cols-[6.5rem_1fr] border-base-content/12"
+    class="grid h-full min-h-0 grid-cols-[6.5rem_1fr] gap-2 overflow-hidden rounded-lg border border-base-content/12"
   >
-    <div class="flex flex-col gap-1.5 p-2 bg-base-200/60">
+    <div class="flex flex-col gap-1.5 bg-base-200/60 p-2">
       <div
-        class="flex gap-1 items-center px-1 font-semibold text-[0.62rem] text-base-content/80"
+        class="flex items-center gap-1 px-1 text-[0.62rem] font-semibold text-base-content/80"
       >
         <BookOpen class="size-3" aria-hidden="true" />
         Sommaire
@@ -42,14 +42,14 @@ const lineClass =
       {/each}
     </div>
     <div class="flex flex-col gap-3 p-2.5">
-      <div class="flex gap-2 items-center pb-2 border-b border-base-content/10">
+      <div class="flex items-center gap-2 border-b border-base-content/10 pb-2">
         <FileText class="size-4 text-primary" aria-hidden="true" />
-        <div class="w-32 h-3 rounded-sm bg-base-content/22"></div>
+        <div class="h-3 w-32 rounded-sm bg-base-content/22"></div>
       </div>
       {#each sections as section, index (index)}
         <div class="{lineClass} {section.width} {section.delay}"></div>
       {/each}
-      <div class="grid grid-cols-2 gap-2 pt-1 mt-auto">
+      <div class="mt-auto grid grid-cols-2 gap-2 pt-1">
         <div
           class="h-8 rounded-md border border-base-content/12 bg-base-200/50"
         ></div>

@@ -107,7 +107,7 @@ const filteredItems = $derived.by(() => {
 </script>
 
 <div
-  class="flex absolute left-0 top-16 gap-2 justify-center items-center p-1 w-full bg-base-300"
+  class="absolute top-16 left-0 flex w-full items-center justify-center gap-2 bg-base-300 p-1"
 >
   {#if editMode}
     Si vous souhaiter arrêter le mode édition de profil. C'est juste ici
@@ -123,9 +123,9 @@ const filteredItems = $derived.by(() => {
 </div>
 
 <div class="flex gap-2">
-  <section class="flex flex-col items-center p-4 w-80 max-w-full">
+  <section class="flex w-80 max-w-full flex-col items-center p-4">
     <div
-      class="flex overflow-hidden relative justify-center items-center p-2 rounded-full bg-base-300 size-48"
+      class="relative flex size-48 items-center justify-center overflow-hidden rounded-full bg-base-300 p-2"
     >
       {#if user.image}
         <img src={user.image} alt="Profil de {user.name}" class="rounded-full">
@@ -136,7 +136,7 @@ const filteredItems = $derived.by(() => {
       {#if editMode}
         <button
           type="button"
-          class="absolute w-full h-full rounded-lg opacity-0 cursor-pointer hover:opacity-50 bg-neutral/50"
+          class="absolute h-full w-full cursor-pointer rounded-lg bg-neutral/50 opacity-0 hover:opacity-50"
         >
           Changer l'image
         </button>
@@ -146,16 +146,16 @@ const filteredItems = $derived.by(() => {
     <h2 class="mt-4 font-bold">{user.name}</h2>
     <h3>{user.rank}</h3>
   </section>
-  <section class="flex flex-col gap-4 w-full min-h-80">
+  <section class="flex min-h-80 w-full flex-col gap-4">
     {#if user.banner || editMode}
       <div
-        class="flex overflow-hidden relative justify-center items-center h-48 rounded-xl bg-base-300"
+        class="relative flex h-48 items-center justify-center overflow-hidden rounded-xl bg-base-300"
       >
         {#if user.banner}
           <img
             src={user.banner}
             alt="Bannière de profil de {user.name}"
-            class="object-cover rounded-full"
+            class="rounded-full object-cover"
           >
         {:else}
           <ImageOff size="64" opacity=".2" />
@@ -164,7 +164,7 @@ const filteredItems = $derived.by(() => {
         {#if editMode}
           <button
             type="button"
-            class="absolute right-0 bottom-0 px-5 py-1 rounded-tl-lg cursor-pointer bg-neutral/50"
+            class="absolute right-0 bottom-0 cursor-pointer rounded-tl-lg bg-neutral/50 px-5 py-1"
           >
             Changer la bannière
           </button>
@@ -174,7 +174,7 @@ const filteredItems = $derived.by(() => {
 
     {#if user.description || editMode}
       <div
-        class="flex overflow-hidden relative items-center p-6 rounded-xl bg-base-300 min-h-48"
+        class="relative flex min-h-48 items-center overflow-hidden rounded-xl bg-base-300 p-6"
       >
         {#if user.description}
           <p class="self-start">
@@ -187,7 +187,7 @@ const filteredItems = $derived.by(() => {
         {#if editMode}
           <button
             type="button"
-            class="absolute right-0 bottom-0 px-5 py-1 rounded-tl-lg cursor-pointer bg-neutral/50"
+            class="absolute right-0 bottom-0 cursor-pointer rounded-tl-lg bg-neutral/50 px-5 py-1"
           >
             Changer la description
           </button>
@@ -196,10 +196,10 @@ const filteredItems = $derived.by(() => {
     {/if}
 
     {#if items.length > 0}
-      <div class="flex relative flex-col p-2 rounded-xl">
-        <h3 class="py-4 text-xl font-bold text-center">Mes traductions:</h3>
+      <div class="relative flex flex-col rounded-xl p-2">
+        <h3 class="py-4 text-center text-xl font-bold">Mes traductions:</h3>
 
-        <div class="flex justify-end my-4">
+        <div class="my-4 flex justify-end">
           <Input
             placeholder="Rechercher un nom..."
             value={search}
@@ -216,7 +216,7 @@ const filteredItems = $derived.by(() => {
                   class={cn('select-none', key && 'cursor-pointer')}
                   onclick={() => sortBy(key)}
                 >
-                  <span class="flex gap-2 justify-center items-center">
+                  <span class="flex items-center justify-center gap-2">
                     {label}
                     {#if key && sortKey === key}
                       {#if sortAsc}
@@ -233,7 +233,7 @@ const filteredItems = $derived.by(() => {
           <tbody>
             {#each filteredItems as item (item.id)}
               <tr
-                class="relative border-collapse even:bg-base-300 odd:bg-base-100"
+                class="relative border-collapse odd:bg-base-100 even:bg-base-300"
               >
                 <td class="px-4 py-2 font-bold">{item.name}</td>
                 <td class="px-4 py-2 text-center">{item.version}</td>
@@ -242,7 +242,7 @@ const filteredItems = $derived.by(() => {
                 >
                   {item.tversion}
                 </td>
-                <td class="flex gap-2 justify-center px-4 py-3">
+                <td class="flex justify-center gap-2 px-4 py-3">
                   <Button label="Accèder" size="tiny" />
                 </td>
               </tr>

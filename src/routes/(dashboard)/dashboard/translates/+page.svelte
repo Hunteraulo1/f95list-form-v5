@@ -103,7 +103,7 @@ const filteredItems = $derived.by(() => {
 });
 </script>
 
-<div class="flex justify-end my-4">
+<div class="my-4 flex justify-end">
   <Input
     placeholder="Rechercher un nom..."
     value={search}
@@ -120,7 +120,7 @@ const filteredItems = $derived.by(() => {
           class={cn('select-none', key && 'cursor-pointer')}
           onclick={() => sortBy(key)}
         >
-          <span class="flex gap-2 justify-center items-center">
+          <span class="flex items-center justify-center gap-2">
             {label}
             {#if key && sortKey === key}
               {#if sortAsc}
@@ -138,16 +138,16 @@ const filteredItems = $derived.by(() => {
     {#each filteredItems as item (item.id)}
       <tr
         class={cn(
-  'relative border-collapse even:bg-base-300 odd:bg-base-100',
+  'relative border-collapse odd:bg-base-100 even:bg-base-300',
   item.version !== item.tversion &&
-    'even:bg-yellow-500/60! odd:bg-yellow-500/70!',
-  item.abandoned && 'even:bg-red-600/30! odd:bg-red-600/40!',
+    'odd:bg-yellow-500/70! even:bg-yellow-500/60!',
+  item.abandoned && 'odd:bg-red-600/40! even:bg-red-600/30!',
 )}
       >
         <td class="px-4 py-2 font-bold">{item.name}</td>
         <td class="px-4 py-2 text-center">{item.version}</td>
         <td class="px-4 py-2 text-center">{item.tversion}</td>
-        <td class="flex gap-2 justify-center px-4 py-3">
+        <td class="flex justify-center gap-2 px-4 py-3">
           <Button label="Accèder" size="tiny" />
           <Button
             label={item.abandoned ? 'Reprendre' : 'Abandoner'}

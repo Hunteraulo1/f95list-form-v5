@@ -18,16 +18,16 @@ interface Props {
 const { data }: Props = $props();
 </script>
 
-<div class="overflow-hidden relative w-vw max-w-lvw min-h-150">
+<div class="w-vw relative min-h-150 max-w-lvw overflow-hidden">
   <div
-    class="absolute bg-repeat -inset-1/1 -rotate-16 bg-size-[16rem_auto]"
+    class="absolute -inset-1/1 -rotate-16 bg-size-[16rem_auto] bg-repeat"
     style="background-image: url({isDark ? homeBgDark : homeBgLight});"
     class:opacity-2={isDark}
     class:opacity-4={!isDark}
   ></div>
 
   <div
-    class="absolute inset-x-0 bottom-0 h-40 to-transparent bg-linear-to-t from-base-200"
+    class="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-base-200 to-transparent"
   ></div>
   <div class="relative h-full">
     <Header isHome />

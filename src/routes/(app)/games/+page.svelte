@@ -49,21 +49,21 @@ const resetFilters = () => {
 };
 </script>
 
-<section class="gap-4 w-full md:grid md:grid-cols-[1fr_20rem]">
+<section class="w-full gap-4 md:grid md:grid-cols-[1fr_20rem]">
   <div
-    class="flex overflow-hidden flex-col gap-4 p-4 w-full rounded-xl bg-base-100 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+    class="flex w-full flex-col gap-4 overflow-hidden rounded-xl bg-base-100 p-4 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
   >
     {#each filteredGames as { id, image, name } (id)}
       <a href={`/games/${id}`}>
-        <div class="overflow-hidden relative h-60 rounded-lg bg-base-200">
+        <div class="relative h-60 overflow-hidden rounded-lg bg-base-200">
           <img
             src={image}
             loading="lazy"
             alt={name}
-            class="object-cover w-full h-full"
+            class="h-full w-full object-cover"
           >
           <div
-            class="absolute top-0 p-4 w-full h-full font-bold bg-base-300/20 hover:bg-base-300/0"
+            class="absolute top-0 h-full w-full bg-base-300/20 p-4 font-bold hover:bg-base-300/0"
           >
             {name}
           </div>
@@ -77,16 +77,16 @@ const resetFilters = () => {
   </div>
   <div
     class={cn(
-  'relative right-2 top-24 transition-all not-md:fixed md:w-full md:top-0 not-md:w-12',
-  isOpen && 'p-4 max-w-full w-75!',
+  'relative top-24 right-2 transition-all not-md:fixed not-md:w-12 md:top-0 md:w-full',
+  isOpen && 'w-75! max-w-full p-4',
 )}
   >
     <div
-      class="flex flex-col items-end p-1 w-full h-full rounded-xl bg-base-300 md:w-full md:sticky md:top-8 md:h-[calc(100vh-4rem)] md:p-4"
+      class="flex h-full w-full flex-col items-end rounded-xl bg-base-300 p-1 md:sticky md:top-8 md:h-[calc(100vh-4rem)] md:w-full md:p-4"
     >
       <button
         type="button"
-        class="p-2 rounded-lg md:hidden hover:bg-base-200"
+        class="rounded-lg p-2 hover:bg-base-200 md:hidden"
         onclick={() => {
   isOpen = !isOpen;
 }}
@@ -99,7 +99,7 @@ const resetFilters = () => {
       </button>
 
       <div
-        class="flex flex-col gap-3 w-full not-md:p-4"
+        class="flex w-full flex-col gap-3 not-md:p-4"
         class:not-md:hidden={!isOpen}
       >
         <Input
@@ -110,12 +110,12 @@ const resetFilters = () => {
   query = e.currentTarget.value;
 }}
         />
-        <div class="flex gap-2 justify-between items-center">
+        <div class="flex items-center justify-between gap-2">
           <span class="text-sm font-bold">Filtres</span>
           {#if hasFilters}
             <button
               type="button"
-              class="text-xs underline opacity-70 cursor-pointer hover:opacity-100"
+              class="cursor-pointer text-xs underline opacity-70 hover:opacity-100"
               onclick={resetFilters}
             >
               Réinitialiser

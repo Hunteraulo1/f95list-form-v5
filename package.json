@@ -13,6 +13,7 @@
     "check": "svelte-kit sync && svelte-check --tsgo",
     "lint": "biome check .",
     "format": "biome format --write .",
+    "sort-classes": "node scripts/sort-classes.mjs",
     "db:migration:create": "mikro-orm migration:create",
     "db:migration:up": "mikro-orm migration:up",
     "db:schema:update": "mikro-orm schema:update --run",
@@ -83,7 +84,11 @@
     }
   },
   "lint-staged": {
-    "*.{js,ts,svelte}": [
+    "*.svelte": [
+      "biome check --write",
+      "node scripts/sort-classes.mjs"
+    ],
+    "*.{js,ts}": [
       "biome check --write"
     ],
     "*.{json,md,yml,yaml}": [

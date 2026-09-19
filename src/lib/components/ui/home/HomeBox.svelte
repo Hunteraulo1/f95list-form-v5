@@ -25,11 +25,11 @@ const { children, title, description, buttons, classes, masterClasses }: Props =
 
 <div
   class={cn(
-  'relative z-0 px-8 py-4 w-full h-full rounded-xl bg-base-300 min-h-60 lg:grid lg:grid-cols-2',
+  'relative z-0 h-full min-h-60 w-full rounded-xl bg-base-300 px-8 py-4 lg:grid lg:grid-cols-2',
   masterClasses,
 )}
 >
-  <div class="flex flex-col gap-4 justify-center p-8 h-full">
+  <div class="flex h-full flex-col justify-center gap-4 p-8">
     <h4 class="text-4xl font-bold">{title}</h4>
     <p class="text-xl">{description}</p>
     <div class="flex gap-2">
@@ -40,7 +40,7 @@ const { children, title, description, buttons, classes, masterClasses }: Props =
       {/each}
     </div>
   </div>
-  <div class={cn('w-full h-full', classes)}>
+  <div class={cn('h-full w-full', classes)}>
     {@render children?.()}
   </div>
 </div>

@@ -40,7 +40,7 @@ let isOpen = $state(false);
 </script>
 
 <header
-  class="flex justify-between items-center p-5 h-16 text-base-content"
+  class="flex h-16 items-center justify-between p-5 text-base-content"
   class:bg-base-100={!isHome}
   class:h-24={isHome}
   class:p-8={isHome}
@@ -49,10 +49,10 @@ let isOpen = $state(false);
     onclick={() => (isOpen = true)}
     class={cn(
   isOpen && 'hidden',
-  'p-1 rounded-lg cursor-pointer md:hidden dark:hover:bg-base-300 hover:bg-base-100 size-8',
+  'size-8 cursor-pointer rounded-lg p-1 hover:bg-base-100 md:hidden dark:hover:bg-base-300',
 )}
   />
-  <a href="/" class="h-1/2 sm:h-full aspect-8/1">
+  <a href="/" class="aspect-8/1 h-1/2 sm:h-full">
     {#if isDark}
       <img
         src={bannerDark}
@@ -66,16 +66,16 @@ let isOpen = $state(false);
   </a>
 
   <ul
-    class="flex top-0 left-0 z-50 gap-4 px-16 font-bold not-md:flex-col md:gap-8 md:w-full not-md:fixed not-md:bg-base-200 w-75 not-md:h-screen not-md:pt-20"
+    class="top-0 left-0 z-50 flex w-75 gap-4 px-16 font-bold not-md:fixed not-md:h-screen not-md:flex-col not-md:bg-base-200 not-md:pt-20 md:w-full md:gap-8"
     class:not-md:hidden={!isOpen}
   >
     <X
-      class="absolute top-8 left-8 p-1 rounded-lg cursor-pointer md:hidden hover:bg-base-300 size-8"
+      class="absolute top-8 left-8 size-8 cursor-pointer rounded-lg p-1 hover:bg-base-300 md:hidden"
       onclick={() => {
   isOpen = false;
 }}
     />
-    <div class="flex mb-4 w-full md:hidden">
+    <div class="mb-4 flex w-full md:hidden">
       {#if isDark}
         <img src={bannerDark} alt="bannière de f95 france">
       {:else}
@@ -93,7 +93,7 @@ let isOpen = $state(false);
     type="button"
     onclick={toggleTheme}
     aria-label="Basculer le thème"
-    class="p-2 rounded-field dark:hover:bg-base-300 hover:bg-base-100"
+    class="rounded-field p-2 hover:bg-base-100 dark:hover:bg-base-300"
   >
     {#if isDark}
       <Sun size={20} />

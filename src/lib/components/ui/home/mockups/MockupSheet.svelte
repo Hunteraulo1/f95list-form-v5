@@ -64,7 +64,7 @@ const sheetGridClass =
 </script>
 
 <MockupShell badge="Liste des traductions">
-  <div class="flex overflow-hidden flex-col gap-2 h-full min-h-0">
+  <div class="flex h-full min-h-0 flex-col gap-2 overflow-hidden">
     <div
       class="{sheetGridClass} shrink-0 rounded-lg bg-primary/16 p-2 text-xs font-semibold text-base-content sm:text-sm"
     >

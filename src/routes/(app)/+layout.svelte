@@ -10,6 +10,6 @@ let { children }: Props = $props();
 </script>
 
 <Header />
-<div class="px-4 py-8 mx-auto max-w-7xl md:px-8 lg:px-16 md:py-16 ax-w-7xl">
+<div class="ax-w-7xl mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-16 lg:px-16">
   {@render children()}
 </div>

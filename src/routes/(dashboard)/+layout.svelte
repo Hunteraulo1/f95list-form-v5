@@ -11,7 +11,7 @@ const { children }: Props = $props();
 
 <div>
   <Header />
-  <div class="flex gap-8 p-8 mx-auto w-full max-w-7xl h-full">
+  <div class="mx-auto flex h-full w-full max-w-7xl gap-8 p-8">
     {@render children()}
   </div>
 </div>

@@ -16,7 +16,7 @@ let { children }: Props = $props();
 </svelte:head>
 
 <QueryProvider>
-  <main class="pb-16 h-full min-h-screen bg-base-200 font-[Fustat]">
+  <main class="h-full min-h-screen bg-base-200 pb-16 font-[Fustat]">
     {@render children()}
   </main>
 </QueryProvider>

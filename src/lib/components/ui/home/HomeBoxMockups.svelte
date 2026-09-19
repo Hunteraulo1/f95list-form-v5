@@ -89,16 +89,16 @@ const slides: HeroSlide[] = [
   masterClasses="min-h-120 overflow-hidden"
 >
   <div
-    class="p-8 w-full h-full max-lg:absolute lg:relative max-lg:top-0 max-lg:left-0 max-lg:opacity-20 max-lg:-z-1"
+    class="h-full w-full p-8 max-lg:absolute max-lg:top-0 max-lg:left-0 max-lg:-z-1 max-lg:opacity-20 lg:relative"
   >
     <MockupFlip {slides} {activeSlide}></MockupFlip>
   </div>
-  <div class="flex absolute left-0 bottom-8 gap-2 justify-center w-full">
+  <div class="absolute bottom-8 left-0 flex w-full justify-center gap-2">
     {#each slides as _, index}
       <button
         type="button"
         aria-label="slide {index}"
-        class="rounded-full border bg-base-300 border-bg-base-200 size-4 hover:bg-primary/50"
+        class="border-bg-base-200 size-4 rounded-full border bg-base-300 hover:bg-primary/50"
         class:bg-primary={index === activeSlide}
         onclick={() => (activeSlide = index)}
       ></button>

@@ -25,14 +25,14 @@ const getHostname = (link: string) => {
     style="background-image: url({data.game.image});"
   >
     <div
-      class="flex flex-col justify-center items-center p-4 w-full h-full transition-all select-none hover:opacity-0 bg-base-300/40"
+      class="flex flex-col justify-center items-center p-4 w-full h-full transition-all select-none bg-base-300/40 hover:opacity-0"
     >
       {data.game.name}
       <span class="text-sm">{data.game.description}</span>
     </div>
   </div>
   <div
-    class="flex flex-col col-span-2 gap-2 p-4 max-h-full rounded-xl bg-base-100 min-h-60"
+    class="flex flex-col col-span-2 gap-2 p-4 max-h-full rounded-xl min-h-60 bg-base-100"
   >
     <div class="overflow-y-scroll">
       <div class="font-bold">Tags:</div>
@@ -74,7 +74,7 @@ const getHostname = (link: string) => {
         <div class="flex overflow-x-scroll gap-2 px-4 pb-4 w-full">
           {#each edition.gameTranslations as translation}
             <div
-              class="flex flex-col gap-4 p-2 w-60 rounded-xl bg-base-300 min-w-60"
+              class="flex flex-col gap-4 p-2 w-60 rounded-xl min-w-60 bg-base-300"
             >
               <span>Version: {translation.version}</span>
 
@@ -97,22 +97,18 @@ const getHostname = (link: string) => {
 
               <span>Qualité: {translation.quality}</span>
               <span>Type: {translation.type}</span>
+
               {#if translation.files[0].internalLink}
-                {@const link = translation.files[0].internalLink}
-                <Button
-                  label="Télécharger depuis F95France"
-                  onclick={() => open(link, 'blank_')}
-                  size="big"
-                />
-                {link}
+                {@render downloadButton(
+  translation.files[0].internalLink,
+  'Télécharger depuis F95France',
+)}
               {/if}
               {#if translation.files[0].externalLink}
-                {@const link = translation.files[0].externalLink}
-                <Button
-                  label="Télécharger depuis {getHostname(link)}"
-                  onclick={() => open(link, 'blank_')}
-                  size="big"
-                />
+                {@render downloadButton(
+  translation.files[0].externalLink,
+  `Télécharger depuis ${getHostname(translation.files[0].externalLink)}`,
+)}
               {/if}
             </div>
           {/each}
@@ -121,3 +117,10 @@ const getHostname = (link: string) => {
     {/each}
   </div>
 </section>
+
+{#snippet downloadButton(
+  link: string,
+  label: string,
+)}
+  <Button {label} onclick={() => open(link, 'blank_')} size="big" />
+{/snippet}

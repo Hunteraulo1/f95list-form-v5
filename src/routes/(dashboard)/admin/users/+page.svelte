@@ -84,10 +84,10 @@ const filteredItems = $derived.by(() => {
 });
 </script>
 
-<div class="flex relative flex-col p-2 rounded-xl">
-  <h3 class="py-4 text-xl font-bold text-center">Utilisateurs:</h3>
+<div class="relative flex flex-col rounded-xl p-2">
+  <h3 class="py-4 text-center text-xl font-bold">Utilisateurs:</h3>
 
-  <div class="flex justify-end my-4">
+  <div class="my-4 flex justify-end">
     <Input
       placeholder="Rechercher un nom..."
       value={search}
@@ -104,7 +104,7 @@ const filteredItems = $derived.by(() => {
             class={cn('select-none', key && 'cursor-pointer')}
             onclick={() => sortBy(key)}
           >
-            <span class="flex gap-2 justify-center items-center">
+            <span class="flex items-center justify-center gap-2">
               {label}
               {#if key && sortKey === key}
                 {#if sortAsc}
@@ -120,13 +120,13 @@ const filteredItems = $derived.by(() => {
     </thead>
     <tbody>
       {#each filteredItems as item (item.id)}
-        <tr class="relative border-collapse even:bg-base-300 odd:bg-base-100">
-          <td class="py-2 px-4 font-bold">{item.name}</td>
-          <td class="py-2 px-4 text-center">{item.rank}</td>
-          <td class="py-2 px-4 text-center">
+        <tr class="relative border-collapse odd:bg-base-100 even:bg-base-300">
+          <td class="px-4 py-2 font-bold">{item.name}</td>
+          <td class="px-4 py-2 text-center">{item.rank}</td>
+          <td class="px-4 py-2 text-center">
             {new Date(item.createdAt).toLocaleString('fr')}
           </td>
-          <td class="flex gap-2 justify-center py-3 px-4">
+          <td class="flex justify-center gap-2 px-4 py-3">
             <Button label="Modifier" size="tiny" />
           </td>
         </tr>
