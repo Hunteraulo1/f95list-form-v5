@@ -91,7 +91,7 @@ const gamesByDay = $derived.by(() => {
 									class="object-cover w-full h-full"
 								/>
 								<div
-									class="bg-base-200/20 hover:bg-base-200/10 h-full w-full p-4 absolute top-0 flex flex-col gap-2"
+									class="bg-base-300/20 hover:bg-base-300/0 h-full w-full p-4 absolute top-0 flex flex-col gap-2 font-bold"
 								>
 									<span
 										class="w-fit rounded-xl px-2 text-xs font-black uppercase"
@@ -134,7 +134,7 @@ const gamesByDay = $derived.by(() => {
 			</button>
 
 			<div
-				class="w-full flex flex-col gap-3 not-md:p-4"
+				class="w-full flex-col gap-3 not-md:p-4 flex"
 				class:not-md:hidden={!isOpen}
 			>
 				<Input

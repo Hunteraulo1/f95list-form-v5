@@ -53,29 +53,29 @@ const max = $derived(
 <section class={cn("flex flex-col gap-4", classes)}>
 	<h3 class="text-xl font-bold">{title}</h3>
 	<div
-		class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 w-full min-h-60 gap-4"
+		class="grid grid-cols-1 gap-4 w-full sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 min-h-60"
 	>
 		{#each games.slice(0, max) as { name, image }}
 			<article
-				class="bg-base-300 w-full h-60 rounded-xl relative hover:-rotate-1 hover:md:-rotate-2 transition-all cursor-pointer shadow hover:shadow-md"
+				class="relative w-full h-60 rounded-xl shadow transition-all cursor-pointer bg-base-300 hover:-rotate-1 hover:md:-rotate-2 hover:shadow-md"
 			>
 				<div
-					class="bg-base-200/20 hover:bg-base-200/10 flex flex-col justify-end h-full p-4 z-10 relative"
+					class="flex relative z-10 flex-col justify-end p-4 h-full bg-base-300/20 hover:bg-base-300/0"
 				>
-					<h4 class="font-bold text-md text-center">
+					<h4 class="font-bold text-center text-md">
 						{name}
 					</h4>
 				</div>
-				<div class="absolute top-0 h-full w-full">
+				<div class="absolute top-0 w-full h-full">
 					{#if image}
 						<img
 							src={image}
 							alt={`image de ${name}`}
-							class="h-full w-full object-cover p-2 rounded-2xl opacity-100"
+							class="object-cover p-2 w-full h-full rounded-2xl opacity-100"
 						/>
 					{:else}
 						<div
-							class="h-full w-full flex justify-center items-center text-base-content/20 text-sm"
+							class="flex justify-center items-center w-full h-full text-sm text-base-content/20"
 						>
 							Aucune image
 						</div>
@@ -86,15 +86,15 @@ const max = $derived(
 		{#if aboutLink}
 			<a href={aboutLink}>
 				<article
-					class="bg-base-300 w-full h-60 rounded-xl relative hover:-rotate-1 hover:md:-rotate-2 transition-all cursor-pointer shadow hover:shadow-md"
+					class="relative w-full h-60 rounded-xl shadow transition-all cursor-pointer bg-base-300 hover:-rotate-1 hover:md:-rotate-2 hover:shadow-md"
 				>
-					<div class="absolute top-0 h-full w-full">
+					<div class="absolute top-0 w-full h-full">
 						<div
-							class="h-full w-full flex flex-col justify-center items-center text-base-content/20 text-sm gap-2 font-bold"
+							class="flex flex-col gap-2 justify-center items-center w-full h-full text-sm font-bold text-base-content/20"
 						>
 							En voir plus
 
-							<div class="bg-base-200 rounded-full p-2">
+							<div class="p-2 rounded-full bg-base-200">
 								<ArrowRight />
 							</div>
 						</div>

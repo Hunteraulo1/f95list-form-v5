@@ -26,7 +26,7 @@ const getHostname = (link: string) => {
 		style="background-image: url({data.game.image});"
 	>
 		<div
-			class="hover:opacity-0 bg-black/75 h-full w-full flex flex-col justify-center items-center p-4 transition-all select-none"
+			class="hover:opacity-0 bg-base-300/40 h-full w-full flex flex-col justify-center items-center p-4 transition-all select-none"
 		>
 			{data.game.name}
 			<span class="text-sm">{data.game.description}</span>
@@ -57,8 +57,13 @@ const getHostname = (link: string) => {
 </section>
 
 <section>
-	<div class="w-full bg-base-100 flex flex-col rounded-xl p-4 gap-4">
+	<div class="w-full bg-base-100 flex flex-col rounded-xl p-4 gap-4 relative">
 		<span class="text-center font-bold">Traductions</span>
+		<Button
+			label="Ajouter une traduction"
+			size="small"
+			classes="w-45 absolute right-4"
+		/>
 		{#each data.game.gameEditions as edition}
 			<div class="w-full bg-base-200 flex flex-col rounded-xl gap-2">
 				<span class="p-4">

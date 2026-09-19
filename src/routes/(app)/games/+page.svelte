@@ -65,7 +65,7 @@ const resetFilters = () => {
 						class="object-cover w-full h-full"
 					/>
 					<div
-						class="bg-base-200/20 hover:bg-base-200/10 h-full w-full p-4 absolute top-0"
+						class="bg-base-300/20 hover:bg-base-300/0 h-full w-full p-4 absolute top-0 font-bold"
 					>
 						{name}
 					</div>

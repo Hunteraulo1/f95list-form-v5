@@ -21,12 +21,12 @@ const {
 
 const inlineStyle =
   'border-base-content text-base-content hover:border-transparent';
-const classicStyle = 'bg-neutral-content';
+const classicStyle = 'dark:bg-neutral-content bg-primary';
 </script>
 
 <button
 	class={cn(
-		"rounded-xl text-primary shadow-mini border-2 border-transparent inline-flex items-center justify-center text-sm font-bold transition-all hover:bg-primary hover:text-neutral-content cursor-pointer",
+		"rounded-xl dark:text-primary text-neutral-content shadow-mini border-2 border-transparent inline-flex items-center justify-center text-sm font-bold transition-all hover:bg-primary hover:text-neutral-content cursor-pointer",
 		inline ? inlineStyle : classicStyle,
 		size === "tiny" && "h-5 min-h-5 px-2 text-[.75rem]",
 		size === "small" && "h-6 min-h-6 px-3",

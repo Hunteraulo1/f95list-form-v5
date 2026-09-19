@@ -26,6 +26,11 @@ const items: Item[] = [
     icon: Users,
     href: '/admin/users',
   },
+  {
+    label: 'Rôles',
+    icon: Users,
+    href: '/admin/roles',
+  },
 ];
 </script>
 
