@@ -154,15 +154,13 @@ export const GameTranslationSchema = defineEntity({
       'unrated',
       'not-working',
     ] as const),
-    type: p
-      .enum([
-        'no_translation',
-        'integrated',
-        'translation',
-        'translation_with_mods',
-        'mods',
-      ] as const)
-      .nullable(),
+    type: p.enum([
+      'no_translation',
+      'integrated',
+      'translation',
+      'translation_with_mods',
+      'mods',
+    ] as const),
     active: p.boolean(),
     gameTranslationFiles: () =>
       p.oneToMany(GameTranslationFile).mappedBy('gameTranslation'),

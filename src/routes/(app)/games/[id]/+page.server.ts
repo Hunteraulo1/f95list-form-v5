@@ -66,8 +66,10 @@ export const load: PageServerLoad = async ({ params }) => {
             .map((translation) => ({
               id: translation.id,
               version: translation.version,
-              quality: translationQualityName(translation.quality),
-              type: translationTypeName(translation.type),
+              quality: translation.quality,
+              qualityLabel: translationQualityName(translation.quality),
+              type: translation.type,
+              typeLabel: translationTypeName(translation.type),
               active: translation.active,
               // createdAt: translation.createdAt,
               // updatedAt: translation.updatedAt,
@@ -84,14 +86,15 @@ export const load: PageServerLoad = async ({ params }) => {
                   // createdAt: translator.createdAt,
                   // updatedAt: translator.updatedAt,
                 })),
-              files: translation.gameTranslationFiles
-                .getItems()
-                .filter((file) => file.active)
-                .map((file) => ({
-                  id: file.id,
-                  internalLink: file.internalLink,
-                  externalLink: file.externalLink,
-                })),
+              file:
+                translation.gameTranslationFiles
+                  .getItems()
+                  .filter((file) => file.active)
+                  .map((file) => ({
+                    id: file.id,
+                    internalLink: file.internalLink,
+                    externalLink: file.externalLink,
+                  }))[0] ?? null,
             })),
         })),
     },

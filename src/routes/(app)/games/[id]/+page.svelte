@@ -1,5 +1,6 @@
 <script lang="ts">
 import Button from '$lib/components/ui/Button.svelte';
+import ColorBadge from '$lib/components/ui/games/ColorBadge.svelte';
 import type { PageData } from './$types.js';
 
 interface Props {
@@ -58,58 +59,63 @@ const getHostname = (link: string) => {
 </section>
 
 <section>
-  <div class="relative flex w-full flex-col gap-4 rounded-xl bg-base-100 p-4">
-    <span class="text-center font-bold">Traductions</span>
-    <Button
-      label="Ajouter une traduction"
-      size="small"
-      classes="w-45 absolute right-4"
-    />
-    {#each data.game.gameEditions as edition}
-      <div class="flex w-full flex-col gap-2 rounded-xl bg-base-200">
-        <span class="p-4">
-          {edition.name}
-        </span>
+  <div class="flex w-full flex-col gap-4 rounded-xl bg-base-100 p-4">
+    <div class="flex items-center justify-between gap-2">
+      <span class="font-bold">Traductions</span>
+      <Button label="Ajouter une traduction" size="small" />
+    </div>
 
-        <div class="flex w-full gap-2 overflow-x-scroll px-4 pb-4">
+    {#each data.game.gameEditions as edition}
+      <div class="flex flex-col gap-2">
+        <span class="font-bold">{edition.name}</span>
+
+        <div
+          class="flex flex-col divide-y divide-base-content/10 overflow-hidden rounded-xl bg-base-200"
+        >
           {#each edition.gameTranslations as translation}
             <div
-              class="flex w-60 min-w-60 flex-col gap-4 rounded-xl bg-base-300 p-2"
+              class="flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between"
             >
-              <span>Version: {translation.version}</span>
+              <div class="flex flex-col gap-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="font-bold">{translation.version}</span>
+                  <ColorBadge
+                    item={translation.quality}
+                    label={translation.qualityLabel}
+                  />
+                  <ColorBadge
+                    item={translation.type}
+                    label={translation.typeLabel}
+                  />
+                </div>
 
-              <span>
-                {#if translation.translators.length === 1}
-                  Traducteur:
-                  {translation.translators[0].name}
-                {:else if translation.translators.length > 1}
-                  Traducteurs:
-                  {#each translation.translators as translator, index}
-                    {translator.name}
-                    {#if index >= 0 && translation.translators.length !== index + 1}
-                      ,
-                    {/if}
-                  {/each}
-                {:else}
-                  Traducteur: Aucun
+                <span class="text-sm text-base-content/70">
+                  {#if translation.translators.length > 0}
+                    Par
+                    {translation.translators.map((translator) => translator.name).join(', ')}
+                  {:else}
+                    Aucun traducteur
+                  {/if}
+                </span>
+              </div>
+
+              <div class="flex flex-wrap gap-2 md:justify-end">
+                {#if translation.file?.internalLink}
+                  {@render downloadLink(translation.file.internalLink, 'F95France', false)}
                 {/if}
-              </span>
-
-              <span>Qualité: {translation.quality}</span>
-              <span>Type: {translation.type}</span>
-
-              {#if translation.files[0].internalLink}
-                {@render downloadButton(
-  translation.files[0].internalLink,
-  'Télécharger depuis F95France',
+                {#if translation.file?.externalLink}
+                  {@render downloadLink(
+  translation.file.externalLink,
+  getHostname(translation.file.externalLink),
+  Boolean(translation.file.internalLink),
 )}
-              {/if}
-              {#if translation.files[0].externalLink}
-                {@render downloadButton(
-  translation.files[0].externalLink,
-  `Télécharger depuis ${getHostname(translation.files[0].externalLink)}`,
-)}
-              {/if}
+                {/if}
+                {#if !translation.file?.internalLink && !translation.file?.externalLink}
+                  <span class="text-sm text-base-content/70"
+                    >Aucun fichier</span
+                  >
+                {/if}
+              </div>
             </div>
           {/each}
         </div>
@@ -118,9 +124,14 @@ const getHostname = (link: string) => {
   </div>
 </section>
 
-{#snippet downloadButton(
+{#snippet downloadLink(
   link: string,
   label: string,
+  secondary: boolean,
 )}
-  <Button {label} onclick={() => open(link, 'blank_')} size="big" />
+  <Button
+    {label}
+    inline={secondary}
+    onclick={() => open(link, '_blank', 'noopener')}
+  />
 {/snippet}
