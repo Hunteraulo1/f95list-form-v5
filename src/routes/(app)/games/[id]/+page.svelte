@@ -1,6 +1,7 @@
 <script lang="ts">
 import Button from '$lib/components/ui/Button.svelte';
 import ColorBadge from '$lib/components/ui/games/ColorBadge.svelte';
+import ReportGameModal from '$lib/components/ui/games/ReportGameModal.svelte';
 import type { PageData } from './$types.js';
 
 interface Props {
@@ -8,6 +9,17 @@ interface Props {
 }
 
 const { data }: Props = $props();
+
+let reportOpen = $state(false);
+
+const reportTranslations = $derived(
+  data.game.gameEditions.flatMap((edition) =>
+    edition.gameTranslations.map((translation) => ({
+      id: translation.id,
+      label: `${edition.name} — ${translation.version}`,
+    })),
+  ),
+);
 
 const getHostname = (link: string) => {
   try {
@@ -65,6 +77,7 @@ const getHostname = (link: string) => {
       label="Signaler un problème"
       inline
       classes="border-error text-error! hover:bg-error-content ml-auto"
+      onclick={() => (reportOpen = true)}
     />
   </section>
 
@@ -135,6 +148,12 @@ const getHostname = (link: string) => {
     {/each}
   </section>
 </div>
+
+<ReportGameModal
+  bind:open={reportOpen}
+  gameName={data.game.name}
+  translations={reportTranslations}
+/>
 
 {#snippet downloadLink(
   link: string,
