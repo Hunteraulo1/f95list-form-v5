@@ -2,6 +2,7 @@ import { RequestContext } from '@mikro-orm/core';
 import type { Handle, HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { orm } from '$lib/server/db';
+import { handleAuth } from '$lib/server/hooks/auth';
 import { handleLogging } from '$lib/server/hooks/logging';
 import { handleRateLimit } from '$lib/server/hooks/rate-limit';
 import { handleSecurityHeaders } from '$lib/server/hooks/security-headers';
@@ -13,6 +14,7 @@ const handleDbContext: Handle = ({ event, resolve }) =>
 export const handle = sequence(
   handleDbContext,
   handleRateLimit,
+  handleAuth,
   handleLogging,
   handleSecurityHeaders,
 );

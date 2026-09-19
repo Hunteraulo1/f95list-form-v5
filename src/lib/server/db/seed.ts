@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker';
 import { MikroORM } from '@mikro-orm/mariadb';
 import { config as loadEnv } from 'dotenv';
 import mikroOrmConfig from '../../../../mikro-orm.config';
+import { DEV_USER_ID } from '../config';
 import {
   Config,
   Game,
@@ -87,9 +88,21 @@ export const main = async () => {
     },
   ].map((origin) => em.create(OriginWebsite, origin));
 
-  const users = Array.from({ length: 10 }, () =>
+  //? Le premier user est l'utilisateur « connecté » en dev (DEV_USER_ID), en admin.
+  const users = Array.from({ length: 10 }, (_, index) =>
     em.create(User, {
-      role: faker.helpers.arrayElement(roles),
+      ...(index === 0 && { id: DEV_USER_ID }),
+      name: faker.internet.username().slice(0, 64),
+      email: faker.internet.email(),
+      description: faker.helpers.maybe(() => faker.lorem.sentence()),
+      avatar: faker.image.avatar(),
+      banner: faker.image.urlPicsumPhotos({ width: 1200, height: 300 }),
+      //? snowflake Discord : 17-19 chiffres, trop grand pour un number JS -> string
+      discord: faker.string.numeric({ length: 18, allowLeadingZeros: false }),
+      role:
+        index === 0
+          ? (roles.find(({ name }) => name === 'admin') ?? roles[0])
+          : faker.helpers.arrayElement(roles),
       zitadelId: randomUUID(),
       discordNotification: faker.datatype.boolean(),
     }),

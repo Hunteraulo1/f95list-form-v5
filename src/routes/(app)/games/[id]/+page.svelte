@@ -123,7 +123,7 @@ const getHostname = (link: string) => {
                 </span>
               </div>
 
-              <div class="flex flex-wrap gap-2 md:justify-end">
+              <div class="flex flex-wrap gap-2 md:justify-end items-center">
                 {#if translation.file?.internalLink}
                   {@render downloadLink(translation.file.internalLink, 'F95France', false)}
                 {/if}
@@ -135,7 +135,7 @@ const getHostname = (link: string) => {
                     )}
                 {/if}
                 {#if !translation.file?.internalLink && !translation.file?.externalLink}
-                  <span class="text-sm text-base-content/70"
+                  <span class="text-sm text-base-content/70 font-bold px-4"
                     >Aucun fichier</span
                   >
                 {/if}

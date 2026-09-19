@@ -3,17 +3,17 @@ import { ArrowDownAZ, ArrowUpAZ, ImageOff, PenOff } from '@lucide/svelte';
 import Button from '$lib/components/ui/Button.svelte';
 import Input from '$lib/components/ui/Input.svelte';
 import { cn } from '$lib/utils/cn';
+import type { PageData } from './$types.js';
+
+interface Props {
+  data: PageData;
+}
+
+const { data }: Props = $props();
+
+const user = $derived(data.profile);
 
 let editMode = $state(false);
-
-const user = $state({
-  name: 'Hunteraulo',
-  image:
-    'https://cdn.discordapp.com/avatars/521092563042828297/84a0e6cc5576d6395643c8d32e8a2c75.webp?size=256',
-  rank: 'Super admin',
-  banner: null,
-  description: 'Salut les donateurs !',
-});
 
 type SortKey = 'name' | 'version' | 'tversion';
 
@@ -127,8 +127,8 @@ const filteredItems = $derived.by(() => {
     <div
       class="relative flex size-48 items-center justify-center overflow-hidden rounded-full bg-base-300 p-2"
     >
-      {#if user.image}
-        <img src={user.image} alt="Profil de {user.name}" class="rounded-full">
+      {#if user.avatar}
+        <img src={user.avatar} alt="Profil de {user.name}" class="rounded-full">
       {:else}
         <ImageOff size="64" opacity=".2" />
       {/if}
@@ -144,7 +144,7 @@ const filteredItems = $derived.by(() => {
     </div>
 
     <h2 class="mt-4 font-bold">{user.name}</h2>
-    <h3>{user.rank}</h3>
+    <h3>{user.role.label}</h3>
   </section>
   <section class="flex min-h-80 w-full flex-col gap-4">
     {#if user.banner || editMode}

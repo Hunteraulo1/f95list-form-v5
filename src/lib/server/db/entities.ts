@@ -292,6 +292,13 @@ export const UserSchema = defineEntity({
   tableName: 'user',
   properties: {
     id: uuidPk(),
+    name: p.string().length(64),
+    email: p.string().length(128),
+    description: p.text().nullable(),
+    avatar: p.string().length(2048).nullable(),
+    banner: p.string().length(2048).nullable(),
+    discord: p.string().length(32).nullable(),
+    theme: p.enum(['system', 'light', 'dark'] as const).default('system'),
     role: () =>
       p
         .manyToOne(Role)
