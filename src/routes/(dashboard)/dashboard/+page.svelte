@@ -89,7 +89,7 @@ const translationStatusLabel = (status: TranslationStatus) => {
         {#each results as game (game.id)}
           <a
             href={`/games/${game.id}`}
-            class="flex gap-2 justify-between items-center py-2 px-3 rounded-lg hover:bg-base-200"
+            class="flex gap-2 justify-between items-center px-3 py-2 rounded-lg hover:bg-base-200"
           >
             <span class="flex gap-2 items-center min-w-0">
               <img
@@ -101,7 +101,7 @@ const translationStatusLabel = (status: TranslationStatus) => {
               <span class="truncate">{game.name}</span>
             </span>
             <span
-              class="py-1 px-2 text-xs font-bold uppercase rounded-lg shrink-0"
+              class="px-2 py-1 text-xs font-bold uppercase rounded-lg shrink-0"
               class:bg-success={game.translationStatus === 'up_to_date'}
               class:text-success-content={game.translationStatus === 'up_to_date'}
               class:bg-warning={game.translationStatus === 'outdated'}
@@ -113,7 +113,7 @@ const translationStatusLabel = (status: TranslationStatus) => {
             </span>
           </a>
         {:else}
-          <p class="py-2 px-3 text-sm opacity-60">
+          <p class="px-3 py-2 text-sm opacity-60">
             Aucun jeu ne correspond à la recherche.
           </p>
         {/each}

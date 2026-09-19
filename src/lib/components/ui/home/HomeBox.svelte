@@ -25,7 +25,7 @@ const { children, title, description, buttons, classes, masterClasses }: Props =
 
 <div
   class={cn(
-  'bg-base-300 min-h-60 rounded-xl py-4 px-8 lg:grid lg:grid-cols-2 w-full h-full relative z-0',
+  'relative z-0 px-8 py-4 w-full h-full rounded-xl bg-base-300 min-h-60 lg:grid lg:grid-cols-2',
   masterClasses,
 )}
 >

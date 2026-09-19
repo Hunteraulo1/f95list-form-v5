@@ -54,7 +54,7 @@ const navItems = [
   inert
 >
   <div
-    class="pointer-events-none absolute inset-[6%_-12%_-6%] rounded-4xl bg-[radial-gradient(circle_at_50%_50%,color-mix(in_oklab,var(--color-secondary)_42%,transparent),transparent_70%)] blur-[20px]"
+    class="absolute pointer-events-none inset-[6%_-12%_-6%] rounded-4xl bg-[radial-gradient(circle_at_50%_50%,color-mix(in_oklab,var(--color-secondary)_42%,transparent),transparent_70%)] blur-[20px]"
   ></div>
 
   <div
@@ -64,14 +64,14 @@ const navItems = [
       class="flex overflow-hidden relative flex-col flex-1 gap-2 p-2 pt-0 min-h-0"
     >
       <div
-        class="sticky top-0 z-10 mx-0.5 rounded-b-xl border border-ext-border bg-ext-card p-2 pb-8 text-center"
+        class="sticky top-0 z-10 p-2 pb-8 mx-0.5 text-center rounded-b-xl border border-ext-border bg-ext-card"
       >
-        <p class="text-[0.65rem] leading-snug text-ext-secondary-foreground">
+        <p class="leading-snug text-[0.65rem] text-ext-secondary-foreground">
           Traduction détectée sur cette page
         </p>
         <div class="flex absolute right-0 top-8 justify-center w-full">
           <div
-            class="flex items-center justify-center rounded-full border-2 border-ext-border bg-ext-card/40 px-4 py-2 text-ext-secondary-foreground transition-opacity hover:bg-ext-card/80"
+            class="flex justify-center items-center px-4 py-2 rounded-full border-2 transition-opacity border-ext-border bg-ext-card/40 text-ext-secondary-foreground hover:bg-ext-card/80"
           >
             <ChevronDown size={16} strokeWidth={2} aria-hidden="true" />
           </div>
@@ -91,7 +91,7 @@ const navItems = [
               draggable="false"
             >
             <div
-              class="flex relative flex-col justify-end p-6 h-full transition text-ext-secondary-foreground backdrop-brightness-90 hover:backdrop-brightness-100"
+              class="flex relative flex-col justify-end p-6 h-full backdrop-brightness-90 transition text-ext-secondary-foreground hover:backdrop-brightness-100"
             >
               <p
                 class="text-sm font-semibold leading-tight select-none line-clamp-1"
@@ -121,7 +121,7 @@ const navItems = [
 
       <div class="flex absolute right-0 bottom-0 left-0 justify-center pb-4">
         <div
-          class="bottom-2 z-10 mx-auto mt-auto w-fit rounded-md border-2 border-ext-border bg-ext-card/80 px-4 py-1.5 text-center text-xs font-medium text-ext-secondary-foreground shadow-sm hover:bg-ext-card"
+          class="bottom-2 z-10 px-4 py-1.5 mx-auto mt-auto text-xs font-medium text-center rounded-md border-2 shadow-sm w-fit border-ext-border bg-ext-card/80 text-ext-secondary-foreground hover:bg-ext-card"
         >
           Filtrer
         </div>
@@ -133,12 +133,12 @@ const navItems = [
     >
       {#each navItems as item (item.icon)}
         <div
-          class="relative flex flex-1 flex-col items-center justify-center rounded-md py-0.5 text-ext-secondary-foreground transition hover:opacity-100"
+          class="flex relative flex-col flex-1 justify-center items-center py-0.5 rounded-md transition text-ext-secondary-foreground hover:opacity-100"
           class:opacity-50={!item.active}
         >
           {#if item.badge > 0}
             <span
-              class="absolute top-0.5 left-1/2 z-10 rounded-lg bg-red-700 px-1 text-[0.6rem] leading-tight text-white"
+              class="absolute top-0.5 left-1/2 z-10 px-1 leading-tight text-white bg-red-700 rounded-lg text-[0.6rem]"
             >
               {item.badge}
             </span>

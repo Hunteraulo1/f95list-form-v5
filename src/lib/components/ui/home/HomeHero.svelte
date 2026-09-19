@@ -11,7 +11,7 @@ const { stats }: Props = $props();
 const { format } = new Intl.NumberFormat('fr', { notation: 'compact' });
 </script>
 
-<section class="py-8 px-16 xl:px-32 md:h-1/2 flex items-center">
+<section class="flex items-center px-16 py-8 xl:px-32 md:h-1/2">
   <div class="flex flex-col gap-8 w-full lg:grid lg:grid-cols-2 lg:mt-16">
     <div class="w-full">
       <h2 class="text-2xl font-bold">
@@ -25,7 +25,7 @@ const { format } = new Intl.NumberFormat('fr', { notation: 'compact' });
     </div>
     <div class="flex flex-col gap-4 items-center w-full">
       <h5
-        class="text-[4vw] lg:text-[2vw] font-black text-base-content/70 uppercase text-center"
+        class="font-black text-center uppercase text-[4vw] lg:text-[2vw] text-base-content/70"
       >
         En quelques statistiques
       </h5>
@@ -35,12 +35,12 @@ const { format } = new Intl.NumberFormat('fr', { notation: 'compact' });
             class="flex flex-col justify-center items-center p-2 w-full rounded-xl border shadow-lg bg-base-200 border-base-300"
           >
             <h6
-              class="font-bold text-[2vw] sm:text-[1.5vw] lg:text-[.75vw] xl:text-xs uppercase text-base-content/70"
+              class="font-bold uppercase text-[2vw] sm:text-[1.5vw] lg:text-[.75vw] xl:text-xs text-base-content/70"
             >
               {title}
             </h6>
             <p
-              class="text-[clamp(1.5rem,4vw,2rem)] font-bold text-base-content"
+              class="font-bold text-[clamp(1.5rem,4vw,2rem)] text-base-content"
             >
               {format(value)}
             </p>

@@ -20,7 +20,7 @@ const { data }: Props = $props();
 
 <div class="overflow-hidden relative w-vw max-w-lvw min-h-150">
   <div
-    class="-inset-1/1 absolute -rotate-16 bg-repeat bg-size-[16rem_auto]"
+    class="absolute bg-repeat -inset-1/1 -rotate-16 bg-size-[16rem_auto]"
     style="background-image: url({isDark ? homeBgDark : homeBgLight});"
     class:opacity-2={isDark}
     class:opacity-4={!isDark}

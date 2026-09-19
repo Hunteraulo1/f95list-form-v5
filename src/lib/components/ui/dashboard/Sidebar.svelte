@@ -26,7 +26,7 @@ const { items }: Props = $props();
     <li>
       <a
         href={item.href}
-        class={cn('flex items-center gap-2 p-2 rounded-lg hover:bg-base-100', item.class)}
+        class={cn('flex gap-2 items-center p-2 rounded-lg hover:bg-base-100', item.class)}
         class:bg-base-300={active}
       >
         <Icon />

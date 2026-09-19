@@ -138,16 +138,16 @@ const filteredItems = $derived.by(() => {
     {#each filteredItems as item (item.id)}
       <tr
         class={cn(
-  'border-collapse even:bg-base-300 odd:bg-base-100 relative',
+  'relative border-collapse even:bg-base-300 odd:bg-base-100',
   item.version !== item.tversion &&
     'even:bg-yellow-500/60! odd:bg-yellow-500/70!',
   item.abandoned && 'even:bg-red-600/30! odd:bg-red-600/40!',
 )}
       >
-        <td class="py-2 px-4 font-bold">{item.name}</td>
-        <td class="py-2 px-4 text-center">{item.version}</td>
-        <td class="py-2 px-4 text-center">{item.tversion}</td>
-        <td class="flex gap-2 justify-center py-3 px-4">
+        <td class="px-4 py-2 font-bold">{item.name}</td>
+        <td class="px-4 py-2 text-center">{item.version}</td>
+        <td class="px-4 py-2 text-center">{item.tversion}</td>
+        <td class="flex gap-2 justify-center px-4 py-3">
           <Button label="Accèder" size="tiny" />
           <Button
             label={item.abandoned ? 'Reprendre' : 'Abandoner'}

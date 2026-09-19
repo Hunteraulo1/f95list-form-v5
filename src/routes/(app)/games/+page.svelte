@@ -49,7 +49,7 @@ const resetFilters = () => {
 };
 </script>
 
-<section class="md:grid md:grid-cols-[1fr_20rem] w-full gap-4">
+<section class="gap-4 w-full md:grid md:grid-cols-[1fr_20rem]">
   <div
     class="flex overflow-hidden flex-col gap-4 p-4 w-full rounded-xl bg-base-100 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
   >
@@ -63,7 +63,7 @@ const resetFilters = () => {
             class="object-cover w-full h-full"
           >
           <div
-            class="bg-base-300/20 hover:bg-base-300/0 h-full w-full p-4 absolute top-0 font-bold"
+            class="absolute top-0 p-4 w-full h-full font-bold bg-base-300/20 hover:bg-base-300/0"
           >
             {name}
           </div>
@@ -77,12 +77,12 @@ const resetFilters = () => {
   </div>
   <div
     class={cn(
-  'not-md:fixed md:w-full top-24 md:top-0 right-2 not-md:w-12 transition-all relative',
-  isOpen && 'w-75! max-w-full p-4',
+  'relative right-2 top-24 transition-all not-md:fixed md:w-full md:top-0 not-md:w-12',
+  isOpen && 'p-4 max-w-full w-75!',
 )}
   >
     <div
-      class="flex flex-col items-end bg-base-300 md:w-full md:sticky md:top-8 md:h-[calc(100vh-4rem)] p-1 rounded-xl md:p-4 w-full h-full"
+      class="flex flex-col items-end p-1 w-full h-full rounded-xl bg-base-300 md:w-full md:sticky md:top-8 md:h-[calc(100vh-4rem)] md:p-4"
     >
       <button
         type="button"

@@ -98,7 +98,7 @@ const slides: HeroSlide[] = [
       <button
         type="button"
         aria-label="slide {index}"
-        class="bg-base-300 border border-bg-base-200 size-4 rounded-full hover:bg-primary/50"
+        class="rounded-full border bg-base-300 border-bg-base-200 size-4 hover:bg-primary/50"
         class:bg-primary={index === activeSlide}
         onclick={() => (activeSlide = index)}
       ></button>

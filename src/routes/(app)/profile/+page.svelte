@@ -136,7 +136,7 @@ const filteredItems = $derived.by(() => {
       {#if editMode}
         <button
           type="button"
-          class="absolute opacity-0 hover:opacity-50 bg-neutral/50 h-full w-full rounded-lg cursor-pointer"
+          class="absolute w-full h-full rounded-lg opacity-0 cursor-pointer hover:opacity-50 bg-neutral/50"
         >
           Changer l'image
         </button>
@@ -164,7 +164,7 @@ const filteredItems = $derived.by(() => {
         {#if editMode}
           <button
             type="button"
-            class="bottom-0 right-0 absolute bg-neutral/50 py-1 px-5 rounded-tl-lg cursor-pointer"
+            class="absolute right-0 bottom-0 px-5 py-1 rounded-tl-lg cursor-pointer bg-neutral/50"
           >
             Changer la bannière
           </button>
@@ -187,7 +187,7 @@ const filteredItems = $derived.by(() => {
         {#if editMode}
           <button
             type="button"
-            class="bottom-0 right-0 absolute bg-neutral/50 py-1 px-5 rounded-tl-lg cursor-pointer"
+            class="absolute right-0 bottom-0 px-5 py-1 rounded-tl-lg cursor-pointer bg-neutral/50"
           >
             Changer la description
           </button>
@@ -235,14 +235,14 @@ const filteredItems = $derived.by(() => {
               <tr
                 class="relative border-collapse even:bg-base-300 odd:bg-base-100"
               >
-                <td class="py-2 px-4 font-bold">{item.name}</td>
-                <td class="py-2 px-4 text-center">{item.version}</td>
+                <td class="px-4 py-2 font-bold">{item.name}</td>
+                <td class="px-4 py-2 text-center">{item.version}</td>
                 <td
-                  class={cn('py-2 px-4 text-center', item.version !== item.tversion && 'text-yellow-500')}
+                  class={cn('px-4 py-2 text-center', item.version !== item.tversion && 'text-yellow-500')}
                 >
                   {item.tversion}
                 </td>
-                <td class="flex gap-2 justify-center py-3 px-4">
+                <td class="flex gap-2 justify-center px-4 py-3">
                   <Button label="Accèder" size="tiny" />
                 </td>
               </tr>

@@ -49,7 +49,7 @@ let isOpen = $state(false);
     onclick={() => (isOpen = true)}
     class={cn(
   isOpen && 'hidden',
-  'md:hidden dark:hover:bg-base-300 hover:bg-base-100 rounded-lg p-1 size-8 cursor-pointer',
+  'p-1 rounded-lg cursor-pointer md:hidden dark:hover:bg-base-300 hover:bg-base-100 size-8',
 )}
   />
   <a href="/" class="h-1/2 sm:h-full aspect-8/1">
