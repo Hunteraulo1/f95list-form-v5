@@ -1,5 +1,5 @@
 <script lang="ts">
-import { List, Menu, Moon, Sun, X } from '@lucide/svelte';
+import { Menu, Moon, Sun, X } from '@lucide/svelte';
 import bannerDark from '$lib/assets/banner-dark.webp';
 import bannerLight from '$lib/assets/banner-light.png';
 import { getTheme, toggleTheme } from '$lib/stores/theme.svelte';
@@ -40,69 +40,65 @@ let isOpen = $state(false);
 </script>
 
 <header
-	class="flex items-center justify-between text-base-content h-16 p-5"
-	class:bg-base-100={!isHome}
-	class:h-24={isHome}
-	class:p-8={isHome}
+  class="flex justify-between items-center p-5 h-16 text-base-content"
+  class:bg-base-100={!isHome}
+  class:h-24={isHome}
+  class:p-8={isHome}
 >
-	<Menu
-		onclick={() => (isOpen = true)}
-		class={cn(
-			isOpen && "hidden",
-			"md:hidden dark:hover:bg-base-300 hover:bg-base-100 rounded-lg p-1 size-8 cursor-pointer",
-		)}
-	/>
-	<a href="/" class="h-1/2 sm:h-full aspect-8/1">
-		{#if isDark}
-			<img
-				src={bannerDark}
-				alt="bannière de f95 france"
-				class="h-full"
-				draggable="false"
-			/>
-		{:else}
-			<img
-				src={bannerLight}
-				alt="bannière de f95 france"
-				class="h-full"
-			/>
-		{/if}
-	</a>
+  <Menu
+    onclick={() => (isOpen = true)}
+    class={cn(
+  isOpen && 'hidden',
+  'md:hidden dark:hover:bg-base-300 hover:bg-base-100 rounded-lg p-1 size-8 cursor-pointer',
+)}
+  />
+  <a href="/" class="h-1/2 sm:h-full aspect-8/1">
+    {#if isDark}
+      <img
+        src={bannerDark}
+        alt="bannière de f95 france"
+        class="h-full"
+        draggable="false"
+      >
+    {:else}
+      <img src={bannerLight} alt="bannière de f95 france" class="h-full">
+    {/if}
+  </a>
 
-	<ul
-		class="flex not-md:flex-col md:gap-8 gap-4 md:w-full px-16 font-bold not-md:fixed not-md:bg-base-200 top-0 left-0 w-75 not-md:h-screen z-50 not-md:pt-20"
-		class:not-md:hidden={!isOpen}
-	>
-		<X
-			class="left-8 top-8 absolute md:hidden hover:bg-base-300 rounded-lg p-1 size-8 cursor-pointer"
-			onclick={() => {
-				isOpen = false;
-			}}
-		/>
-		<div class="w-full md:hidden mb-4 flex">
-			{#if isDark}
-				<img src={bannerDark} alt="bannière de f95 france" />
-			{:else}
-				<img src={bannerLight} alt="bannière de f95 france" />
-			{/if}
-		</div>
-		{#each nav as { title, href }}
-			<li>
-				<a {href}>{title}</a>
-			</li>
-		{/each}
-	</ul>
+  <ul
+    class="flex top-0 left-0 z-50 gap-4 px-16 font-bold not-md:flex-col md:gap-8 md:w-full not-md:fixed not-md:bg-base-200 w-75 not-md:h-screen not-md:pt-20"
+    class:not-md:hidden={!isOpen}
+  >
+    <X
+      class="absolute top-8 left-8 p-1 rounded-lg cursor-pointer md:hidden hover:bg-base-300 size-8"
+      onclick={() => {
+  isOpen = false;
+}}
+    />
+    <div class="flex mb-4 w-full md:hidden">
+      {#if isDark}
+        <img src={bannerDark} alt="bannière de f95 france">
+      {:else}
+        <img src={bannerLight} alt="bannière de f95 france">
+      {/if}
+    </div>
+    {#each nav as { title, href }}
+      <li>
+        <a {href}>{title}</a>
+      </li>
+    {/each}
+  </ul>
 
-	<button
-		type="button"
-		onclick={toggleTheme}
-		aria-label="Basculer le thème"
-		class="rounded-field p-2 dark:hover:bg-base-300 hover:bg-base-100"
-	>
-		{#if isDark}
-			<Sun size={20} />
-		{:else}
-			<Moon size={20} />
-		{/if}
-	</button>
+  <button
+    type="button"
+    onclick={toggleTheme}
+    aria-label="Basculer le thème"
+    class="p-2 rounded-field dark:hover:bg-base-300 hover:bg-base-100"
+  >
+    {#if isDark}
+      <Sun size={20} />
+    {:else}
+      <Moon size={20} />
+    {/if}
+  </button>
 </header>

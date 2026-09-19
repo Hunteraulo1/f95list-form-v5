@@ -104,63 +104,63 @@ const filteredItems = $derived.by(() => {
 </script>
 
 <div class="flex justify-end my-4">
-	<Input
-		placeholder="Rechercher un nom..."
-		value={search}
-		oninput={(e) => (search = e.currentTarget.value)}
-	/>
+  <Input
+    placeholder="Rechercher un nom..."
+    value={search}
+    oninput={(e) => (search = e.currentTarget.value)}
+  />
 </div>
 
-<table class="table-fixed w-full border-spacing-2">
-	<thead>
-		<tr>
-			{#each columns as { label, key }}
-				<th
-					scope="col"
-					class={cn("select-none", key && "cursor-pointer")}
-					onclick={() => sortBy(key)}
-				>
-					<span class="flex justify-center items-center gap-2">
-						{label}
-						{#if key && sortKey === key}
-							{#if sortAsc}
-								<ArrowDownAZ size="16" />
-							{:else}
-								<ArrowUpAZ size="16" />
-							{/if}
-						{/if}
-					</span>
-				</th>
-			{/each}
-		</tr>
-	</thead>
-	<tbody>
-		{#each filteredItems as item (item.id)}
-			<tr
-				class={cn(
-					"border-collapse even:bg-base-300 odd:bg-base-100 relative",
-					item.version !== item.tversion &&
-						"even:bg-yellow-500/60! odd:bg-yellow-500/70!",
-					item.abandoned && "even:bg-red-600/30! odd:bg-red-600/40!",
-				)}
-			>
-				<td class="py-2 px-4 font-bold">{item.name}</td>
-				<td class="py-2 px-4 text-center">{item.version}</td>
-				<td class="py-2 px-4 text-center">{item.tversion}</td>
-				<td class="py-3 px-4 flex justify-center gap-2">
-					<Button label="Accèder" size="tiny" />
-					<Button
-						label={item.abandoned ? "Reprendre" : "Abandoner"}
-						size="tiny"
-						classes={cn(
-							item.abandoned
-								? "bg-red-400 text-white"
-								: "hover:bg-red-400 hover:text-white",
-						)}
-						onclick={() => (item.abandoned = !item.abandoned)}
-					/>
-				</td>
-			</tr>
-		{/each}
-	</tbody>
+<table class="w-full table-fixed border-spacing-2">
+  <thead>
+    <tr>
+      {#each columns as { label, key }}
+        <th
+          scope="col"
+          class={cn('select-none', key && 'cursor-pointer')}
+          onclick={() => sortBy(key)}
+        >
+          <span class="flex gap-2 justify-center items-center">
+            {label}
+            {#if key && sortKey === key}
+              {#if sortAsc}
+                <ArrowDownAZ size="16" />
+              {:else}
+                <ArrowUpAZ size="16" />
+              {/if}
+            {/if}
+          </span>
+        </th>
+      {/each}
+    </tr>
+  </thead>
+  <tbody>
+    {#each filteredItems as item (item.id)}
+      <tr
+        class={cn(
+  'border-collapse even:bg-base-300 odd:bg-base-100 relative',
+  item.version !== item.tversion &&
+    'even:bg-yellow-500/60! odd:bg-yellow-500/70!',
+  item.abandoned && 'even:bg-red-600/30! odd:bg-red-600/40!',
+)}
+      >
+        <td class="py-2 px-4 font-bold">{item.name}</td>
+        <td class="py-2 px-4 text-center">{item.version}</td>
+        <td class="py-2 px-4 text-center">{item.tversion}</td>
+        <td class="flex gap-2 justify-center py-3 px-4">
+          <Button label="Accèder" size="tiny" />
+          <Button
+            label={item.abandoned ? 'Reprendre' : 'Abandoner'}
+            size="tiny"
+            classes={cn(
+  item.abandoned
+    ? 'bg-red-400 text-white'
+    : 'hover:bg-red-400 hover:text-white',
+)}
+            onclick={() => (item.abandoned = !item.abandoned)}
+          />
+        </td>
+      </tr>
+    {/each}
+  </tbody>
 </table>

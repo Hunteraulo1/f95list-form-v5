@@ -36,5 +36,5 @@ const items: Item[] = [
 
 <Sidebar {items} />
 <div class="w-full h-full">
-	{@render children()}
+  {@render children()}
 </div>

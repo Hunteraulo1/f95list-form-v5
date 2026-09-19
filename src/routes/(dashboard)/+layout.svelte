@@ -10,8 +10,8 @@ const { children }: Props = $props();
 </script>
 
 <div>
-	<Header />
-	<div class="w-full max-w-7xl mx-auto flex h-full gap-8 p-8">
-		{@render children()}
-	</div>
+  <Header />
+  <div class="flex gap-8 p-8 mx-auto w-full max-w-7xl h-full">
+    {@render children()}
+  </div>
 </div>

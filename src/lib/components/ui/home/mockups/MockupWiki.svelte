@@ -21,44 +21,42 @@ const lineClass =
 </script>
 
 <MockupShell badge="Wiki F95 France">
-	<div
-		class="grid h-full min-h-0 grid-cols-[6.5rem_1fr] gap-2 overflow-hidden rounded-lg border border-base-content/12"
-	>
-		<div class="flex flex-col gap-1.5 bg-base-200/60 p-2">
-			<div
-				class="flex items-center gap-1 px-1 text-[0.62rem] font-semibold text-base-content/80"
-			>
-				<BookOpen class="size-3" aria-hidden="true" />
-				Sommaire
-			</div>
-			{#each tocItems as item (item.label)}
-				<div
-					class="rounded-md px-1.5 py-1 text-[0.62rem] hover:bg-base-300 hover:text-base-content {item.active
-						? 'bg-primary/16 font-semibold text-base-content hover:bg-primary hover:text-base-content'
-						: 'text-base-content/80'}"
-				>
-					{item.label}
-				</div>
-			{/each}
-		</div>
-		<div class="flex flex-col gap-3 p-2.5">
-			<div
-				class="flex items-center gap-2 border-b border-base-content/10 pb-2"
-			>
-				<FileText class="size-4 text-primary" aria-hidden="true" />
-				<div class="h-3 w-32 rounded-sm bg-base-content/22"></div>
-			</div>
-			{#each sections as section, index (index)}
-				<div class="{lineClass} {section.width} {section.delay}"></div>
-			{/each}
-			<div class="mt-auto grid grid-cols-2 gap-2 pt-1">
-				<div
-					class="h-8 rounded-md border border-base-content/12 bg-base-200/50"
-				></div>
-				<div
-					class="h-8 rounded-md border border-base-content/12 bg-base-200/50"
-				></div>
-			</div>
-		</div>
-	</div>
+  <div
+    class="grid h-full min-h-0 grid-cols-[6.5rem_1fr] gap-2 overflow-hidden rounded-lg border border-base-content/12"
+  >
+    <div class="flex flex-col gap-1.5 bg-base-200/60 p-2">
+      <div
+        class="flex items-center gap-1 px-1 text-[0.62rem] font-semibold text-base-content/80"
+      >
+        <BookOpen class="size-3" aria-hidden="true" />
+        Sommaire
+      </div>
+      {#each tocItems as item (item.label)}
+        <div
+          class="rounded-md px-1.5 py-1 text-[0.62rem] hover:bg-base-300 hover:text-base-content {item.active
+  ? 'bg-primary/16 font-semibold text-base-content hover:bg-primary hover:text-base-content'
+  : 'text-base-content/80'}"
+        >
+          {item.label}
+        </div>
+      {/each}
+    </div>
+    <div class="flex flex-col gap-3 p-2.5">
+      <div class="flex items-center gap-2 border-b border-base-content/10 pb-2">
+        <FileText class="size-4 text-primary" aria-hidden="true" />
+        <div class="h-3 w-32 rounded-sm bg-base-content/22"></div>
+      </div>
+      {#each sections as section, index (index)}
+        <div class="{lineClass} {section.width} {section.delay}"></div>
+      {/each}
+      <div class="grid grid-cols-2 gap-2 pt-1 mt-auto">
+        <div
+          class="h-8 rounded-md border border-base-content/12 bg-base-200/50"
+        ></div>
+        <div
+          class="h-8 rounded-md border border-base-content/12 bg-base-200/50"
+        ></div>
+      </div>
+    </div>
+  </div>
 </MockupShell>

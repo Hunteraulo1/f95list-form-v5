@@ -12,11 +12,11 @@ let { children }: Props = $props();
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+  <link rel="icon" href={favicon}>
 </svelte:head>
 
 <QueryProvider>
-	<main class="bg-base-200 min-h-screen h-full font-[Fustat] pb-16">
-		{@render children()}
-	</main>
+  <main class="bg-base-200 min-h-screen h-full font-[Fustat] pb-16">
+    {@render children()}
+  </main>
 </QueryProvider>

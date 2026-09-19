@@ -107,161 +107,149 @@ const filteredItems = $derived.by(() => {
 </script>
 
 <div
-	class="absolute top-16 left-0 flex gap-2 justify-center items-center bg-base-300 w-full p-1"
+  class="flex absolute left-0 top-16 gap-2 justify-center items-center p-1 w-full bg-base-300"
 >
-	{#if editMode}
-		Si vous souhaiter arrêter le mode édition de profil. C'est juste ici
-	{:else}
-		Si vous souhaiter modifier votre profil, vous devez passer un mode
-		édition de profil.
-	{/if}
-	<Button
-		label={editMode ? "Arrêter le mode édition" : "Activer le mode édition"}
-		size="tiny"
-		onclick={() => (editMode = !editMode)}
-	/>
+  {#if editMode}
+    Si vous souhaiter arrêter le mode édition de profil. C'est juste ici
+  {:else}
+    Si vous souhaiter modifier votre profil, vous devez passer un mode édition
+    de profil.
+  {/if}
+  <Button
+    label={editMode ? 'Arrêter le mode édition' : 'Activer le mode édition'}
+    size="tiny"
+    onclick={() => (editMode = !editMode)}
+  />
 </div>
 
 <div class="flex gap-2">
-	<section class="w-80 max-w-full flex flex-col items-center p-4">
-		<div
-			class="bg-base-300 size-48 rounded-full p-2 flex justify-center items-center relative overflow-hidden"
-		>
-			{#if user.image}
-				<img
-					src={user.image}
-					alt="Image de profil de {user.name}"
-					class="rounded-full"
-				/>
-			{:else}
-				<ImageOff size="64" opacity=".2" />
-			{/if}
+  <section class="flex flex-col items-center p-4 w-80 max-w-full">
+    <div
+      class="flex overflow-hidden relative justify-center items-center p-2 rounded-full bg-base-300 size-48"
+    >
+      {#if user.image}
+        <img src={user.image} alt="Profil de {user.name}" class="rounded-full">
+      {:else}
+        <ImageOff size="64" opacity=".2" />
+      {/if}
 
-			{#if editMode}
-				<button
-					class="absolute opacity-0 hover:opacity-50 bg-neutral/50 h-full w-full rounded-lg cursor-pointer"
-				>
-					Changer l'image
-				</button>
-			{/if}
-		</div>
+      {#if editMode}
+        <button
+          type="button"
+          class="absolute opacity-0 hover:opacity-50 bg-neutral/50 h-full w-full rounded-lg cursor-pointer"
+        >
+          Changer l'image
+        </button>
+      {/if}
+    </div>
 
-		<h2 class="font-bold mt-4">{user.name}</h2>
-		<h3>{user.rank}</h3>
-	</section>
-	<section class="w-full min-h-80 flex flex-col gap-4">
-		{#if user.banner || editMode}
-			<div
-				class="bg-base-300 h-48 rounded-xl flex justify-center items-center relative overflow-hidden"
-			>
-				{#if user.banner}
-					<img
-						src={user.banner}
-						alt="Bannière de profil de {user.name}"
-						class="rounded-full object-cover"
-					/>
-				{:else}
-					<ImageOff size="64" opacity=".2" />
-				{/if}
+    <h2 class="mt-4 font-bold">{user.name}</h2>
+    <h3>{user.rank}</h3>
+  </section>
+  <section class="flex flex-col gap-4 w-full min-h-80">
+    {#if user.banner || editMode}
+      <div
+        class="flex overflow-hidden relative justify-center items-center h-48 rounded-xl bg-base-300"
+      >
+        {#if user.banner}
+          <img
+            src={user.banner}
+            alt="Bannière de profil de {user.name}"
+            class="object-cover rounded-full"
+          >
+        {:else}
+          <ImageOff size="64" opacity=".2" />
+        {/if}
 
-				{#if editMode}
-					<button
-						class="bottom-0 right-0 absolute bg-neutral/50 py-1 px-5 rounded-tl-lg cursor-pointer"
-					>
-						Changer la bannière
-					</button>
-				{/if}
-			</div>
-		{/if}
+        {#if editMode}
+          <button
+            type="button"
+            class="bottom-0 right-0 absolute bg-neutral/50 py-1 px-5 rounded-tl-lg cursor-pointer"
+          >
+            Changer la bannière
+          </button>
+        {/if}
+      </div>
+    {/if}
 
-		{#if user.description || editMode}
-			<div
-				class="bg-base-300 min-h-48 rounded-xl p-6 flex items-center relative overflow-hidden"
-			>
-				{#if user.description}
-					<p class="self-start">
-						{user.description}
-					</p>
-				{:else}
-					<PenOff class="mx-auto" size="64" opacity=".2" />
-				{/if}
+    {#if user.description || editMode}
+      <div
+        class="flex overflow-hidden relative items-center p-6 rounded-xl bg-base-300 min-h-48"
+      >
+        {#if user.description}
+          <p class="self-start">
+            {user.description}
+          </p>
+        {:else}
+          <PenOff class="mx-auto" size="64" opacity=".2" />
+        {/if}
 
-				{#if editMode}
-					<button
-						class="bottom-0 right-0 absolute bg-neutral/50 py-1 px-5 rounded-tl-lg cursor-pointer"
-					>
-						Changer la description
-					</button>
-				{/if}
-			</div>
-		{/if}
+        {#if editMode}
+          <button
+            type="button"
+            class="bottom-0 right-0 absolute bg-neutral/50 py-1 px-5 rounded-tl-lg cursor-pointer"
+          >
+            Changer la description
+          </button>
+        {/if}
+      </div>
+    {/if}
 
-		{#if items.length > 0}
-			<div class="rounded-xl p-2 flex flex-col relative">
-				<h3 class="py-4 text-center font-bold text-xl">
-					Mes traductions:
-				</h3>
+    {#if items.length > 0}
+      <div class="flex relative flex-col p-2 rounded-xl">
+        <h3 class="py-4 text-xl font-bold text-center">Mes traductions:</h3>
 
-				<div class="flex justify-end my-4">
-					<Input
-						placeholder="Rechercher un nom..."
-						value={search}
-						oninput={(e) => (search = e.currentTarget.value)}
-					/>
-				</div>
+        <div class="flex justify-end my-4">
+          <Input
+            placeholder="Rechercher un nom..."
+            value={search}
+            oninput={(e) => (search = e.currentTarget.value)}
+          />
+        </div>
 
-				<table class="table-fixed w-full border-spacing-2">
-					<thead>
-						<tr>
-							{#each columns as { label, key }}
-								<th
-									scope="col"
-									class={cn(
-										"select-none",
-										key && "cursor-pointer",
-									)}
-									onclick={() => sortBy(key)}
-								>
-									<span
-										class="flex justify-center items-center gap-2"
-									>
-										{label}
-										{#if key && sortKey === key}
-											{#if sortAsc}
-												<ArrowDownAZ size="16" />
-											{:else}
-												<ArrowUpAZ size="16" />
-											{/if}
-										{/if}
-									</span>
-								</th>
-							{/each}
-						</tr>
-					</thead>
-					<tbody>
-						{#each filteredItems as item (item.id)}
-							<tr
-								class="border-collapse even:bg-base-300 odd:bg-base-100 relative"
-							>
-								<td class="py-2 px-4 font-bold">{item.name}</td>
-								<td class="py-2 px-4 text-center"
-									>{item.version}</td
-								>
-								<td
-									class={cn(
-										"py-2 px-4 text-center",
-										item.version !== item.tversion &&
-											"text-yellow-500",
-									)}>{item.tversion}</td
-								>
-								<td class="py-3 px-4 flex justify-center gap-2">
-									<Button label="Accèder" size="tiny" />
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
-		{/if}
-	</section>
+        <table class="w-full table-fixed border-spacing-2">
+          <thead>
+            <tr>
+              {#each columns as { label, key }}
+                <th
+                  scope="col"
+                  class={cn('select-none', key && 'cursor-pointer')}
+                  onclick={() => sortBy(key)}
+                >
+                  <span class="flex gap-2 justify-center items-center">
+                    {label}
+                    {#if key && sortKey === key}
+                      {#if sortAsc}
+                        <ArrowDownAZ size="16" />
+                      {:else}
+                        <ArrowUpAZ size="16" />
+                      {/if}
+                    {/if}
+                  </span>
+                </th>
+              {/each}
+            </tr>
+          </thead>
+          <tbody>
+            {#each filteredItems as item (item.id)}
+              <tr
+                class="relative border-collapse even:bg-base-300 odd:bg-base-100"
+              >
+                <td class="py-2 px-4 font-bold">{item.name}</td>
+                <td class="py-2 px-4 text-center">{item.version}</td>
+                <td
+                  class={cn('py-2 px-4 text-center', item.version !== item.tversion && 'text-yellow-500')}
+                >
+                  {item.tversion}
+                </td>
+                <td class="flex gap-2 justify-center py-3 px-4">
+                  <Button label="Accèder" size="tiny" />
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    {/if}
+  </section>
 </div>

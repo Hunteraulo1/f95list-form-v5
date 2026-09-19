@@ -11,5 +11,5 @@ let { children }: Props = $props();
 </script>
 
 <QueryClientProvider client={queryClient}>
-	{@render children()}
+  {@render children()}
 </QueryClientProvider>

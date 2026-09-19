@@ -82,38 +82,40 @@ const slides: HeroSlide[] = [
 </script>
 
 <HomeBox
-	title={slides[activeSlide].title}
-	description={slides[activeSlide].lead}
-	buttons={slides[activeSlide].buttons}
-	classes="pb-4 flex lg:flex-col flex-col-reverse"
-	masterClasses="min-h-120 overflow-hidden"
+  title={slides[activeSlide].title}
+  description={slides[activeSlide].lead}
+  buttons={slides[activeSlide].buttons}
+  classes="pb-4 flex lg:flex-col flex-col-reverse"
+  masterClasses="min-h-120 overflow-hidden"
 >
-	<div
-		class="max-lg:absolute lg:relative max-lg:top-0 max-lg:left-0 w-full h-full max-lg:opacity-20 max-lg:-z-1 p-8"
-	>
-		<MockupFlip {slides} {activeSlide}></MockupFlip>
-	</div>
-	<div class="flex gap-2 w-full justify-center absolute bottom-8 left-0">
-		{#each slides as _, index}
-			<button
-				aria-label="slide {index}"
-				class="bg-base-300 border border-bg-base-200 size-4 rounded-full hover:bg-primary/50"
-				class:bg-primary={index === activeSlide}
-				onclick={() => (activeSlide = index)}
-			></button>
-		{/each}
-		<button
-			aria-label="toggle"
-			class="hover:text-primary"
-			onclick={() => {
-				toogleSlide = !toogleSlide;
-			}}
-		>
-			{#if toogleSlide}
-				<Play size="16" />
-			{:else}
-				<Pause size="16" />
-			{/if}
-		</button>
-	</div>
+  <div
+    class="p-8 w-full h-full max-lg:absolute lg:relative max-lg:top-0 max-lg:left-0 max-lg:opacity-20 max-lg:-z-1"
+  >
+    <MockupFlip {slides} {activeSlide}></MockupFlip>
+  </div>
+  <div class="flex absolute left-0 bottom-8 gap-2 justify-center w-full">
+    {#each slides as _, index}
+      <button
+        type="button"
+        aria-label="slide {index}"
+        class="bg-base-300 border border-bg-base-200 size-4 rounded-full hover:bg-primary/50"
+        class:bg-primary={index === activeSlide}
+        onclick={() => (activeSlide = index)}
+      ></button>
+    {/each}
+    <button
+      type="button"
+      aria-label="toggle"
+      class="hover:text-primary"
+      onclick={() => {
+  toogleSlide = !toogleSlide;
+}}
+    >
+      {#if toogleSlide}
+        <Play size="16" />
+      {:else}
+        <Pause size="16" />
+      {/if}
+    </button>
+  </div>
 </HomeBox>

@@ -26,12 +26,12 @@ const classicStyle = 'bg-neutral-content';
 </script>
 
 <input
-	class={cn(
-		"rounded-xl text-primary shadow-mini border-2 border-transparent inline-flex items-center justify-center text-sm font-bold transition-all hover:border-primary cursor-pointer h-9 px-4",
-		inline ? inlineStyle : classicStyle,
-		classes,
-	)}
-	{value}
-	{placeholder}
-	{oninput}
-/>
+  class={cn(
+  'rounded-xl text-primary shadow-mini border-2 border-transparent inline-flex items-center justify-center text-sm font-bold transition-all hover:border-primary cursor-pointer h-9 px-4',
+  inline ? inlineStyle : classicStyle,
+  classes,
+)}
+  {value}
+  {placeholder}
+  {oninput}
+>

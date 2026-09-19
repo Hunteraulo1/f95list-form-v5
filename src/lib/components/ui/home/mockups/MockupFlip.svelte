@@ -93,47 +93,49 @@ $effect(() => {
 });
 </script>
 
-{#snippet mockupFace(slide: SlideMockup)}
-	<div class="relative flex h-full w-full items-stretch justify-center">
-		<div
-			class="pointer-events-none absolute inset-[12%_-6%_-12%] rounded-2xl bg-[radial-gradient(circle_at_50%_50%,color-mix(in_oklab,var(--color-primary)_42%,transparent),transparent_70%)] opacity-50 blur-[20px]"
-		></div>
-		<div class="relative z-1 flex h-full w-full max-w-2xl antialiased">
-			{#if slide.mockup === "sheet"}
-				<MockupSheet />
-			{:else if slide.mockup === "discord"}
-				<DiscordMockup />
-			{:else}
-				<MockupWiki />
-			{/if}
-		</div>
-	</div>
+{#snippet mockupFace(
+  slide: SlideMockup,
+)}
+  <div class="flex relative justify-center items-stretch w-full h-full">
+    <div
+      class="pointer-events-none absolute inset-[12%_-6%_-12%] rounded-2xl bg-[radial-gradient(circle_at_50%_50%,color-mix(in_oklab,var(--color-primary)_42%,transparent),transparent_70%)] opacity-50 blur-[20px]"
+    ></div>
+    <div class="flex relative w-full max-w-2xl h-full antialiased z-1">
+      {#if slide.mockup === 'sheet'}
+        <MockupSheet />
+      {:else if slide.mockup === 'discord'}
+        <DiscordMockup />
+      {:else}
+        <MockupWiki />
+      {/if}
+    </div>
+  </div>
 {/snippet}
 
 <div
-	class="relative h-92 md:h-full w-full perspective-origin-[50%_50%] perspective-midrange"
+  class="relative h-92 md:h-full w-full perspective-origin-[50%_50%] perspective-midrange"
 >
-	<div
-		class="h-full w-full origin-[50%_50%] animate-float-sheet transform-3d"
-		class:paused={isSpinning}
-	>
-		<div
-			bind:this={flipperEl}
-			class="relative h-full w-full origin-[50%_50%] transform-[rotateY(0deg)] will-change-transform transform-3d"
-		>
-			<div
-				class="{faceBaseClass} transform-[rotateY(0deg)_translateZ(1px)]"
-				class:opacity-0={backFaceVisible}
-			>
-				{@render mockupFace(slides[shownIndex])}
-			</div>
-			<div
-				class="{faceBaseClass} pointer-events-none transform-[rotateY(180deg)_translateZ(1px)] opacity-0"
-				class:opacity-100={backFaceVisible}
-				class:pointer-events-auto={backFaceVisible}
-			>
-				{@render mockupFace(slides[targetIndex])}
-			</div>
-		</div>
-	</div>
+  <div
+    class="h-full w-full origin-[50%_50%] animate-float-sheet transform-3d"
+    class:paused={isSpinning}
+  >
+    <div
+      bind:this={flipperEl}
+      class="relative h-full w-full origin-[50%_50%] transform-[rotateY(0deg)] will-change-transform transform-3d"
+    >
+      <div
+        class="{faceBaseClass} transform-[rotateY(0deg)_translateZ(1px)]"
+        class:opacity-0={backFaceVisible}
+      >
+        {@render mockupFace(slides[shownIndex])}
+      </div>
+      <div
+        class="{faceBaseClass} pointer-events-none transform-[rotateY(180deg)_translateZ(1px)] opacity-0"
+        class:opacity-100={backFaceVisible}
+        class:pointer-events-auto={backFaceVisible}
+      >
+        {@render mockupFace(slides[targetIndex])}
+      </div>
+    </div>
+  </div>
 </div>

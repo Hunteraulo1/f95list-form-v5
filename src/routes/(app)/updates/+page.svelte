@@ -70,102 +70,99 @@ const gamesByDay = $derived.by(() => {
 </script>
 
 <section class="md:grid md:grid-cols-[1fr_20rem] w-full gap-4">
-	<div
-		class="w-full bg-base-100 flex flex-col gap-6 p-4 rounded-xl overflow-hidden"
-	>
-		{#each gamesByDay as [day, games] (day)}
-			<div>
-				<h2 class="text-lg font-semibold capitalize mb-2">{day}</h2>
-				<div
-					class="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-				>
-					{#each games as { id, image, name, gameId, updateType } (id)}
-						<a href={`/games/${gameId}`}>
-							<div
-								class="bg-base-200 h-60 rounded-lg overflow-hidden relative"
-							>
-								<img
-									src={image}
-									loading="lazy"
-									alt="image de {name}"
-									class="object-cover w-full h-full"
-								/>
-								<div
-									class="bg-base-300/20 hover:bg-base-300/0 h-full w-full p-4 absolute top-0 flex flex-col gap-2 font-bold"
-								>
-									<span
-										class="w-fit rounded-xl px-2 text-xs font-black uppercase"
-										class:bg-green-700={updateType ===
-											"ajout"}
-										class:bg-yellow-500={updateType ===
-											"mise à jour"}
-									>
-										{updateType}
-									</span>
-									{name}
-								</div>
-							</div>
-						</a>
-					{/each}
-				</div>
-			</div>
-		{/each}
-	</div>
-	<div
-		class={cn(
-			"not-md:fixed md:w-full top-24 md:top-0 right-2 not-md:w-12 transition-all relative",
-			isOpen && "w-75! max-w-full p-4",
-		)}
-	>
-		<div
-			class="flex flex-col items-end bg-base-300 md:w-full md:sticky md:top-8 md:h-[calc(100vh-4rem)] p-1 rounded-xl md:p-4 w-full h-full"
-		>
-			<button
-				class="md:hidden p-2 hover:bg-base-200 rounded-lg"
-				onclick={() => {
-					isOpen = !isOpen;
-				}}
-			>
-				{#if isOpen}
-					<X />
-				{:else}
-					<Funnel />
-				{/if}
-			</button>
+  <div
+    class="flex overflow-hidden flex-col gap-6 p-4 w-full rounded-xl bg-base-100"
+  >
+    {#each gamesByDay as [day, games] (day)}
+      <div>
+        <h2 class="mb-2 text-lg font-semibold capitalize">{day}</h2>
+        <div
+          class="flex flex-col gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
+          {#each games as { id, image, name, gameId, updateType } (id)}
+            <a href={`/games/${gameId}`}>
+              <div class="overflow-hidden relative h-60 rounded-lg bg-base-200">
+                <img
+                  src={image}
+                  loading="lazy"
+                  alt={name}
+                  class="object-cover w-full h-full"
+                >
+                <div
+                  class="flex absolute top-0 flex-col gap-2 p-4 w-full h-full font-bold bg-base-300/20 hover:bg-base-300/0"
+                >
+                  <span
+                    class="px-2 text-xs font-black uppercase rounded-xl w-fit"
+                    class:bg-green-700={updateType === 'ajout'}
+                    class:bg-yellow-500={updateType === 'mise à jour'}
+                  >
+                    {updateType}
+                  </span>
+                  {name}
+                </div>
+              </div>
+            </a>
+          {/each}
+        </div>
+      </div>
+    {/each}
+  </div>
+  <div
+    class={cn(
+  'not-md:fixed md:w-full top-24 md:top-0 right-2 not-md:w-12 transition-all relative',
+  isOpen && 'w-75! max-w-full p-4',
+)}
+  >
+    <div
+      class="flex flex-col items-end bg-base-300 md:w-full md:sticky md:top-8 md:h-[calc(100vh-4rem)] p-1 rounded-xl md:p-4 w-full h-full"
+    >
+      <button
+        type="button"
+        class="p-2 rounded-lg md:hidden hover:bg-base-200"
+        onclick={() => {
+  isOpen = !isOpen;
+}}
+      >
+        {#if isOpen}
+          <X />
+        {:else}
+          <Funnel />
+        {/if}
+      </button>
 
-			<div
-				class="w-full flex-col gap-3 not-md:p-4 flex"
-				class:not-md:hidden={!isOpen}
-			>
-				<Input
-					placeholder="Rechercher un nom ou un n° de thread"
-					classes="w-full"
-					value={query}
-					oninput={(e) => {
-						query = e.currentTarget.value;
-					}}
-				/>
-				<div class="flex items-center justify-between gap-2">
-					<span class="text-sm font-bold">Filtres</span>
-					{#if hasFilters}
-						<button
-							type="button"
-							class="text-xs underline opacity-70 hover:opacity-100 cursor-pointer"
-							onclick={resetFilters}
-						>
-							Réinitialiser
-						</button>
-					{/if}
-				</div>
-				<div class="flex flex-wrap gap-2">
-					{#each filterGroups as group (group.name)}
-						<GamesFilterGroup
-							{group}
-							onToggle={(value) => toggleValue(group.name, value)}
-						/>
-					{/each}
-				</div>
-			</div>
-		</div>
-	</div>
+      <div
+        class="flex flex-col gap-3 w-full not-md:p-4"
+        class:not-md:hidden={!isOpen}
+      >
+        <Input
+          placeholder="Rechercher un nom ou un n° de thread"
+          classes="w-full"
+          value={query}
+          oninput={(e) => {
+  query = e.currentTarget.value;
+}}
+        />
+        <div class="flex gap-2 justify-between items-center">
+          <span class="text-sm font-bold">Filtres</span>
+          {#if hasFilters}
+            <button
+              type="button"
+              class="text-xs underline opacity-70 cursor-pointer hover:opacity-100"
+              onclick={resetFilters}
+            >
+              Réinitialiser
+            </button>
+          {/if}
+        </div>
+        <div class="flex flex-wrap gap-2">
+          {#each filterGroups as group (group.name)}
+            <GamesFilterGroup
+              {group}
+              onToggle={(value) => toggleValue(group.name, value)}
+            />
+          {/each}
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
