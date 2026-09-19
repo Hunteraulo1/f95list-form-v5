@@ -10,6 +10,7 @@ interface Props {
   size?: 'tiny' | 'small' | 'normal' | 'big';
   type?: 'button' | 'submit' | 'reset';
   onclick?: MouseEventHandler<HTMLButtonElement>;
+  full?: boolean;
 }
 
 const {
@@ -19,6 +20,7 @@ const {
   size = 'normal',
   type = 'button',
   onclick,
+  full = false,
 }: Props = $props();
 
 const inlineStyle: ClassValue =
@@ -34,6 +36,7 @@ const classicStyle: ClassValue = 'bg-primary dark:bg-neutral-content';
   size === 'small' && 'h-6 min-h-6 px-3',
   size === 'normal' && 'h-9 min-h-9 px-4 uppercase',
   size === 'big' && 'h-12 min-h-12 px-5.25 uppercase',
+  full ? 'w-full' : ' w-fit',
   classes,
 )}
   {type}

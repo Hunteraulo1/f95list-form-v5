@@ -18,48 +18,57 @@ const getHostname = (link: string) => {
 };
 </script>
 
-<section
-  class="relative mb-4 flex min-h-60 flex-col gap-4 md:grid md:grid-cols-5"
->
-  <div
-    class="col-span-3 h-full w-full overflow-hidden rounded-xl bg-base-100 bg-cover bg-center bg-no-repeat text-2xl font-bold hover:bg-contain"
-    style="background-image: url({data.game.image});"
-  >
+<div class="flex flex-col gap-4">
+  <section class="relative flex min-h-60 flex-col gap-4 md:grid md:grid-cols-5">
     <div
-      class="flex h-full w-full flex-col items-center justify-center bg-base-300/40 p-4 transition-all select-none hover:opacity-0"
+      class="col-span-3 h-full w-full overflow-hidden rounded-xl bg-base-100 bg-cover bg-center bg-no-repeat text-2xl font-bold hover:bg-contain"
+      style="background-image: url({data.game.image});"
     >
-      {data.game.name}
-      <span class="text-sm">{data.game.description}</span>
+      <div
+        class="flex h-full w-full flex-col items-center justify-center bg-base-300/40 p-4 transition-all select-none hover:opacity-0"
+      >
+        {data.game.name}
+        <span class="text-sm">{data.game.description}</span>
+      </div>
     </div>
-  </div>
-  <div
-    class="col-span-2 flex max-h-full min-h-60 flex-col gap-2 rounded-xl bg-base-100 p-4"
-  >
-    <div class="overflow-y-scroll">
-      <div class="font-bold">Tags:</div>
-      {#each data.game.tags as tag, index}
-        {#if index !== 0}
-          ,
-        {/if}
-        {tag.name}
-      {/each}
-    </div>
+    <div
+      class="col-span-2 flex max-h-full min-h-60 flex-col gap-2 rounded-xl bg-base-100 p-4"
+    >
+      <div class="overflow-y-scroll">
+        <div class="font-bold">Tags:</div>
+        {#each data.game.tags as tag, index}
+          {#if index !== 0}
+            ,
+          {/if}
+          {tag.name}
+        {/each}
+      </div>
 
-    <div>
-      <span class="font-bold">ID du thread:</span>
-      {data.game.threadId}
-    </div>
+      <div>
+        <span class="font-bold">ID du thread:</span>
+        {data.game.threadId}
+      </div>
 
+      <Button
+        label="Accèder à {getHostname(data.game.link)}"
+        classes="mt-auto"
+        full
+        onclick={() => open(data.game.link, 'blank_')}
+      />
+    </div>
+  </section>
+
+  <section class="flex w-full gap-4 rounded-xl bg-base-100 p-4">
+    <Button label="Actualiser les données" />
+    <Button label="Modifier le jeu" />
     <Button
-      label="Accèder à {getHostname(data.game.link)}"
-      classes="mt-auto"
-      onclick={() => open(data.game.link, 'blank_')}
+      label="Signaler un problème"
+      inline
+      classes="border-error text-error! hover:bg-error-content ml-auto"
     />
-  </div>
-</section>
+  </section>
 
-<section>
-  <div class="flex w-full flex-col gap-4 rounded-xl bg-base-100 p-4">
+  <section class="flex w-full flex-col gap-4 rounded-xl bg-base-100 p-4">
     <div class="flex items-center justify-between gap-2">
       <span class="font-bold">Traductions</span>
       <Button label="Ajouter une traduction" size="small" />
@@ -107,24 +116,25 @@ const getHostname = (link: string) => {
                 {/if}
                 {#if translation.file?.externalLink}
                   {@render downloadLink(
-                    translation.file.externalLink,
-                    getHostname(translation.file.externalLink),
-                    Boolean(translation.file.internalLink),
-                  )}
+                      translation.file.externalLink,
+                      getHostname(translation.file.externalLink),
+                      Boolean(translation.file.internalLink),
+                    )}
                 {/if}
                 {#if !translation.file?.internalLink && !translation.file?.externalLink}
                   <span class="text-sm text-base-content/70"
                     >Aucun fichier</span
                   >
                 {/if}
+                <Button label="Modifier" inline />
               </div>
             </div>
           {/each}
         </div>
       </div>
     {/each}
-  </div>
-</section>
+  </section>
+</div>
 
 {#snippet downloadLink(
   link: string,
