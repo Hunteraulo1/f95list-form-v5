@@ -51,33 +51,35 @@ const max = $derived(
   <div
     class="grid min-h-60 w-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
   >
-    {#each games.slice(0, max) as { name, image }}
-      <article
-        class="relative h-60 w-full cursor-pointer rounded-xl bg-base-300 shadow transition-all hover:-rotate-1 hover:shadow-md hover:md:-rotate-2"
-      >
-        <div
-          class="relative z-10 flex h-full flex-col justify-end bg-base-300/20 p-4 hover:bg-base-300/0"
+    {#each games.slice(0, max) as { name, image, id }}
+      <a href="/games/{id}">
+        <article
+          class="relative h-60 w-full cursor-pointer rounded-xl bg-base-300 shadow transition-all hover:-rotate-1 hover:shadow-md hover:md:-rotate-2"
         >
-          <h4 class="text-md text-center font-bold">
-            {name}
-          </h4>
-        </div>
-        <div class="absolute top-0 h-full w-full">
-          {#if image}
-            <img
-              src={image}
-              alt={`image de ${name}`}
-              class="h-full w-full rounded-2xl object-cover p-2 opacity-100"
-            >
-          {:else}
-            <div
-              class="flex h-full w-full items-center justify-center text-sm text-base-content/20"
-            >
-              Aucune image
-            </div>
-          {/if}
-        </div>
-      </article>
+          <div
+            class="relative z-10 flex h-full flex-col justify-end bg-base-300/20 p-4 hover:bg-base-300/0"
+          >
+            <h4 class="text-md text-center font-bold">
+              {name}
+            </h4>
+          </div>
+          <div class="absolute top-0 h-full w-full">
+            {#if image}
+              <img
+                src={image}
+                alt={`image de ${name}`}
+                class="h-full w-full rounded-2xl object-cover p-2 opacity-100"
+              >
+            {:else}
+              <div
+                class="flex h-full w-full items-center justify-center text-sm text-base-content/20"
+              >
+                Aucune image
+              </div>
+            {/if}
+          </div>
+        </article>
+      </a>
     {/each}
     {#if aboutLink}
       <a href={aboutLink}>

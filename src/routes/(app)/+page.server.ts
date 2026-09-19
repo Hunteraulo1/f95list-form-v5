@@ -17,7 +17,7 @@ export const load = async () => {
     .join('gt.gameEdition', 'ge')
     .join('ge.game', 'g')
     .select([
-      'gt.id as id',
+      'g.id as id',
       'g.name as name',
       'ge.name as editionName',
       'g.imageExternal as image',
