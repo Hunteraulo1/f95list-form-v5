@@ -19,12 +19,12 @@ interface Props {
 const { items }: Props = $props();
 </script>
 
-<ul class="flex flex-col gap-2 p-2 w-64 max-w-full h-full">
+<ul class="flex h-full w-64 max-w-full flex-col gap-2 p-2">
   {#each items as item}
     <li>
       <a
         href={item.href}
-        class={cn('flex gap-2 items-center p-2 rounded-lg hover:bg-base-100', item.class)}
+        class={cn('flex items-center gap-2 rounded-lg p-2 hover:bg-base-100', item.class)}
         class:bg-base-300={page.url.pathname === item.href}
       >
         <item.icon />

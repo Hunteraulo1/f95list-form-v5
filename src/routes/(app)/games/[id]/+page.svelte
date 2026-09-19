@@ -18,21 +18,21 @@ const getHostname = (link: string) => {
 </script>
 
 <section
-  class="flex relative flex-col gap-4 mb-4 min-h-60 md:grid md:grid-cols-5"
+  class="relative mb-4 flex min-h-60 flex-col gap-4 md:grid md:grid-cols-5"
 >
   <div
-    class="overflow-hidden col-span-3 w-full h-full text-2xl font-bold bg-center bg-no-repeat bg-cover rounded-xl bg-base-100 hover:bg-contain"
+    class="col-span-3 h-full w-full overflow-hidden rounded-xl bg-base-100 bg-cover bg-center bg-no-repeat text-2xl font-bold hover:bg-contain"
     style="background-image: url({data.game.image});"
   >
     <div
-      class="flex flex-col justify-center items-center p-4 w-full h-full transition-all select-none bg-base-300/40 hover:opacity-0"
+      class="flex h-full w-full flex-col items-center justify-center bg-base-300/40 p-4 transition-all select-none hover:opacity-0"
     >
       {data.game.name}
       <span class="text-sm">{data.game.description}</span>
     </div>
   </div>
   <div
-    class="flex flex-col col-span-2 gap-2 p-4 max-h-full rounded-xl min-h-60 bg-base-100"
+    class="col-span-2 flex max-h-full min-h-60 flex-col gap-2 rounded-xl bg-base-100 p-4"
   >
     <div class="overflow-y-scroll">
       <div class="font-bold">Tags:</div>
@@ -58,23 +58,23 @@ const getHostname = (link: string) => {
 </section>
 
 <section>
-  <div class="flex relative flex-col gap-4 p-4 w-full rounded-xl bg-base-100">
-    <span class="font-bold text-center">Traductions</span>
+  <div class="relative flex w-full flex-col gap-4 rounded-xl bg-base-100 p-4">
+    <span class="text-center font-bold">Traductions</span>
     <Button
       label="Ajouter une traduction"
       size="small"
       classes="w-45 absolute right-4"
     />
     {#each data.game.gameEditions as edition}
-      <div class="flex flex-col gap-2 w-full rounded-xl bg-base-200">
+      <div class="flex w-full flex-col gap-2 rounded-xl bg-base-200">
         <span class="p-4">
           {edition.name}
         </span>
 
-        <div class="flex overflow-x-scroll gap-2 px-4 pb-4 w-full">
+        <div class="flex w-full gap-2 overflow-x-scroll px-4 pb-4">
           {#each edition.gameTranslations as translation}
             <div
-              class="flex flex-col gap-4 p-2 w-60 rounded-xl min-w-60 bg-base-300"
+              class="flex w-60 min-w-60 flex-col gap-4 rounded-xl bg-base-300 p-2"
             >
               <span>Version: {translation.version}</span>
 
