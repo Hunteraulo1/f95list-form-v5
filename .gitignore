@@ -28,3 +28,4 @@ vite.config.ts.timestamp-*
 
 # Dev
 migrate-v4.ts
+translator-merge.ts

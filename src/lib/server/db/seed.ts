@@ -14,9 +14,8 @@ import {
   OriginWebsite,
   Role,
   RolePermission,
-  Translator,
-  TranslatorLink,
   User,
+  UserLink,
 } from './entities';
 
 loadEnv();
@@ -50,8 +49,7 @@ export const main = async () => {
   const em = orm.em.fork();
 
   await em.nativeDelete(GameTranslationTranslator, {});
-  await em.nativeDelete(TranslatorLink, {});
-  await em.nativeDelete(Translator, {});
+  await em.nativeDelete(UserLink, {});
   await em.nativeDelete(GameTranslationFile, {});
   await em.nativeDelete(GameTranslation, {});
   await em.nativeDelete(GameEdition, {});
@@ -167,21 +165,30 @@ export const main = async () => {
     });
   }
 
-  const translators = Array.from({ length: 50 }, () =>
-    em.create(Translator, {
-      name: faker.person.fullName(),
-      user:
-        faker.helpers.maybe(() => faker.helpers.arrayElement(users)) ?? null,
-      discordId: faker.helpers.maybe(() => faker.string.numeric(18)) ?? null,
-      active: true,
+  //? Un traducteur est un compte : des comptes réels, et des comptes fantômes (sans e-mail ni
+  //? zitadelId) pour les traducteurs qui n'ont pas de compte, revendicables ensuite.
+  const translatorRole =
+    roles.find(({ name }) => name === 'translator') ?? roles[0];
+  const ghosts = Array.from({ length: 30 }, () =>
+    em.create(User, {
+      name: faker.person.fullName().slice(0, 64),
+      discord:
+        faker.helpers.maybe(() =>
+          faker.string.numeric({ length: 18, allowLeadingZeros: false }),
+        ) ?? null,
+      role: translatorRole,
     }),
   );
+  const translators = [
+    ...ghosts,
+    ...faker.helpers.arrayElements(users, { min: 15, max: 20 }),
+  ];
 
   for (const translator of translators) {
     const linkCount = faker.number.int({ min: 0, max: 3 });
     for (let order = 0; order < linkCount; order++) {
-      em.create(TranslatorLink, {
-        translator,
+      em.create(UserLink, {
+        user: translator,
         name: faker.internet.domainWord(),
         link: faker.internet.url(),
         order,
@@ -192,7 +199,7 @@ export const main = async () => {
   await em.flush();
 
   //? drizzle-seed's replacement here has the same composite-PK constraint the original
-  //? hand-written loop worked around: (gameTranslationId, translatorId) pairs must be unique.
+  //? hand-written loop worked around: (gameTranslationId, userId) pairs must be unique.
   const maxLinks = Math.min(10, gameTranslations.length * translators.length);
   const pairs = new Set<string>();
 
@@ -206,8 +213,9 @@ export const main = async () => {
 
     em.create(GameTranslationTranslator, {
       gameTranslation: gt,
-      translator: t,
+      user: t,
       alert: faker.datatype.boolean(),
+      anonymous: faker.datatype.boolean({ probability: 0.1 }),
       type: faker.helpers.arrayElement(['translator', 'proofreader'] as const),
     });
   }

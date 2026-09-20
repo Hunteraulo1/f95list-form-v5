@@ -7,6 +7,19 @@ import {
 } from '$lib/utils/entriesConvert';
 import type { PageServerLoad } from './$types';
 
+//? Les crédités anonymes sont regroupés sous un seul « Anonyme » : ni nom, ni identifiant, ni nombre.
+const publicTranslators = (
+  items: { anonymous: boolean; user: { id: string; name: string } }[],
+) => {
+  const named = items
+    .filter(({ anonymous }) => !anonymous)
+    .map(({ user }) => ({ id: user.id as string | null, name: user.name }));
+
+  return items.some(({ anonymous }) => anonymous)
+    ? [...named, { id: null, name: 'Anonyme' }]
+    : named;
+};
+
 export const load: PageServerLoad = async ({ params }) => {
   const id = parseInt(params.id, 10);
 
@@ -15,7 +28,7 @@ export const load: PageServerLoad = async ({ params }) => {
     { id },
     {
       populate: [
-        'gameEditions.gameTranslations.gameTranslationTranslators.translator',
+        'gameEditions.gameTranslations.gameTranslationTranslators.user',
         'gameEditions.gameTranslations.gameTranslationFiles',
         'gameGameTags.gameTag',
       ],
@@ -73,19 +86,9 @@ export const load: PageServerLoad = async ({ params }) => {
               active: translation.active,
               // createdAt: translation.createdAt,
               // updatedAt: translation.updatedAt,
-              translators: translation.gameTranslationTranslators
-                .getItems()
-                .filter(
-                  ({ translator }) => !VIEW_ACTIVE_ONLY || translator.active,
-                )
-                .map(({ translator }) => ({
-                  id: translator.id,
-                  name: translator.name,
-                  // discordId: translator.discordId,
-                  active: translator.active,
-                  // createdAt: translator.createdAt,
-                  // updatedAt: translator.updatedAt,
-                })),
+              translators: publicTranslators(
+                translation.gameTranslationTranslators.getItems(),
+              ),
               file:
                 translation.gameTranslationFiles
                   .getItems()

@@ -13,7 +13,7 @@ import { logger } from '../logger';
 export interface SessionUser {
   id: string;
   name: string;
-  email: string;
+  email: string | null;
   description: string | null;
   avatar: string | null;
   banner: string | null;
@@ -40,7 +40,7 @@ const loadUser = async (id: string): Promise<SessionUser | null> => {
   return {
     id: user.id,
     name: user.name,
-    email: user.email,
+    email: user.email ?? null,
     description: user.description ?? null,
     avatar: user.avatar ?? null,
     banner: user.banner ?? null,

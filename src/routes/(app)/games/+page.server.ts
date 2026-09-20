@@ -3,23 +3,23 @@ import type {
   GamesFilterOptions,
 } from '$lib/games/games-filter';
 import { VIEW_ACTIVE_ONLY } from '$lib/server/config';
-import { Game, GameTags, OriginWebsite, orm, Translator } from '$lib/server/db';
+import { Game, GameTags, OriginWebsite, orm } from '$lib/server/db';
 
 export const load = async () => {
-  const [games, origins, translators, tags] = await Promise.all([
+  const [games, origins, tags] = await Promise.all([
     orm.em.find(Game, VIEW_ACTIVE_ONLY ? { active: true } : {}, {
       populate: [
-        'gameEditions.gameTranslations.gameTranslationTranslators.translator',
+        'gameEditions.gameTranslations.gameTranslationTranslators.user',
         'gameGameTags.gameTag',
       ],
       orderBy: { name: 'asc' },
     }),
     orm.em.find(OriginWebsite, {}, { orderBy: { name: 'asc' } }),
-    orm.em.find(Translator, VIEW_ACTIVE_ONLY ? { active: true } : {}, {
-      orderBy: { name: 'asc' },
-    }),
     orm.em.find(GameTags, {}, { orderBy: { name: 'asc' } }),
   ]);
+
+  //? Les traducteurs proposés au filtre : ceux qui figurent sur au moins une traduction affichée.
+  const translators = new Map<string, string>();
 
   const gameRows = games.map((game) => {
     const editions = game.gameEditions
@@ -33,8 +33,12 @@ export const load = async () => {
     const translatorIds = translations.flatMap((translation) =>
       translation.gameTranslationTranslators
         .getItems()
-        .filter(({ translator }) => !VIEW_ACTIVE_ONLY || translator.active)
-        .map(({ translator }) => translator.id),
+        //? Les anonymes ne sont ni listés ni filtrables : ce serait les identifier.
+        .filter(({ anonymous }) => !anonymous)
+        .map(({ user }) => {
+          translators.set(user.id, user.name);
+          return user.id;
+        }),
     );
 
     const row: GamesFilterableGame & { id: number; image: string | null } = {
@@ -62,10 +66,9 @@ export const load = async () => {
 
   const filterOptions: GamesFilterOptions = {
     origins: origins.map((origin) => ({ id: origin.id, name: origin.name })),
-    translators: translators.map((translator) => ({
-      id: translator.id,
-      name: translator.name,
-    })),
+    translators: [...translators]
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'fr')),
     tags: tags.map((tag) => ({ id: tag.id, name: tag.name })),
   };
 

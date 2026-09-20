@@ -1494,6 +1494,23 @@
           "enumItems": [],
           "mappedType": "boolean"
         },
+        "anonymous": {
+          "name": "anonymous",
+          "type": "tinyint(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 3,
+          "scale": 0,
+          "default": "false",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "boolean"
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -1513,23 +1530,6 @@
         },
         "game_translation_id": {
           "name": "game_translation_id",
-          "type": "char(36)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": true,
-          "nullable": false,
-          "unique": false,
-          "length": 36,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "character"
-        },
-        "translator_id": {
-          "name": "translator_id",
           "type": "char(36)",
           "unsigned": false,
           "autoincrement": false,
@@ -1579,11 +1579,28 @@
           "enumItems": [],
           "mappedType": "datetime",
           "extra": "on update current_timestamp()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "char(36)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": 36,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "character"
         }
       },
       "indexes": [
         {
-          "columnNames": ["game_translation_id", "translator_id"],
+          "columnNames": ["game_translation_id", "user_id"],
           "composite": true,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1591,10 +1608,18 @@
           "unique": true
         },
         {
-          "columnNames": ["translator_id"],
+          "columnNames": ["game_translation_id"],
           "composite": false,
           "constraint": false,
-          "keyName": "game_translation_translator_translator_fk",
+          "keyName": "game_translation_translator_game_translation_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": ["user_id"],
+          "composite": false,
+          "constraint": false,
+          "keyName": "game_translation_translator_user_id_index",
           "primary": false,
           "unique": false
         }
@@ -1611,12 +1636,12 @@
           "updateRule": "restrict",
           "deleteRule": "cascade"
         },
-        "game_translation_translator_translator_fk": {
-          "columnNames": ["translator_id"],
-          "constraintName": "game_translation_translator_translator_fk",
+        "game_translation_translator_user_fk": {
+          "columnNames": ["user_id"],
+          "constraintName": "game_translation_translator_user_fk",
           "localTableName": "game_translation_translator",
           "referencedColumnNames": ["id"],
-          "referencedTableName": "translator",
+          "referencedTableName": "user",
           "updateRule": "restrict",
           "deleteRule": "cascade"
         }
@@ -2050,320 +2075,6 @@
       "comment": null
     },
     {
-      "name": "translator",
-      "columns": {
-        "active": {
-          "name": "active",
-          "type": "tinyint(1)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": 3,
-          "scale": 0,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "boolean"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "current_timestamp()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "discord_id": {
-          "name": "discord_id",
-          "type": "varchar(36)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": 36,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "id": {
-          "name": "id",
-          "type": "char(36)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": true,
-          "nullable": false,
-          "unique": false,
-          "length": 36,
-          "precision": null,
-          "scale": null,
-          "default": "uuid()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "character"
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 255,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "current_timestamp()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime",
-          "extra": "on update current_timestamp()"
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(36)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": 36,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        }
-      },
-      "indexes": [
-        {
-          "columnNames": ["id"],
-          "composite": false,
-          "constraint": true,
-          "keyName": "PRIMARY",
-          "primary": true,
-          "unique": true
-        },
-        {
-          "columnNames": ["user_id"],
-          "composite": false,
-          "constraint": false,
-          "keyName": "translator_user_id_user_id_fkey",
-          "primary": false,
-          "unique": false
-        }
-      ],
-      "checks": [],
-      "triggers": [],
-      "foreignKeys": {
-        "translator_user_id_user_id_fkey": {
-          "columnNames": ["user_id"],
-          "constraintName": "translator_user_id_user_id_fkey",
-          "localTableName": "translator",
-          "referencedColumnNames": ["id"],
-          "referencedTableName": "user",
-          "updateRule": "restrict",
-          "deleteRule": "restrict"
-        }
-      },
-      "comment": null
-    },
-    {
-      "name": "translator_link",
-      "columns": {
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "current_timestamp()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "id": {
-          "name": "id",
-          "type": "char(36)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": true,
-          "nullable": false,
-          "unique": false,
-          "length": 36,
-          "precision": null,
-          "scale": null,
-          "default": "uuid()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "character"
-        },
-        "link": {
-          "name": "link",
-          "type": "varchar(2048)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 2048,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 255,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "order": {
-          "name": "order",
-          "type": "tinyint",
-          "unsigned": true,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "tinyint"
-        },
-        "translator_id": {
-          "name": "translator_id",
-          "type": "varchar(36)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 36,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "current_timestamp()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime",
-          "extra": "on update current_timestamp()"
-        }
-      },
-      "indexes": [
-        {
-          "columnNames": ["id"],
-          "composite": false,
-          "constraint": true,
-          "keyName": "PRIMARY",
-          "primary": true,
-          "unique": true
-        },
-        {
-          "columnNames": ["translator_id"],
-          "composite": false,
-          "constraint": false,
-          "keyName": "translator_link_translator_id_translator_id_fkey",
-          "primary": false,
-          "unique": false
-        }
-      ],
-      "checks": [],
-      "triggers": [],
-      "foreignKeys": {
-        "translator_link_translator_id_translator_id_fkey": {
-          "columnNames": ["translator_id"],
-          "constraintName": "translator_link_translator_id_translator_id_fkey",
-          "localTableName": "translator_link",
-          "referencedColumnNames": ["id"],
-          "referencedTableName": "translator",
-          "updateRule": "restrict",
-          "deleteRule": "restrict"
-        }
-      },
-      "comment": null
-    },
-    {
       "name": "user",
       "columns": {
         "avatar": {
@@ -2474,7 +2185,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "unique": false,
           "length": 128,
           "precision": null,
@@ -2577,7 +2288,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "unique": true,
           "length": 36,
           "precision": null,
@@ -2626,6 +2337,163 @@
           "referencedTableName": "role",
           "updateRule": "restrict",
           "deleteRule": "restrict"
+        }
+      },
+      "comment": null
+    },
+    {
+      "name": "user_link",
+      "columns": {
+        "created_at": {
+          "name": "created_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "id": {
+          "name": "id",
+          "type": "char(36)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": 36,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "character"
+        },
+        "link": {
+          "name": "link",
+          "type": "varchar(2048)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 2048,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 255,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "order": {
+          "name": "order",
+          "type": "tinyint",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "tinyint"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime",
+          "extra": "on update current_timestamp()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "char(36)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 36,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "character"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": ["id"],
+          "composite": false,
+          "constraint": true,
+          "keyName": "PRIMARY",
+          "primary": true,
+          "unique": true
+        },
+        {
+          "columnNames": ["user_id"],
+          "composite": false,
+          "constraint": false,
+          "keyName": "user_link_user_id_index",
+          "primary": false,
+          "unique": false
+        }
+      ],
+      "checks": [],
+      "triggers": [],
+      "foreignKeys": {
+        "user_link_user_id_user_id_fkey": {
+          "columnNames": ["user_id"],
+          "constraintName": "user_link_user_id_user_id_fkey",
+          "localTableName": "user_link",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "user",
+          "updateRule": "restrict",
+          "deleteRule": "cascade"
         }
       },
       "comment": null

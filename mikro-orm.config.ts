@@ -14,9 +14,8 @@ import {
   OriginWebsite,
   Role,
   RolePermission,
-  Translator,
-  TranslatorLink,
   User,
+  UserLink,
 } from './src/lib/server/db/entities';
 
 config();
@@ -40,9 +39,8 @@ export default defineConfig({
     OriginWebsite,
     Role,
     RolePermission,
-    Translator,
-    TranslatorLink,
     User,
+    UserLink,
   ],
   extensions: [Migrator],
   migrations: { path: './src/lib/server/db/migrations' },

@@ -195,32 +195,6 @@ export const GameTranslationFileSchema = defineEntity({
 export class GameTranslationFile extends GameTranslationFileSchema.class {}
 GameTranslationFileSchema.setClass(GameTranslationFile);
 
-export const TranslatorSchema = defineEntity({
-  name: 'Translator',
-  tableName: 'translator',
-  properties: {
-    id: uuidPk(),
-    name: p.string().length(255),
-    user: () =>
-      p
-        .manyToOne(User)
-        .fieldName('user_id')
-        .columnType('char(36)')
-        .foreignKeyName('translator_user_id_user_id_fkey')
-        .nullable()
-        .deleteRule('restrict'),
-    discordId: p.string().length(36).nullable(),
-    active: p.boolean(),
-    translatorLinks: () => p.oneToMany(TranslatorLink).mappedBy('translator'),
-    gameTranslationTranslators: () =>
-      p.oneToMany(GameTranslationTranslator).mappedBy('translator'),
-    ...timestamps(),
-  },
-});
-
-export class Translator extends TranslatorSchema.class {}
-TranslatorSchema.setClass(Translator);
-
 export const GameTranslationTranslatorSchema = defineEntity({
   name: 'GameTranslationTranslator',
   tableName: 'game_translation_translator',
@@ -234,16 +208,19 @@ export const GameTranslationTranslatorSchema = defineEntity({
         .foreignKeyName('game_translation_translator_translation_fk')
         .deleteRule('cascade')
         .updateRule('restrict'),
-    translator: () =>
+    //? Le traducteur ou relecteur : un compte utilisateur (éventuellement fantôme, sans zitadelId).
+    user: () =>
       p
-        .manyToOne(Translator)
+        .manyToOne(User)
         .primary()
-        .fieldName('translator_id')
+        .fieldName('user_id')
         .columnType('char(36)')
-        .foreignKeyName('game_translation_translator_translator_fk')
+        .foreignKeyName('game_translation_translator_user_fk')
         .deleteRule('cascade')
         .updateRule('restrict'),
     alert: p.boolean().default(true),
+    //? Crédité anonymement : la personne reste liée à la traduction, mais son nom n'est pas affiché au public.
+    anonymous: p.boolean().default(false),
     type: p.enum(['translator', 'proofreader'] as const).nullable(),
     ...timestamps(),
   },
@@ -252,17 +229,19 @@ export const GameTranslationTranslatorSchema = defineEntity({
 export class GameTranslationTranslator extends GameTranslationTranslatorSchema.class {}
 GameTranslationTranslatorSchema.setClass(GameTranslationTranslator);
 
-export const TranslatorLinkSchema = defineEntity({
-  name: 'TranslatorLink',
-  tableName: 'translator_link',
+export const UserLinkSchema = defineEntity({
+  name: 'UserLink',
+  tableName: 'user_link',
   properties: {
     id: uuidPk(),
-    translator: () =>
+    user: () =>
       p
-        .manyToOne(Translator)
-        .fieldName('translator_id')
+        .manyToOne(User)
+        .fieldName('user_id')
         .columnType('char(36)')
-        .foreignKeyName('translator_link_translator_id_translator_id_fkey'),
+        .foreignKeyName('user_link_user_id_user_id_fkey')
+        .deleteRule('cascade')
+        .updateRule('restrict'),
     name: p.string().length(255),
     link: p.string().length(2048),
     order: p.tinyint().unsigned(),
@@ -270,8 +249,8 @@ export const TranslatorLinkSchema = defineEntity({
   },
 });
 
-export class TranslatorLink extends TranslatorLinkSchema.class {}
-TranslatorLinkSchema.setClass(TranslatorLink);
+export class UserLink extends UserLinkSchema.class {}
+UserLinkSchema.setClass(UserLink);
 
 export const RoleSchema = defineEntity({
   name: 'Role',
@@ -324,7 +303,8 @@ export const UserSchema = defineEntity({
   properties: {
     id: uuidPk(),
     name: p.string().length(64),
-    email: p.string().length(128),
+    //? Un compte fantôme (traducteur sans compte, revendicable) n'a ni e-mail ni zitadelId.
+    email: p.string().length(128).nullable(),
     description: p.text().nullable(),
     avatar: p.string().length(2048).nullable(),
     banner: p.string().length(2048).nullable(),
@@ -336,7 +316,7 @@ export const UserSchema = defineEntity({
         .fieldName('role_id')
         .columnType('char(36)')
         .foreignKeyName('user_role_id_role_id_fkey'),
-    zitadelId: uuidFk().unique(),
+    zitadelId: uuidFk().unique().nullable(),
     discordNotification: p.boolean().default(true),
     ...timestamps(),
   },
