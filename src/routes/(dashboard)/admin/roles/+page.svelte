@@ -24,7 +24,7 @@ const fieldStyle =
 const cardStyle = 'flex flex-col gap-4 rounded-xl bg-base-100 p-4';
 
 const role = $derived(data.selected);
-//? Sur le rôle admin, seuls les quotas se règlent, et seulement par un admin.
+//? Sur le rôle super admin, seuls les quotas se règlent, et seulement par un super admin.
 const quotasEditable = $derived(
   role.canManage || (role.isSuper && data.canEditPriority),
 );
@@ -47,7 +47,7 @@ const parentBlocked = (key: string) => {
   return parent !== undefined && !checks[parent];
 };
 
-//? Une case est bloquée tant que sa permission parente n'est pas cochée (sauf rôle admin).
+//? Une case est bloquée tant que sa permission parente n'est pas cochée (sauf rôle super admin).
 const isBlocked = (key: string) => !role.isSuper && parentBlocked(key);
 const isDisabled = (key: string) => permissionsLocked || isBlocked(key);
 
@@ -122,8 +122,8 @@ const plural = (count: number, word: string) =>
     <div class="flex min-w-0 flex-col gap-4">
       {#if role.isSuper}
         <p class="rounded-xl bg-info/20 p-3 text-sm">
-          Le rôle admin possède automatiquement tous les droits. Seuls ses
-          quotas API peuvent être ajustés ici, par un admin.
+          Le rôle super admin possède automatiquement tous les droits. Seuls ses
+          quotas API peuvent être ajustés ici, par un super admin.
         </p>
       {:else if !role.canManage && role.blockedReason}
         <p class="rounded-xl bg-warning/20 p-3 text-sm">{role.blockedReason}</p>

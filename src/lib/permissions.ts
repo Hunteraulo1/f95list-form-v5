@@ -20,6 +20,13 @@ export const PERMISSIONS = {
     group: 'Administration',
     requires: 'admin.access',
   },
+  'users.view_email': {
+    label: 'Voir les e-mails des utilisateurs',
+    description:
+      "Afficher l'adresse e-mail des comptes dans la liste des utilisateurs.",
+    group: 'Administration',
+    requires: 'manage.users',
+  },
   'manage.roles': {
     label: 'Gérer les rôles',
     description: 'Modifier les permissions et quotas des rôles plus faibles.',
@@ -47,8 +54,14 @@ export const isPermission = (value: string): value is Permission =>
   Object.hasOwn(PERMISSIONS, value);
 
 //? Ce rôle a toutes les permissions sans passer par la base : impossible de se verrouiller
-//? hors de l'administration en décochant une case.
-export const SUPER_ROLE = 'admin';
+//? hors de l'administration en décochant une case. Il est au-dessus de tous les autres rôles,
+//? et seul un super admin peut le modifier ou l'attribuer.
+export const SUPER_ROLE = 'superadmin';
+
+//? La force du super admin est fixe et supérieure à toute force réglable : aucun autre rôle ne
+//? peut l'égaler, donc personne ne peut se hisser à son niveau.
+export const SUPER_ROLE_PRIORITY = 1000;
+export const MAX_ROLE_PRIORITY = SUPER_ROLE_PRIORITY - 1;
 
 export const getPermissionParent = (key: string): Permission | undefined => {
   if (!isPermission(key)) return undefined;

@@ -2,7 +2,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import {
   enforcePermissionDependencies,
   isPermission,
-  PERMISSION_KEYS,
+  MAX_ROLE_PRIORITY,
   permissionGroups,
   SUPER_ROLE,
 } from '$lib/permissions';
@@ -16,13 +16,13 @@ import { requirePermission } from '$lib/server/permissions';
 import {
   canGrant,
   checkCanManageRole,
+  effectivePermissions,
   roleActor,
 } from '$lib/server/role-guard';
 import type { Actions, PageServerLoad } from './$types';
 
 const LABEL_MAX_LENGTH = 64;
 const DESCRIPTION_MAX_LENGTH = 500;
-const MAX_PRIORITY = 1000;
 
 const NOTICES = {
   created: 'Rôle créé.',
@@ -48,12 +48,6 @@ const slugify = (input: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 64);
-
-//? Permissions effectives d'un rôle, dépendances comprises ; le rôle admin a tout.
-const effectivePermissions = (role: Role, stored: readonly string[]) =>
-  role.name === SUPER_ROLE
-    ? [...PERMISSION_KEYS]
-    : enforcePermissionDependencies(stored);
 
 const loadRoleWithPermissions = async (id: string) => {
   const role = await orm.em.findOne(Role, { id });
@@ -138,7 +132,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     limits: {
       keys: MAX_API_KEY_LIMIT,
       quota: MAX_API_DAILY_QUOTA,
-      priority: MAX_PRIORITY,
+      priority: MAX_ROLE_PRIORITY,
     },
   };
 };
@@ -193,10 +187,11 @@ export const actions: Actions = {
     const actor = roleActor(locals.user);
     const isSuperRole = role.name === SUPER_ROLE;
 
-    //? Sur le rôle admin, seuls les quotas se règlent, et seulement par un admin.
+    //? Sur le rôle super admin, seuls les quotas se règlent, et seulement par un super admin.
     if (isSuperRole && !actor.isSuper) {
       return fail(403, {
-        message: 'Seul un admin peut modifier les quotas du rôle admin.',
+        message:
+          'Seul un super admin peut modifier les quotas du rôle super admin.',
       });
     }
     if (!isSuperRole) {
@@ -248,12 +243,13 @@ export const actions: Actions = {
       role.description = description || null;
     }
 
-    //? La force ne se règle que par un admin.
-    if (actor.isSuper && data.has('priority')) {
-      const priority = parseQuota(data.get('priority'), MAX_PRIORITY);
+    //? La force ne se règle que par un super admin.
+    //? Celle du super admin est fixe.
+    if (actor.isSuper && !isSuperRole && data.has('priority')) {
+      const priority = parseQuota(data.get('priority'), MAX_ROLE_PRIORITY);
       if (priority == null) {
         return fail(400, {
-          message: `La force doit être un entier entre 0 et ${MAX_PRIORITY}.`,
+          message: `La force doit être un entier entre 0 et ${MAX_ROLE_PRIORITY}.`,
         });
       }
       role.priority = priority;

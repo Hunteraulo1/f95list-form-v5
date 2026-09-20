@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker';
 import { MikroORM } from '@mikro-orm/mariadb';
 import { config as loadEnv } from 'dotenv';
 import mikroOrmConfig from '../../../../mikro-orm.config';
+import { PERMISSION_KEYS, SUPER_ROLE_PRIORITY } from '../../permissions';
 import { DEV_USER_ID } from '../config';
 import {
   Config,
@@ -61,17 +62,21 @@ export const main = async () => {
 
   const roles = [
     { name: 'user', label: 'Utilisateur', priority: 0 },
-    { name: 'author', label: 'Auteur', priority: 20 },
     { name: 'translator', label: 'Traducteur', priority: 40 },
     { name: 'moderator', label: 'Modérateur', priority: 60 },
     { name: 'admin', label: 'Admin', priority: 100 },
+    { name: 'superadmin', label: 'Super admin', priority: SUPER_ROLE_PRIORITY },
   ].map((role) => em.create(Role, { ...role, isSystem: true }));
 
-  //? Le rôle « admin » a toutes les permissions sans ligne ici (voir $lib/permissions).
-  const moderator = roles.find(({ name }) => name === 'moderator');
-  if (moderator) {
-    for (const permission of ['admin.access', 'manage.game']) {
-      em.create(RolePermission, { role: moderator, permission });
+  //? Le rôle « superadmin » a toutes les permissions sans ligne ici (voir $lib/permissions) ;
+  //? l'admin les reçoit explicitement, le modérateur une partie seulement.
+  const grants: Record<string, readonly string[]> = {
+    admin: PERMISSION_KEYS,
+    moderator: ['admin.access', 'manage.game'],
+  };
+  for (const role of roles) {
+    for (const permission of grants[role.name] ?? []) {
+      em.create(RolePermission, { role, permission });
     }
   }
 
@@ -108,7 +113,7 @@ export const main = async () => {
       discord: faker.string.numeric({ length: 18, allowLeadingZeros: false }),
       role:
         index === 0
-          ? (roles.find(({ name }) => name === 'admin') ?? roles[0])
+          ? (roles.find(({ name }) => name === 'superadmin') ?? roles[0])
           : faker.helpers.arrayElement(roles),
       zitadelId: randomUUID(),
       discordNotification: faker.datatype.boolean(),
