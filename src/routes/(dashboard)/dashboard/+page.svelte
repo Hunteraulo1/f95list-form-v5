@@ -10,8 +10,7 @@ interface Props {
 }
 const { data }: Props = $props();
 
-// TODO: Implémenter la valeurs des traductions oudated
-let oudated = 5;
+const oudated = $derived(data.outdated);
 let unread = 0;
 
 let query = $state('');

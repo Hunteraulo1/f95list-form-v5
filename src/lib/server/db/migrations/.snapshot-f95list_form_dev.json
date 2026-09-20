@@ -1649,6 +1649,129 @@
       "comment": null
     },
     {
+      "name": "impersonation",
+      "columns": {
+        "created_at": {
+          "name": "created_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "target_id": {
+          "name": "target_id",
+          "type": "char(36)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 36,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "character"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime",
+          "extra": "on update current_timestamp()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "char(36)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": 36,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "character"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": ["user_id"],
+          "composite": false,
+          "constraint": true,
+          "keyName": "PRIMARY",
+          "primary": true,
+          "unique": true
+        },
+        {
+          "columnNames": ["target_id"],
+          "composite": false,
+          "constraint": false,
+          "keyName": "impersonation_target_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": ["user_id"],
+          "composite": false,
+          "constraint": false,
+          "keyName": "impersonation_user_id_index",
+          "primary": false,
+          "unique": false
+        }
+      ],
+      "checks": [],
+      "triggers": [],
+      "foreignKeys": {
+        "impersonation_target_id_user_id_fkey": {
+          "columnNames": ["target_id"],
+          "constraintName": "impersonation_target_id_user_id_fkey",
+          "localTableName": "impersonation",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "user",
+          "updateRule": "restrict",
+          "deleteRule": "cascade"
+        },
+        "impersonation_user_id_user_id_fkey": {
+          "columnNames": ["user_id"],
+          "constraintName": "impersonation_user_id_user_id_fkey",
+          "localTableName": "impersonation",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "user",
+          "updateRule": "restrict",
+          "deleteRule": "cascade"
+        }
+      },
+      "comment": null
+    },
+    {
       "name": "origin-website",
       "columns": {
         "created_at": {

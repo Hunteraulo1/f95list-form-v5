@@ -27,6 +27,13 @@ export const PERMISSIONS = {
     group: 'Administration',
     requires: 'manage.users',
   },
+  'users.impersonate': {
+    label: "Prendre la place d'un utilisateur",
+    description:
+      "Naviguer en tant qu'un autre compte (jamais un super admin, ni un rôle plus fort que le sien), avec retour immédiat à son compte.",
+    group: 'Administration',
+    requires: 'manage.users',
+  },
   'manage.roles': {
     label: 'Gérer les rôles',
     description: 'Modifier les permissions et quotas des rôles plus faibles.',

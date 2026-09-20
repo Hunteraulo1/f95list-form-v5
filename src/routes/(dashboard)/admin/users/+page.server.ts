@@ -1,8 +1,10 @@
-import { error, fail } from '@sveltejs/kit';
-import { orm, Role, User } from '$lib/server/db';
+import { error, fail, redirect } from '@sveltejs/kit';
+import { Impersonation, orm, Role, User } from '$lib/server/db';
+import { logger } from '$lib/server/logger';
 import { requirePermission } from '$lib/server/permissions';
 import {
   checkCanAssignRole,
+  checkCanImpersonate,
   checkCanManageUser,
   loadRoleTargets,
   type RoleCheck,
@@ -15,7 +17,12 @@ const SEARCH_MAX_LENGTH = 100;
 const NAME_MAX_LENGTH = 64;
 const AVATAR_MAX_LENGTH = 2048;
 
-const SORTS = ['name', 'role', 'createdAt'] as const;
+//? Par défaut on ne liste que les comptes réels : les fantômes (traducteurs sans compte, sans
+//? zitadelId) sont nombreux et ne se connectent pas ; « all » les remet tous.
+const KINDS = ['real', 'ghost', 'all'] as const;
+type Kind = (typeof KINDS)[number];
+
+const SORTS = ['name', 'role', 'createdAt', 'translations'] as const;
 type Sort = (typeof SORTS)[number];
 
 const isSort = (value: string | null): value is Sort =>
@@ -23,7 +30,8 @@ const isSort = (value: string | null): value is Sort =>
 
 const escapeLike = (value: string) => value.replace(/[\\%_]/g, '\\$&');
 
-const orderBy = (sort: Sort, dir: 'asc' | 'desc') => {
+//? Le tri sur le nombre de traductions ne se fait pas en base (voir `load`).
+const orderBy = (sort: Exclude<Sort, 'translations'>, dir: 'asc' | 'desc') => {
   switch (sort) {
     case 'name':
       return { name: dir };
@@ -34,18 +42,43 @@ const orderBy = (sort: Sort, dir: 'asc' | 'desc') => {
   }
 };
 
+//? Nombre de traductions par compte (traducteur ou relecteur) ; sans `userIds`, tous les comptes
+//? qui en ont au moins une.
+const loadTranslationCounts = async (
+  into: Map<string, number>,
+  userIds?: string[],
+) => {
+  if (userIds?.length === 0) return;
+
+  const rows = await orm.em
+    .getConnection()
+    .execute<{ userId: string; count: number }[]>(
+      `select user_id as userId, count(*) as count from game_translation_translator
+       ${userIds ? `where user_id in (${userIds.map(() => '?').join(', ')})` : ''}
+       group by user_id`,
+      userIds ?? [],
+    );
+
+  for (const { userId, count } of rows) into.set(userId, Number(count));
+};
+
 export const load: PageServerLoad = async ({ locals, url }) => {
   requirePermission(locals, 'manage.users');
   if (!locals.user) error(401, 'Non connecté');
 
   const actor = roleActor(locals.user);
   const canViewEmails = locals.user.permissions.includes('users.view_email');
+  //? On ne prend pas la place d'un autre depuis un compte déjà emprunté : on revient d'abord.
+  const canImpersonate =
+    !locals.impersonator &&
+    locals.user.permissions.includes('users.impersonate');
 
   const q = (url.searchParams.get('q') ?? '')
     .trim()
     .slice(0, SEARCH_MAX_LENGTH);
   const roleFilter = url.searchParams.get('role') ?? '';
-  const kind = url.searchParams.get('kind');
+  const kindParam = url.searchParams.get('kind');
+  const kind: Kind = KINDS.find((value) => value === kindParam) ?? 'real';
   const sortParam = url.searchParams.get('sort');
   const sort = isSort(sortParam) ? sortParam : 'createdAt';
   const dir = url.searchParams.get('dir') === 'asc' ? 'asc' : 'desc';
@@ -80,30 +113,55 @@ export const load: PageServerLoad = async ({ locals, url }) => {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const page = Math.min(requestedPage, totalPages);
 
-  const users = await orm.em.find(User, where, {
-    populate: ['role'],
-    orderBy: orderBy(sort, dir),
-    limit: PAGE_SIZE,
-    offset: (page - 1) * PAGE_SIZE,
-  });
-
+  const offset = (page - 1) * PAGE_SIZE;
   const counts = new Map<string, number>();
-  if (users.length > 0) {
-    const rows = await orm.em
-      .getConnection()
-      .execute<{ userId: string; count: number }[]>(
-        `select user_id as userId, count(*) as count from game_translation_translator
-       where user_id in (${users.map(() => '?').join(', ')}) group by user_id`,
-        users.map(({ id }) => id),
-      );
-    for (const { userId, count } of rows) counts.set(userId, Number(count));
+  let users: User[];
+
+  if (sort === 'translations') {
+    //? Le nombre de traductions n'est pas une colonne : on trie les comptes filtrés en mémoire,
+    //? avec les compteurs de tous ceux qui ont au moins une traduction (les autres valent 0).
+    //? Le `fork` évite de laisser dans l'ORM des entités partielles (nom seulement).
+    await loadTranslationCounts(counts);
+    const matching = await orm.em
+      .fork()
+      .find(User, where, { fields: ['id', 'name'] });
+    const factor = dir === 'asc' ? 1 : -1;
+
+    const ids = matching
+      .sort(
+        (a, b) =>
+          factor * ((counts.get(a.id) ?? 0) - (counts.get(b.id) ?? 0)) ||
+          a.name.localeCompare(b.name, 'fr'),
+      )
+      .slice(offset, offset + PAGE_SIZE)
+      .map(({ id }) => id);
+
+    const loaded = await orm.em.find(
+      User,
+      { id: { $in: ids } },
+      { populate: ['role'] },
+    );
+    const byId = new Map(loaded.map((user) => [user.id, user]));
+    users = ids.flatMap((id) => byId.get(id) ?? []);
+  } else {
+    users = await orm.em.find(User, where, {
+      populate: ['role'],
+      orderBy: orderBy(sort, dir),
+      limit: PAGE_SIZE,
+      offset,
+    });
+    await loadTranslationCounts(
+      counts,
+      users.map(({ id }) => id),
+    );
   }
 
   return {
-    query: { q, role: roleFilter, kind: kind ?? '', sort, dir, page },
+    query: { q, role: roleFilter, kind, sort, dir, page },
     total,
     totalPages,
     canViewEmails,
+    canImpersonate,
     roles: roles.flatMap((role) => {
       const target = targetById.get(role.id);
       if (!target) return [];
@@ -124,6 +182,11 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         ? checkCanManageUser(actor, { id: user.id, role: target })
         : { allowed: false, message: 'Rôle inconnu.' };
 
+      const impersonate: RoleCheck =
+        canImpersonate && target
+          ? checkCanImpersonate(actor, { id: user.id, role: target })
+          : { allowed: false, message: 'Non autorisé.' };
+
       return {
         id: user.id,
         name: user.name,
@@ -141,6 +204,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         isSelf: user.id === locals.user?.id,
         canEdit: manage.allowed,
         blockedReason: manage.allowed ? null : manage.message,
+        canImpersonate: impersonate.allowed,
+        impersonateBlockedReason: impersonate.allowed
+          ? null
+          : impersonate.message,
       };
     }),
   };
@@ -227,5 +294,56 @@ export const actions: Actions = {
     await orm.em.flush();
 
     return { saved: user.id };
+  },
+
+  //? Prend la place d'un autre compte : le compte réel reste connu du serveur, et le bandeau de la
+  //? page permet de revenir à tout moment. La prise de place expire d'elle-même (voir config.ts).
+  impersonate: async ({ locals, request }) => {
+    requirePermission(locals, 'manage.users');
+    requirePermission(locals, 'users.impersonate');
+    if (!locals.user)
+      return fail(401, { impersonate: true, message: 'Non connecté.' });
+
+    if (locals.impersonator) {
+      return fail(403, {
+        impersonate: true,
+        message: "Revenez d'abord à votre compte.",
+      });
+    }
+
+    const id = String((await request.formData()).get('id') ?? '');
+    const user = await orm.em.findOne(User, { id }, { populate: ['role'] });
+    if (!user) {
+      return fail(404, {
+        impersonate: true,
+        message: 'Utilisateur introuvable.',
+      });
+    }
+
+    const role = (await loadRoleTargets()).find(
+      ({ id }) => id === user.role.id,
+    );
+    const check: RoleCheck = role
+      ? checkCanImpersonate(roleActor(locals.user), { id: user.id, role })
+      : { allowed: false, message: 'Rôle inconnu.' };
+    if (!check.allowed) {
+      return fail(403, { impersonate: true, message: check.message });
+    }
+
+    await orm.em.nativeDelete(Impersonation, { user: locals.user.id });
+    orm.em.create(Impersonation, {
+      user: orm.em.getReference(User, locals.user.id),
+      target: orm.em.getReference(User, user.id),
+      //? Fixé ici plutôt que par la base : l'expiration compare avec l'horloge de l'application.
+      createdAt: new Date(),
+    });
+    await orm.em.flush();
+
+    logger.info(
+      { userId: locals.user.id, targetId: user.id },
+      'prise de place commencée',
+    );
+
+    redirect(303, '/dashboard');
   },
 };

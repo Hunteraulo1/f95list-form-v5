@@ -355,6 +355,37 @@ export const ApiKeySchema = defineEntity({
 export class ApiKey extends ApiKeySchema.class {}
 ApiKeySchema.setClass(ApiKey);
 
+//? Un utilisateur qui a pris la place d'un autre (au plus une à la fois). Côté serveur, donc
+//? infalsifiable ; elle expire d'elle-même (voir IMPERSONATION_TTL_MS).
+export const ImpersonationSchema = defineEntity({
+  name: 'Impersonation',
+  tableName: 'impersonation',
+  properties: {
+    //? Le vrai compte, celui qui a lancé la prise de place.
+    user: () =>
+      p
+        .manyToOne(User)
+        .primary()
+        .fieldName('user_id')
+        .columnType('char(36)')
+        .foreignKeyName('impersonation_user_id_user_id_fkey')
+        .deleteRule('cascade')
+        .updateRule('restrict'),
+    target: () =>
+      p
+        .manyToOne(User)
+        .fieldName('target_id')
+        .columnType('char(36)')
+        .foreignKeyName('impersonation_target_id_user_id_fkey')
+        .deleteRule('cascade')
+        .updateRule('restrict'),
+    ...timestamps(),
+  },
+});
+
+export class Impersonation extends ImpersonationSchema.class {}
+ImpersonationSchema.setClass(Impersonation);
+
 export const ConfigSchema = defineEntity({
   name: 'Config',
   tableName: 'config',

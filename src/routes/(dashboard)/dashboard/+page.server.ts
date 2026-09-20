@@ -1,8 +1,9 @@
 import { Game, orm } from '$lib/server/db';
+import { countOutdatedTranslations } from '$lib/server/my-translations';
 
 export type TranslationStatus = 'up_to_date' | 'outdated' | 'none';
 
-export const load = async () => {
+export const load = async ({ locals }: { locals: App.Locals }) => {
   const games = await orm.em.find(
     Game,
     {},
@@ -41,5 +42,9 @@ export const load = async () => {
     };
   });
 
-  return { games: rows };
+  return {
+    games: rows,
+    //? Mes traductions dont la version n'est plus à jour (mêmes règles que /dashboard/translates).
+    outdated: locals.user ? await countOutdatedTranslations(locals.user.id) : 0,
+  };
 };

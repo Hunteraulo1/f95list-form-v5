@@ -1,9 +1,11 @@
 <script lang="ts">
-import { ArrowDownAZ, ArrowUpAZ, UserRound } from '@lucide/svelte';
+import { ArrowDownAZ, ArrowUpAZ, LogIn, UserRound } from '@lucide/svelte';
 import { enhance } from '$app/forms';
 import Button from '$lib/components/ui/Button.svelte';
+import Menu from '$lib/components/ui/Menu.svelte';
 import Modal from '$lib/components/ui/Modal.svelte';
 import { cn } from '$lib/utils/cn';
+import { submitForm } from '$lib/utils/form';
 import type { ActionData, PageData } from './$types';
 
 interface Props {
@@ -14,7 +16,7 @@ interface Props {
 const { data, form }: Props = $props();
 
 type Row = PageData['users'][number];
-type SortKey = 'name' | 'role' | 'createdAt';
+type SortKey = 'name' | 'role' | 'createdAt' | 'translations';
 
 const fieldStyle =
   'shadow-mini h-9 w-full rounded-xl border-2 border-transparent bg-neutral-content px-3 text-sm font-bold text-primary outline-none hover:border-primary focus:border-primary disabled:opacity-60';
@@ -24,7 +26,7 @@ const columns = $derived<{ label: string; key: SortKey | null }[]>([
   ...(data.canViewEmails ? [{ label: 'E-mail', key: null }] : []),
   { label: 'Rôle', key: 'role' },
   { label: 'Discord', key: null },
-  { label: 'Traductions', key: null },
+  { label: 'Traductions', key: 'translations' },
   { label: 'Inscrit le', key: 'createdAt' },
   { label: 'Actions', key: null },
 ]);
@@ -48,9 +50,22 @@ const href = (changes: Record<string, string | number>) => {
 const sortHref = (key: SortKey) =>
   href({
     sort: key,
-    dir: data.query.sort === key && data.query.dir === 'asc' ? 'desc' : 'asc',
+    //? Un même clic inverse le tri ; au premier clic, les plus traducteurs d'abord.
+    dir:
+      data.query.sort === key
+        ? data.query.dir === 'asc'
+          ? 'desc'
+          : 'asc'
+        : key === 'translations'
+          ? 'desc'
+          : 'asc',
     page: 1,
   });
+
+//? Les refus de « prendre sa place » s'affichent en haut de page (la fenêtre de modification n'est pas ouverte).
+const impersonateError = $derived(
+  form && 'impersonate' in form && 'message' in form ? form.message : null,
+);
 
 const message = $derived(
   form && 'message' in form && 'id' in form && editing?.id === form.id
@@ -63,6 +78,15 @@ const message = $derived(
   <h3 class="pt-2 text-center text-xl font-bold">
     Utilisateurs ({data.total})
   </h3>
+
+  {#if impersonateError}
+    <p
+      class="rounded-xl bg-error/20 p-3 text-sm font-bold text-error"
+      role="alert"
+    >
+      {impersonateError}
+    </p>
+  {/if}
 
   <form method="GET" class="flex flex-wrap items-end gap-2">
     <label class="flex flex-col gap-1 text-sm font-bold">
@@ -94,13 +118,13 @@ const message = $derived(
     <label class="flex flex-col gap-1 text-sm font-bold">
       Type de compte
       <select class="{fieldStyle} w-44 cursor-pointer" name="kind">
-        <option value="" selected={data.query.kind === ''}>Tous</option>
         <option value="real" selected={data.query.kind === 'real'}>
           Comptes réels
         </option>
         <option value="ghost" selected={data.query.kind === 'ghost'}>
           Comptes fantômes
         </option>
+        <option value="all" selected={data.query.kind === 'all'}>Tous</option>
       </select>
     </label>
     <input type="hidden" name="sort" value={data.query.sort}>
@@ -185,13 +209,38 @@ const message = $derived(
               {dateFormat.format(new Date(user.createdAt))}
             </td>
             <td class="px-4 py-2">
-              <span class="flex justify-center">
+              <span class="flex flex-wrap justify-center gap-2">
                 <Button
                   label="Modifier"
                   size="tiny"
                   classes={cn(!user.canEdit && 'pointer-events-none opacity-50')}
                   onclick={() => (editing = user)}
                 />
+                {#if data.canImpersonate}
+                  <Menu
+                    label="Plus d'actions pour {user.name}"
+                    items={[
+  {
+    label: 'Prendre sa place',
+    icon: LogIn,
+    disabled: !user.canImpersonate,
+    title: user.impersonateBlockedReason ?? undefined,
+    onselect: () => submitForm(`impersonate-${user.id}`),
+  },
+]}
+                  />
+
+                  <!-- L'entrée du menu soumet ce formulaire : il reste caché dans la ligne. -->
+                  <form
+                    id="impersonate-{user.id}"
+                    method="POST"
+                    action="?/impersonate"
+                    class="hidden"
+                    use:enhance
+                  >
+                    <input type="hidden" name="id" value={user.id}>
+                  </form>
+                {/if}
               </span>
             </td>
           </tr>

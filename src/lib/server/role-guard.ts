@@ -165,3 +165,24 @@ export const checkCanManageUser = (
 
   return { allowed: true };
 };
+
+//? Peut-on prendre la place de ce compte ? Jamais celle d'un super admin, jamais soi-même ; et sans
+//? être super admin, seulement celle d'un compte qu'on aurait le droit de gérer : on ne peut pas
+//? se hisser au-dessus de ses droits en passant par un autre compte.
+export const checkCanImpersonate = (
+  actor: RoleActor,
+  target: { id: string; role: RoleTarget },
+): RoleCheck => {
+  if (target.id === actor.userId) {
+    return { allowed: false, message: 'Vous êtes déjà connecté à ce compte.' };
+  }
+  if (target.role.name === SUPER_ROLE) {
+    return {
+      allowed: false,
+      message: "Impossible de prendre la place d'un super admin.",
+    };
+  }
+  if (actor.isSuper) return { allowed: true };
+
+  return checkCanManageUser(actor, target);
+};

@@ -37,6 +37,15 @@ export const actions: Actions = {
   create: async ({ locals, request }) => {
     if (!locals.user) error(401, 'Non connecté');
 
+    //? Une clé créée en empruntant un compte lui donnerait un accès durable, même après le retour.
+    if (locals.impersonator) {
+      return fail(403, {
+        error:
+          "Impossible de créer une clé en naviguant en tant qu'un autre compte.",
+        name: '',
+      });
+    }
+
     const name = String((await request.formData()).get('name') ?? '').trim();
 
     if (!name) return fail(400, { error: 'Le nom est requis.', name });
