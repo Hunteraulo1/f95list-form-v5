@@ -32,6 +32,42 @@ const columns = $derived<{ label: string; key: SortKey | null }[]>([
 ]);
 
 let editing = $state<Row | null>(null);
+let nameDraft = $state('');
+let slugCheck = $state<{
+  available: boolean;
+  slug: string;
+  message?: string;
+} | null>(null);
+
+//? Le nom donne le slug de l'adresse du profil : on vérifie sa disponibilité pendant la saisie
+//? (le serveur revérifie à l'enregistrement).
+$effect(() => {
+  const user = editing;
+  const name = nameDraft.trim();
+
+  if (!user || !name || name === user.name) {
+    slugCheck = null;
+    return;
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(async () => {
+    try {
+      const response = await fetch(
+        `/admin/users/slug?name=${encodeURIComponent(name)}&id=${user.id}`,
+        { signal: controller.signal },
+      );
+      slugCheck = await response.json();
+    } catch {
+      //? Requête annulée (saisie suivante) ou réseau : le serveur tranchera à l'enregistrement.
+    }
+  }, 300);
+
+  return () => {
+    clearTimeout(timer);
+    controller.abort();
+  };
+});
 
 const dateFormat = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' });
 
@@ -214,7 +250,10 @@ const message = $derived(
                   label="Modifier"
                   size="tiny"
                   classes={cn(!user.canEdit && 'pointer-events-none opacity-50')}
-                  onclick={() => (editing = user)}
+                  onclick={() => {
+  editing = user;
+  nameDraft = user.name;
+}}
                 />
                 {#if data.canImpersonate}
                   <Menu
@@ -294,8 +333,23 @@ const message = $derived(
             name="name"
             maxlength="64"
             required
-            value={editing.name}
+            bind:value={nameDraft}
           >
+          <span
+            class={cn(
+  'text-xs font-normal',
+  slugCheck && (slugCheck.available ? 'text-success' : 'font-bold text-error'),
+)}
+          >
+            {#if slugCheck?.available === false}
+              {slugCheck.message}
+            {:else if slugCheck}
+              Lien du profil : /profile/{slugCheck.slug}
+              (disponible)
+            {:else}
+              Lien du profil : /profile/{editing.slug}
+            {/if}
+          </span>
         </label>
         <label class="flex flex-col gap-1 text-sm font-bold">
           Avatar (adresse http/https)
@@ -345,7 +399,11 @@ const message = $derived(
 
         <div class="flex justify-end gap-2">
           <Button label="Annuler" inline onclick={() => (editing = null)} />
-          <Button label="Enregistrer" type="submit" />
+          <Button
+            label="Enregistrer"
+            type="submit"
+            classes={cn(slugCheck?.available === false && 'pointer-events-none opacity-50')}
+          />
         </div>
       </form>
     {/key}

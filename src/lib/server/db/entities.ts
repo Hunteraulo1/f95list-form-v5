@@ -303,6 +303,8 @@ export const UserSchema = defineEntity({
   properties: {
     id: uuidPk(),
     name: p.string().length(64),
+    //? Adresse de son profil (/profile/<slug>), fabriquée depuis le nom (voir `$lib/slug`) et unique.
+    slug: p.string().length(64).unique(),
     //? Un compte fantôme (traducteur sans compte, revendicable) n'a ni e-mail ni zitadelId.
     email: p.string().length(128).nullable(),
     description: p.text().nullable(),

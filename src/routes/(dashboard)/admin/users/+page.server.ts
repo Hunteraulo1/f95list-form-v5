@@ -1,7 +1,9 @@
+import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { Impersonation, orm, Role, User } from '$lib/server/db';
 import { logger } from '$lib/server/logger';
 import { requirePermission } from '$lib/server/permissions';
+import { parseImageUrl } from '$lib/server/profile';
 import {
   checkCanAssignRole,
   checkCanImpersonate,
@@ -10,12 +12,12 @@ import {
   type RoleCheck,
   roleActor,
 } from '$lib/server/role-guard';
+import { checkNameSlug } from '$lib/server/slug';
 import type { Actions, PageServerLoad } from './$types';
 
 const PAGE_SIZE = 20;
 const SEARCH_MAX_LENGTH = 100;
 const NAME_MAX_LENGTH = 64;
-const AVATAR_MAX_LENGTH = 2048;
 
 //? Par défaut on ne liste que les comptes réels : les fantômes (traducteurs sans compte, sans
 //? zitadelId) sont nombreux et ne se connectent pas ; « all » les remet tous.
@@ -190,6 +192,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
       return {
         id: user.id,
         name: user.name,
+        slug: user.slug,
         avatar: user.avatar ?? null,
         discord: user.discord ?? null,
         email: canViewEmails ? (user.email ?? null) : null,
@@ -211,16 +214,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
       };
     }),
   };
-};
-
-const validAvatar = (value: string) => {
-  if (value.length > AVATAR_MAX_LENGTH) return false;
-
-  try {
-    return ['http:', 'https:'].includes(new URL(value).protocol);
-  } catch {
-    return false;
-  }
 };
 
 export const actions: Actions = {
@@ -255,12 +248,13 @@ export const actions: Actions = {
         message: `Le nom est requis (${NAME_MAX_LENGTH} caractères max).`,
       });
     }
-    if (avatar && !validAvatar(avatar)) {
-      return fail(400, {
-        id,
-        message: "L'avatar doit être une adresse http(s) valide.",
-      });
-    }
+    //? Un avatar inchangé n'est pas revalidé : certains avatars migrés viennent d'hébergeurs qui ne
+    //? sont plus autorisés, et cela ne doit pas empêcher de modifier autre chose sur le compte.
+    const image =
+      avatar === (user.avatar ?? '')
+        ? { ok: true as const, url: user.avatar ?? null }
+        : parseImageUrl(avatar);
+    if (!image.ok) return fail(400, { id, message: image.message });
     if (discord && !/^\d{5,32}$/.test(discord)) {
       return fail(400, {
         id,
@@ -272,6 +266,16 @@ export const actions: Actions = {
     const duplicate = await orm.em.findOne(User, { name, id: { $ne: id } });
     if (duplicate) {
       return fail(409, { id, message: 'Un utilisateur porte déjà ce nom.' });
+    }
+
+    //? Le nom donne le slug de l'adresse du profil : il doit être libre. Le slug ne change que si le
+    //? nom change (une simple modification de casse redonne le même slug, toujours libre pour soi).
+    let slug = user.slug;
+    if (name !== user.name) {
+      const check = await checkNameSlug(name, id);
+      if (!check.ok) return fail(409, { id, message: check.message });
+
+      slug = check.slug;
     }
 
     if (target.id !== current.id) {
@@ -289,9 +293,23 @@ export const actions: Actions = {
     }
 
     user.name = name;
-    user.avatar = avatar || null;
+    user.slug = slug;
+    user.avatar = image.url;
     user.discord = discord || null;
-    await orm.em.flush();
+
+    try {
+      await orm.em.flush();
+    } catch (cause) {
+      //? Course : un autre compte a pris ce slug entre la vérification et l'enregistrement.
+      if (cause instanceof UniqueConstraintViolationException) {
+        return fail(409, {
+          id,
+          message: "Ce lien de profil vient d'être pris par un autre compte.",
+        });
+      }
+
+      throw cause;
+    }
 
     return { saved: user.id };
   },

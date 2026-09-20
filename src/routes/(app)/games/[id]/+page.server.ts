@@ -9,14 +9,21 @@ import type { PageServerLoad } from './$types';
 
 //? Les crédités anonymes sont regroupés sous un seul « Anonyme » : ni nom, ni identifiant, ni nombre.
 const publicTranslators = (
-  items: { anonymous: boolean; user: { id: string; name: string } }[],
+  items: {
+    anonymous: boolean;
+    user: { id: string; name: string; slug: string };
+  }[],
 ) => {
   const named = items
     .filter(({ anonymous }) => !anonymous)
-    .map(({ user }) => ({ id: user.id as string | null, name: user.name }));
+    .map(({ user }) => ({
+      id: user.id as string | null,
+      name: user.name,
+      slug: user.slug as string | null,
+    }));
 
   return items.some(({ anonymous }) => anonymous)
-    ? [...named, { id: null, name: 'Anonyme' }]
+    ? [...named, { id: null, name: 'Anonyme', slug: null }]
     : named;
 };
 

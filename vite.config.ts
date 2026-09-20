@@ -3,6 +3,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, type Plugin } from 'vite';
+import { IMAGE_HOSTS } from './src/lib/image-hosts.ts';
 import { handleUpgrade } from './src/lib/server/ws/socket.ts';
 
 const webSocketServer: Plugin = {
@@ -39,14 +40,7 @@ export default defineConfig(({ command }) => {
             'default-src': ['self'],
             'script-src': ['self', 'https://insight.f95france.site'],
             'style-src': ['self', 'https://fonts.googleapis.com'],
-            'img-src': [
-              'self',
-              'data:',
-              'https://attachments.f95zone.to',
-              'https://cdn.f95france.site',
-              'https://cdn.jsdelivr.net',
-              'https://cdn.discordapp.com',
-            ],
+            'img-src': ['self', 'data:', ...IMAGE_HOSTS],
             'font-src': ['self', 'https://fonts.gstatic.com'],
             'connect-src': ['self', 'https://insight.f95france.site'],
             'object-src': ['none'],

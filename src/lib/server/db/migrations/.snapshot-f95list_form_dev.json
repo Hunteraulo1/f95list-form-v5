@@ -2370,6 +2370,23 @@
           "enumItems": [],
           "mappedType": "character"
         },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(64)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
+          "length": 64,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
         "theme": {
           "name": "theme",
           "type": "enum('system','light','dark')",
@@ -2445,6 +2462,14 @@
           "composite": false,
           "constraint": true,
           "keyName": "zitadel_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": ["slug"],
+          "composite": false,
+          "constraint": true,
+          "keyName": "user_slug_unique",
           "primary": false,
           "unique": true
         }

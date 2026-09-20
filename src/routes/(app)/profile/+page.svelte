@@ -1,255 +1,196 @@
 <script lang="ts">
-import { ArrowDownAZ, ArrowUpAZ, ImageOff, PenOff } from '@lucide/svelte';
+import { tick } from 'svelte';
+import { enhance } from '$app/forms';
+import { page } from '$app/state';
+import ProfileView, {
+  type ProfileField,
+} from '$lib/components/profile/ProfileView.svelte';
 import Button from '$lib/components/ui/Button.svelte';
-import Input from '$lib/components/ui/Input.svelte';
-import { cn } from '$lib/utils/cn';
-import type { PageData } from './$types.js';
+import MarkdownEditor from '$lib/components/ui/MarkdownEditor.svelte';
+import Modal from '$lib/components/ui/Modal.svelte';
+import { IMAGE_HOSTS } from '$lib/image-hosts';
+import { DESCRIPTION_MAX_LENGTH } from '$lib/profile';
+import { submitForm } from '$lib/utils/form';
+import type { ActionData, PageData } from './$types';
 
 interface Props {
   data: PageData;
+  form: ActionData;
 }
 
-const { data }: Props = $props();
+const { data, form }: Props = $props();
+
+type ImageField = Exclude<ProfileField, 'description'>;
 
 const user = $derived(data.profile);
+const impersonating = $derived(Boolean(page.data.impersonator));
 
 let editMode = $state(false);
+//? Avatar et bannière s'éditent dans une fenêtre ; la description directement dans son bloc.
+let imageField = $state<ImageField | null>(null);
+let editingDescription = $state(false);
+let draft = $state('');
+let description = $state('');
 
-type SortKey = 'name' | 'version' | 'tversion';
+const fieldStyle =
+  'shadow-mini w-full rounded-xl border-2 border-transparent bg-neutral-content px-4 text-sm font-bold text-primary outline-none hover:border-primary focus:border-primary';
 
-const columns: { label: string; key: SortKey | null }[] = [
-  { label: 'Nom', key: 'name' },
-  { label: 'Version', key: 'version' },
-  { label: 'Trad. Ver.', key: 'tversion' },
-  { label: 'Actions', key: null },
-];
+const hosts = IMAGE_HOSTS.map((host) => new URL(host).hostname).join(', ');
 
-const items = [
-  {
-    id: '1',
-    name: 'Gloup',
-    version: 'v1.2.0',
-    tversion: 'v1.1.0',
-    abandoned: false,
-  },
-  {
-    id: '2',
-    name: 'Shloupe',
-    version: 'v0.4.0',
-    tversion: 'v0.4.0',
-    abandoned: false,
-  },
-  {
-    id: '3',
-    name: 'Scrounch',
-    version: 'v2.8.2',
-    tversion: 'v1.6.1',
-    abandoned: false,
-  },
-  {
-    id: '4',
-    name: 'Wroup',
-    version: 'v1.6.1',
-    tversion: 'v1.6.1',
-    abandoned: false,
-  },
-  {
-    id: '5',
-    name: 'Swoom',
-    version: 'v4.5.8',
-    tversion: 'v4.5.8',
-    abandoned: false,
-  },
-  {
-    id: '6',
-    name: 'Slappy',
-    version: 'v0.8.2',
-    tversion: 'v0.6.1',
-    abandoned: true,
-  },
-  {
-    id: '7',
-    name: 'Buyrp',
-    version: 'v1.4.8',
-    tversion: 'v0.9.6',
-    abandoned: true,
-  },
-];
+const titles: Record<ImageField, string> = {
+  avatar: "Changer l'image",
+  banner: 'Changer la bannière',
+};
 
-let search = $state('');
-let sortKey = $state<SortKey | null>('name');
-let sortAsc = $state(true);
-
-function sortBy(key: SortKey | null) {
-  if (!key) return;
-  if (sortKey === key) {
-    sortAsc = !sortAsc;
-  } else {
-    sortKey = key;
-    sortAsc = true;
+const edit = (target: ProfileField) => {
+  if (target === 'description') {
+    description = user.description ?? '';
+    editingDescription = true;
+    return;
   }
-}
 
-const filteredItems = $derived.by(() => {
-  const query = search.trim().toLowerCase();
+  draft = user[target] ?? '';
+  imageField = target;
+};
 
-  const filtered = query
-    ? items.filter((item) => item.name.toLowerCase().includes(query))
-    : items;
+//? Vider le champ puis enregistrer : retire l'image.
+const clear = async () => {
+  draft = '';
+  await tick();
+  submitForm('profile-form');
+};
 
-  return [...filtered].sort((a, b) => {
-    if (!sortKey) return 0;
+//? Quitter le mode édition abandonne aussi une description en cours.
+const toggleEditMode = () => {
+  editMode = !editMode;
+  if (!editMode) editingDescription = false;
+};
 
-    const cmp = a[sortKey].localeCompare(b[sortKey]);
-    return sortAsc ? cmp : -cmp;
-  });
-});
+const imageError = $derived(
+  form && 'message' in form && form.field === imageField ? form.message : null,
+);
+const descriptionError = $derived(
+  form && 'message' in form && form.field === 'description'
+    ? form.message
+    : null,
+);
 </script>
 
 <div
   class="absolute top-16 left-0 flex w-full items-center justify-center gap-2 bg-base-300 p-1"
 >
-  {#if editMode}
-    Si vous souhaiter arrêter le mode édition de profil. C'est juste ici
+  {#if impersonating}
+    La modification du profil est désactivée en naviguant en tant qu'un autre
+    compte.
   {:else}
-    Si vous souhaiter modifier votre profil, vous devez passer un mode édition
-    de profil.
+    {#if editMode}
+      Si vous souhaitez arrêter le mode édition de profil, c'est juste ici.
+    {:else}
+      Si vous souhaitez modifier votre profil, vous devez passer en mode édition
+      de profil.
+    {/if}
+    <Button
+      label={editMode ? 'Arrêter le mode édition' : 'Activer le mode édition'}
+      size="tiny"
+      onclick={toggleEditMode}
+    />
   {/if}
-  <Button
-    label={editMode ? 'Arrêter le mode édition' : 'Activer le mode édition'}
-    size="tiny"
-    onclick={() => (editMode = !editMode)}
-  />
 </div>
 
-<div class="flex gap-2">
-  <section class="flex w-80 max-w-full flex-col items-center p-4">
-    <div
-      class="relative flex size-48 items-center justify-center overflow-hidden rounded-full bg-base-300 p-2"
+<ProfileView
+  profile={{
+  name: user.name,
+  roleLabel: user.role.label,
+  avatar: user.avatar,
+  banner: user.banner,
+  description: user.description,
+}}
+  descriptionDocument={data.descriptionDocument}
+  translations={data.translations}
+  query={data.query}
+  basePath="/profile"
+  publicPath="/profile/{user.slug}"
+  editMode={editMode && !impersonating}
+  onedit={edit}
+  {editingDescription}
+>
+  {#snippet descriptionEditor()}
+    <form
+      method="POST"
+      action="?/description"
+      class="flex flex-col gap-3"
+      use:enhance={() =>
+  async ({ result, update }) => {
+    await update({ reset: false });
+    if (result.type === 'success') editingDescription = false;
+  }}
     >
-      {#if user.avatar}
-        <img src={user.avatar} alt="Profil de {user.name}" class="rounded-full">
-      {:else}
-        <ImageOff size="64" opacity=".2" />
+      <MarkdownEditor
+        bind:value={description}
+        name="description"
+        maxLength={DESCRIPTION_MAX_LENGTH}
+        placeholder="Présentez-vous, vos spécialités, vos projets…"
+      />
+
+      {#if descriptionError}
+        <p class="text-sm font-bold text-error" role="alert">
+          {descriptionError}
+        </p>
       {/if}
 
-      {#if editMode}
-        <button
-          type="button"
-          class="absolute h-full w-full cursor-pointer rounded-lg bg-neutral/50 opacity-0 hover:opacity-50"
+      <div class="flex justify-end gap-2">
+        <Button
+          label="Annuler"
+          inline
+          onclick={() => (editingDescription = false)}
+        />
+        <Button label="Enregistrer" type="submit" />
+      </div>
+    </form>
+  {/snippet}
+</ProfileView>
+
+<Modal
+  open={imageField !== null}
+  onclose={() => (imageField = null)}
+  title={imageField ? titles[imageField] : ''}
+  description={`Lien d'une image hébergée sur : ${hosts}.`}
+>
+  {#if imageField}
+    <form
+      id="profile-form"
+      method="POST"
+      action="?/{imageField}"
+      class="flex flex-col gap-4"
+      use:enhance={() =>
+  async ({ result, update }) => {
+    await update({ reset: false });
+    if (result.type === 'success') imageField = null;
+  }}
+    >
+      <label class="flex flex-col gap-1 text-sm font-bold">
+        Adresse de l'image
+        <input
+          class="{fieldStyle} h-9"
+          type="url"
+          name={imageField}
+          maxlength="2048"
+          placeholder="https://cdn.discordapp.com/…"
+          bind:value={draft}
         >
-          Changer l'image
-        </button>
+      </label>
+
+      {#if imageError}
+        <p class="text-sm font-bold text-error" role="alert">{imageError}</p>
       {/if}
-    </div>
 
-    <h2 class="mt-4 font-bold">{user.name}</h2>
-    <h3>{user.role.label}</h3>
-  </section>
-  <section class="flex min-h-80 w-full flex-col gap-4">
-    {#if user.banner || editMode}
-      <div
-        class="relative flex h-48 items-center justify-center overflow-hidden rounded-xl bg-base-300"
-      >
-        {#if user.banner}
-          <img
-            src={user.banner}
-            alt="Bannière de profil de {user.name}"
-            class="rounded-full object-cover"
-          >
-        {:else}
-          <ImageOff size="64" opacity=".2" />
+      <div class="flex justify-end gap-2">
+        {#if user[imageField]}
+          <Button label="Retirer l'image" inline onclick={clear} />
         {/if}
-
-        {#if editMode}
-          <button
-            type="button"
-            class="absolute right-0 bottom-0 cursor-pointer rounded-tl-lg bg-neutral/50 px-5 py-1"
-          >
-            Changer la bannière
-          </button>
-        {/if}
+        <Button label="Annuler" inline onclick={() => (imageField = null)} />
+        <Button label="Enregistrer" type="submit" />
       </div>
-    {/if}
-
-    {#if user.description || editMode}
-      <div
-        class="relative flex min-h-48 items-center overflow-hidden rounded-xl bg-base-300 p-6"
-      >
-        {#if user.description}
-          <p class="self-start">
-            {user.description}
-          </p>
-        {:else}
-          <PenOff class="mx-auto" size="64" opacity=".2" />
-        {/if}
-
-        {#if editMode}
-          <button
-            type="button"
-            class="absolute right-0 bottom-0 cursor-pointer rounded-tl-lg bg-neutral/50 px-5 py-1"
-          >
-            Changer la description
-          </button>
-        {/if}
-      </div>
-    {/if}
-
-    {#if items.length > 0}
-      <div class="relative flex flex-col rounded-xl p-2">
-        <h3 class="py-4 text-center text-xl font-bold">Mes traductions:</h3>
-
-        <div class="my-4 flex justify-end">
-          <Input
-            placeholder="Rechercher un nom..."
-            value={search}
-            oninput={(e) => (search = e.currentTarget.value)}
-          />
-        </div>
-
-        <table class="w-full table-fixed border-spacing-2">
-          <thead>
-            <tr>
-              {#each columns as { label, key }}
-                <th
-                  scope="col"
-                  class={cn('select-none', key && 'cursor-pointer')}
-                  onclick={() => sortBy(key)}
-                >
-                  <span class="flex items-center justify-center gap-2">
-                    {label}
-                    {#if key && sortKey === key}
-                      {#if sortAsc}
-                        <ArrowDownAZ size="16" />
-                      {:else}
-                        <ArrowUpAZ size="16" />
-                      {/if}
-                    {/if}
-                  </span>
-                </th>
-              {/each}
-            </tr>
-          </thead>
-          <tbody>
-            {#each filteredItems as item (item.id)}
-              <tr
-                class="relative border-collapse odd:bg-base-100 even:bg-base-300"
-              >
-                <td class="px-4 py-2 font-bold">{item.name}</td>
-                <td class="px-4 py-2 text-center">{item.version}</td>
-                <td
-                  class={cn('px-4 py-2 text-center', item.version !== item.tversion && 'text-yellow-500')}
-                >
-                  {item.tversion}
-                </td>
-                <td class="flex justify-center gap-2 px-4 py-3">
-                  <Button label="Accèder" size="tiny" />
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    {/if}
-  </section>
-</div>
+    </form>
+  {/if}
+</Modal>

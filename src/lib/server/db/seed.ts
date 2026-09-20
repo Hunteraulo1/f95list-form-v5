@@ -4,6 +4,7 @@ import { MikroORM } from '@mikro-orm/mariadb';
 import { config as loadEnv } from 'dotenv';
 import mikroOrmConfig from '../../../../mikro-orm.config';
 import { PERMISSION_KEYS, SUPER_ROLE_PRIORITY } from '../../permissions';
+import { SlugAllocator } from '../../slug';
 import { DEV_USER_ID } from '../config';
 import {
   Config,
@@ -101,10 +102,14 @@ export const main = async () => {
   ].map((origin) => em.create(OriginWebsite, origin));
 
   //? Le premier user est l'utilisateur « connecté » en dev (DEV_USER_ID), en admin.
-  const users = Array.from({ length: 10 }, (_, index) =>
-    em.create(User, {
+  const slugs = new SlugAllocator();
+  const users = Array.from({ length: 10 }, (_, index) => {
+    const name = faker.internet.username().slice(0, 64);
+
+    return em.create(User, {
       ...(index === 0 && { id: DEV_USER_ID }),
-      name: faker.internet.username().slice(0, 64),
+      name,
+      slug: slugs.allocate(name),
       email: faker.internet.email(),
       description: faker.helpers.maybe(() => faker.lorem.sentence()),
       avatar: faker.image.avatar(),
@@ -117,8 +122,8 @@ export const main = async () => {
           : faker.helpers.arrayElement(roles),
       zitadelId: randomUUID(),
       discordNotification: faker.datatype.boolean(),
-    }),
-  );
+    });
+  });
 
   await em.flush();
 
@@ -174,16 +179,19 @@ export const main = async () => {
   //? zitadelId) pour les traducteurs qui n'ont pas de compte, revendicables ensuite.
   const translatorRole =
     roles.find(({ name }) => name === 'translator') ?? roles[0];
-  const ghosts = Array.from({ length: 30 }, () =>
-    em.create(User, {
-      name: faker.person.fullName().slice(0, 64),
+  const ghosts = Array.from({ length: 30 }, () => {
+    const name = faker.person.fullName().slice(0, 64);
+
+    return em.create(User, {
+      name,
+      slug: slugs.allocate(name),
       discord:
         faker.helpers.maybe(() =>
           faker.string.numeric({ length: 18, allowLeadingZeros: false }),
         ) ?? null,
       role: translatorRole,
-    }),
-  );
+    });
+  });
   const translators = [
     ...ghosts,
     ...faker.helpers.arrayElements(users, { min: 15, max: 20 }),

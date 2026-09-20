@@ -116,7 +116,19 @@ const getHostname = (link: string) => {
                 <span class="text-sm text-base-content/70">
                   {#if translation.translators.length > 0}
                     Par
-                    {translation.translators.map((translator) => translator.name).join(', ')}
+                    {#each translation.translators as translator, index (translator.name)}
+                      {#if index > 0}, {/if}
+                      {#if translator.slug}
+                        <a
+                          href="/profile/{translator.slug}"
+                          class="underline hover:text-primary"
+                        >
+                          {translator.name}
+                        </a>
+                      {:else}
+                        {translator.name}
+                      {/if}
+                    {/each}
                   {:else}
                     Aucun traducteur
                   {/if}
