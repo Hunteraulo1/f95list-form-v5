@@ -1,9 +1,11 @@
 <script lang="ts">
 import {
   BrickWallShield,
+  KeyRound,
   Languages,
   LayoutDashboard,
   LogOut,
+  Settings,
   UserPen,
 } from '@lucide/svelte';
 import type { Snippet } from 'svelte';
@@ -17,6 +19,12 @@ interface Props {
 const { children }: Props = $props();
 
 const items: Item[] = [
+  {
+    label: 'Administration',
+    icon: BrickWallShield,
+    href: '/admin',
+    permission: 'manage.game',
+  },
   {
     label: 'Tableau de bord',
     icon: LayoutDashboard,
@@ -33,9 +41,14 @@ const items: Item[] = [
     href: '/profile',
   },
   {
-    label: 'Administration',
-    icon: BrickWallShield,
-    href: '/admin',
+    label: 'API',
+    icon: KeyRound,
+    href: '/dashboard/api',
+  },
+  {
+    label: 'Paramètres',
+    icon: Settings,
+    href: '/settings',
     permission: 'manage.game',
   },
   {

@@ -280,6 +280,9 @@ export const RoleSchema = defineEntity({
     id: uuidPk(),
     name: p.string().length(64),
     label: p.string().length(64),
+    //? Quotas API appliqués aux utilisateurs de ce rôle.
+    apiKeyLimit: p.integer().unsigned().default(10),
+    apiDailyQuota: p.integer().unsigned().default(1000),
     ...timestamps(),
   },
 });
@@ -313,6 +316,36 @@ export const UserSchema = defineEntity({
 
 export class User extends UserSchema.class {}
 UserSchema.setClass(User);
+
+export const ApiKeySchema = defineEntity({
+  name: 'ApiKey',
+  tableName: 'api_key',
+  properties: {
+    id: uuidPk(),
+    user: () =>
+      p
+        .manyToOne(User)
+        .fieldName('user_id')
+        .columnType('char(36)')
+        .foreignKeyName('api_key_user_id_user_id_fkey')
+        .deleteRule('cascade')
+        .updateRule('restrict'),
+    name: p.string().length(64),
+    //? Seuls le préfixe (affichage) et le hash SHA-256 sont stockés, jamais la clé en clair.
+    prefix: p.string().length(16),
+    hash: p.string().length(64).unique(),
+    //? Surcharge du quota quotidien du rôle ; null = celui du rôle.
+    dailyQuota: p.integer().unsigned().nullable(),
+    //? Requêtes comptées pour le jour UTC `usageDate` (remis à zéro au changement de jour).
+    usageCount: p.integer().unsigned().default(0),
+    usageDate: p.date().nullable(),
+    lastUsedAt: p.datetime().nullable(),
+    ...timestamps(),
+  },
+});
+
+export class ApiKey extends ApiKeySchema.class {}
+ApiKeySchema.setClass(ApiKey);
 
 export const ConfigSchema = defineEntity({
   name: 'Config',

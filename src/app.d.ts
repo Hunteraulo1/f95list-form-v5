@@ -5,6 +5,8 @@ declare global {
     // interface Error {}
     interface Locals {
       user: import('$lib/server/hooks/auth').SessionUser | null;
+      //? Renseigné uniquement pour une requête authentifiée par clé API (`Bearer f95_…`).
+      apiKey?: { id: string; userId: string };
     }
     // interface PageData {}
     // interface PageState {}
