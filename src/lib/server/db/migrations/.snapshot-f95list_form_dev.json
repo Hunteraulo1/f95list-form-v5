@@ -1799,6 +1799,23 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
         "id": {
           "name": "id",
           "type": "char(36)",
@@ -1815,6 +1832,23 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "character"
+        },
+        "is_system": {
+          "name": "is_system",
+          "type": "tinyint(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "false",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "boolean"
         },
         "label": {
           "name": "label",
@@ -1840,7 +1874,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "unique": false,
+          "unique": true,
           "length": 64,
           "precision": null,
           "scale": null,
@@ -1849,6 +1883,23 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "string"
+        },
+        "priority": {
+          "name": "priority",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "0",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
         },
         "updated_at": {
           "name": "updated_at",
@@ -1877,11 +1928,125 @@
           "keyName": "PRIMARY",
           "primary": true,
           "unique": true
+        },
+        {
+          "columnNames": ["name"],
+          "composite": false,
+          "constraint": true,
+          "keyName": "role_name_unique",
+          "primary": false,
+          "unique": true
         }
       ],
       "checks": [],
       "triggers": [],
       "foreignKeys": {},
+      "comment": null
+    },
+    {
+      "name": "role_permission",
+      "columns": {
+        "created_at": {
+          "name": "created_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "permission": {
+          "name": "permission",
+          "type": "varchar(64)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": 64,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "role_id": {
+          "name": "role_id",
+          "type": "char(36)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": 36,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "character"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime",
+          "extra": "on update current_timestamp()"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": ["role_id", "permission"],
+          "composite": true,
+          "constraint": true,
+          "keyName": "PRIMARY",
+          "primary": true,
+          "unique": true
+        },
+        {
+          "columnNames": ["role_id"],
+          "composite": false,
+          "constraint": false,
+          "keyName": "role_permission_role_id_index",
+          "primary": false,
+          "unique": false
+        }
+      ],
+      "checks": [],
+      "triggers": [],
+      "foreignKeys": {
+        "role_permission_role_id_role_id_fkey": {
+          "columnNames": ["role_id"],
+          "constraintName": "role_permission_role_id_role_id_fkey",
+          "localTableName": "role_permission",
+          "referencedColumnNames": ["id"],
+          "referencedTableName": "role",
+          "updateRule": "restrict",
+          "deleteRule": "cascade"
+        }
+      },
       "comment": null
     },
     {

@@ -1,41 +1,25 @@
-import { error, fail } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import {
   effectiveDailyQuota,
   MAX_API_DAILY_QUOTA,
-  MAX_API_KEY_LIMIT,
   parseQuota,
   usedToday,
 } from '$lib/server/api-keys';
-import { ApiKey, orm, Role } from '$lib/server/db';
+import { ApiKey, orm } from '$lib/server/db';
+import { requirePermission } from '$lib/server/permissions';
 import type { Actions, PageServerLoad } from './$types';
 
-//? Temporaire : en attendant le système de droits, seul le rôle « admin » gère les clés des autres.
-const requireAdmin = (locals: App.Locals) => {
-  if (!locals.user) error(401, 'Non connecté');
-  if (locals.user.role.name !== 'admin') error(403, 'Accès refusé');
-};
-
 export const load: PageServerLoad = async ({ locals }) => {
-  requireAdmin(locals);
+  requirePermission(locals, 'manage.api');
 
-  const [keys, roles] = await Promise.all([
-    orm.em.find(
-      ApiKey,
-      {},
-      { populate: ['user.role'], orderBy: { createdAt: 'desc' } },
-    ),
-    orm.em.find(Role, {}, { orderBy: { label: 'asc' } }),
-  ]);
+  const keys = await orm.em.find(
+    ApiKey,
+    {},
+    { populate: ['user.role'], orderBy: { createdAt: 'desc' } },
+  );
 
   return {
-    maxKeyLimit: MAX_API_KEY_LIMIT,
     maxDailyQuota: MAX_API_DAILY_QUOTA,
-    roles: roles.map((role) => ({
-      id: role.id,
-      label: role.label,
-      apiKeyLimit: role.apiKeyLimit,
-      apiDailyQuota: role.apiDailyQuota,
-    })),
     keys: keys.map((key) => ({
       id: key.id,
       name: key.name,
@@ -52,7 +36,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   revoke: async ({ locals, request }) => {
-    requireAdmin(locals);
+    requirePermission(locals, 'manage.api');
 
     const id = String((await request.formData()).get('id') ?? '');
 
@@ -64,7 +48,7 @@ export const actions: Actions = {
 
   //? Champ vide = retour au quota du rôle.
   setKeyQuota: async ({ locals, request }) => {
-    requireAdmin(locals);
+    requirePermission(locals, 'manage.api');
 
     const data = await request.formData();
     const id = String(data.get('id') ?? '');
@@ -82,38 +66,6 @@ export const actions: Actions = {
       { dailyQuota: quota },
     );
     if (updated === 0) return fail(404, { error: 'Clé introuvable.' });
-
-    return { saved: true };
-  },
-
-  setRoleQuota: async ({ locals, request }) => {
-    requireAdmin(locals);
-
-    const data = await request.formData();
-    const id = String(data.get('id') ?? '');
-    const apiKeyLimit = parseQuota(data.get('apiKeyLimit'), MAX_API_KEY_LIMIT);
-    const apiDailyQuota = parseQuota(
-      data.get('apiDailyQuota'),
-      MAX_API_DAILY_QUOTA,
-    );
-
-    if (apiKeyLimit == null) {
-      return fail(400, {
-        error: `Le nombre de clés doit être un entier entre 0 et ${MAX_API_KEY_LIMIT}.`,
-      });
-    }
-    if (apiDailyQuota == null) {
-      return fail(400, {
-        error: `Le quota quotidien doit être un entier entre 0 et ${MAX_API_DAILY_QUOTA}.`,
-      });
-    }
-
-    const updated = await orm.em.nativeUpdate(
-      Role,
-      { id },
-      { apiKeyLimit, apiDailyQuota },
-    );
-    if (updated === 0) return fail(404, { error: 'Rôle introuvable.' });
 
     return { saved: true };
   },

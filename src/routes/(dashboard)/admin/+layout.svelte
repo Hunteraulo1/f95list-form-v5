@@ -25,16 +25,19 @@ const items: Item[] = [
     label: 'Utilisateurs',
     icon: Users,
     href: '/admin/users',
+    permission: 'manage.users',
   },
   {
     label: 'Rôles',
     icon: Users,
     href: '/admin/roles',
+    permission: 'manage.roles',
   },
   {
-    label: 'Clés API',
+    label: 'Gestion API',
     icon: KeyRound,
     href: '/admin/api',
+    permission: 'manage.api',
   },
 ];
 </script>

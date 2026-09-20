@@ -40,12 +40,12 @@ const onOpenChange = (value: boolean) => {
       interactOutsideBehavior={closable ? 'close' : 'ignore'}
       escapeKeydownBehavior={closable ? 'close' : 'ignore'}
       class={cn(
-        'shadow-mini fixed top-1/2 left-1/2 z-50 flex max-h-[90dvh] w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-xl border-2 border-base-content bg-base-100 p-6 text-base-content outline-hidden',
-        size === 'small' && 'max-w-sm',
-        size === 'normal' && 'max-w-lg',
-        size === 'big' && 'max-w-3xl',
-        classes,
-      )}
+  'shadow-mini fixed top-1/2 left-1/2 z-50 flex max-h-[90dvh] w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-xl border-2 border-base-content bg-base-100 p-6 text-base-content outline-hidden',
+  size === 'small' && 'max-w-sm',
+  size === 'normal' && 'max-w-lg',
+  size === 'big' && 'max-w-3xl',
+  classes,
+)}
     >
       <div class="flex items-start justify-between gap-4">
         <div class="flex flex-col gap-1">

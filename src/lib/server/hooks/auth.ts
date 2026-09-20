@@ -1,6 +1,12 @@
 import type { Handle } from '@sveltejs/kit';
+import {
+  enforcePermissionDependencies,
+  PERMISSION_KEYS,
+  type Permission,
+  SUPER_ROLE,
+} from '$lib/permissions';
 import { DEV_USER_ID } from '$lib/server/config';
-import { orm, User } from '$lib/server/db';
+import { orm, RolePermission, User } from '$lib/server/db';
 import { logger } from '../logger';
 
 //? Données exposées au client : volontairement sans zitadelId.
@@ -14,12 +20,22 @@ export interface SessionUser {
   discord: string | null;
   theme: 'system' | 'light' | 'dark';
   discordNotification: boolean;
-  role: { id: string; name: string; label: string };
+  role: { id: string; name: string; label: string; priority: number };
+  permissions: Permission[];
 }
 
 const loadUser = async (id: string): Promise<SessionUser | null> => {
   const user = await orm.em.findOne(User, { id }, { populate: ['role'] });
   if (!user) return null;
+
+  const permissions =
+    user.role.name === SUPER_ROLE
+      ? [...PERMISSION_KEYS]
+      : enforcePermissionDependencies(
+          (await orm.em.find(RolePermission, { role: user.role.id })).map(
+            ({ permission }) => permission,
+          ),
+        );
 
   return {
     id: user.id,
@@ -35,7 +51,9 @@ const loadUser = async (id: string): Promise<SessionUser | null> => {
       id: user.role.id,
       name: user.role.name,
       label: user.role.label,
+      priority: user.role.priority,
     },
+    permissions,
   };
 };
 

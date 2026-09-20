@@ -278,8 +278,14 @@ export const RoleSchema = defineEntity({
   tableName: 'role',
   properties: {
     id: uuidPk(),
-    name: p.string().length(64),
+    name: p.string().length(64).unique(),
     label: p.string().length(64),
+    description: p.text().nullable(),
+    //? Plus la valeur est haute, plus le rôle est fort : il sert à l'ordre d'affichage et à la
+    //? hiérarchie (on ne gère que les rôles plus faibles que le sien).
+    priority: p.integer().unsigned().default(0),
+    //? Les rôles système ne se renomment ni ne se suppriment (migrate-v4 et le seed s'en servent).
+    isSystem: p.boolean().default(false),
     //? Quotas API appliqués aux utilisateurs de ce rôle.
     apiKeyLimit: p.integer().unsigned().default(10),
     apiDailyQuota: p.integer().unsigned().default(1000),
@@ -289,6 +295,28 @@ export const RoleSchema = defineEntity({
 
 export class Role extends RoleSchema.class {}
 RoleSchema.setClass(Role);
+
+export const RolePermissionSchema = defineEntity({
+  name: 'RolePermission',
+  tableName: 'role_permission',
+  properties: {
+    role: () =>
+      p
+        .manyToOne(Role)
+        .primary()
+        .fieldName('role_id')
+        .columnType('char(36)')
+        .foreignKeyName('role_permission_role_id_role_id_fkey')
+        .deleteRule('cascade')
+        .updateRule('restrict'),
+    //? Clé du catalogue `$lib/permissions`.
+    permission: p.string().length(64).primary(),
+    ...timestamps(),
+  },
+});
+
+export class RolePermission extends RolePermissionSchema.class {}
+RolePermissionSchema.setClass(RolePermission);
 
 export const UserSchema = defineEntity({
   name: 'User',

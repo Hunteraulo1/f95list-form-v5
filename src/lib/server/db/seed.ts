@@ -13,6 +13,7 @@ import {
   GameTranslationTranslator,
   OriginWebsite,
   Role,
+  RolePermission,
   Translator,
   TranslatorLink,
   User,
@@ -61,12 +62,20 @@ export const main = async () => {
   await em.nativeDelete(Role, {});
 
   const roles = [
-    { name: 'user', label: 'Utilisateur' },
-    { name: 'author', label: 'Auteur' },
-    { name: 'translator', label: 'Traducteur' },
-    { name: 'moderator', label: 'Modérateur' },
-    { name: 'admin', label: 'Admin' },
-  ].map((role) => em.create(Role, role));
+    { name: 'user', label: 'Utilisateur', priority: 0 },
+    { name: 'author', label: 'Auteur', priority: 20 },
+    { name: 'translator', label: 'Traducteur', priority: 40 },
+    { name: 'moderator', label: 'Modérateur', priority: 60 },
+    { name: 'admin', label: 'Admin', priority: 100 },
+  ].map((role) => em.create(Role, { ...role, isSystem: true }));
+
+  //? Le rôle « admin » a toutes les permissions sans ligne ici (voir $lib/permissions).
+  const moderator = roles.find(({ name }) => name === 'moderator');
+  if (moderator) {
+    for (const permission of ['admin.access', 'manage.game']) {
+      em.create(RolePermission, { role: moderator, permission });
+    }
+  }
 
   em.create(Config, { id: 1, name: 'F95 France' });
 

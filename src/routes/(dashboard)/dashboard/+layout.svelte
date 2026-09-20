@@ -23,7 +23,7 @@ const items: Item[] = [
     label: 'Administration',
     icon: BrickWallShield,
     href: '/admin',
-    permission: 'manage.game',
+    permission: 'admin.access',
   },
   {
     label: 'Tableau de bord',
@@ -41,7 +41,7 @@ const items: Item[] = [
     href: '/profile',
   },
   {
-    label: 'API',
+    label: 'Clés API',
     icon: KeyRound,
     href: '/dashboard/api',
   },

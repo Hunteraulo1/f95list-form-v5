@@ -72,64 +72,7 @@ const formatDate = (iso: string) => dateFormat.format(new Date(iso));
 </script>
 
 <div class="relative flex flex-col rounded-xl p-2">
-  <h3 class="py-4 text-center text-xl font-bold">Quotas par rôle:</h3>
-
-  <table class="w-full table-fixed border-spacing-2">
-    <thead>
-      <tr>
-        <th scope="col">Rôle</th>
-        <th scope="col">Clés max. par utilisateur</th>
-        <th scope="col">Requêtes / jour / clé</th>
-        <th scope="col">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each data.roles as role (role.id)}
-        <tr class="odd:bg-base-100 even:bg-base-300">
-          <td class="px-4 py-2 font-bold">{role.label}</td>
-          <td class="px-4 py-2 text-center" colspan="3">
-            <form
-              method="POST"
-              action="?/setRoleQuota"
-              class="grid grid-cols-3 items-center"
-              use:enhance={() =>
-  async ({ update }) =>
-    update({ reset: false })}
-            >
-              <input type="hidden" name="id" value={role.id}>
-              <span>
-                <input
-                  class={numberField}
-                  type="number"
-                  name="apiKeyLimit"
-                  min="0"
-                  max={data.maxKeyLimit}
-                  value={role.apiKeyLimit}
-                  aria-label="Clés max. pour {role.label}"
-                >
-              </span>
-              <span>
-                <input
-                  class={numberField}
-                  type="number"
-                  name="apiDailyQuota"
-                  min="0"
-                  max={data.maxDailyQuota}
-                  value={role.apiDailyQuota}
-                  aria-label="Requêtes par jour pour {role.label}"
-                >
-              </span>
-              <span class="flex justify-center">
-                <Button label="Enregistrer" type="submit" size="tiny" />
-              </span>
-            </form>
-          </td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-
-  <h3 class="py-4 pt-8 text-center text-xl font-bold">Clés API:</h3>
+  <h3 class="py-4 text-center text-xl font-bold">Clés API:</h3>
 
   <div class="my-4 flex items-center justify-between gap-2">
     <span class="text-sm opacity-70">

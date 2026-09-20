@@ -2,13 +2,14 @@
 import type { LucideIcon } from '@lucide/svelte';
 import type { ClassValue } from 'svelte/elements';
 import { page } from '$app/state';
+import type { Permission } from '$lib/permissions';
 import { cn } from '$lib/utils/cn';
 
 export interface Item {
   label: string;
   icon: LucideIcon;
   href: string;
-  permission?: string;
+  permission?: Permission;
   class?: ClassValue;
 }
 
@@ -17,10 +18,17 @@ interface Props {
 }
 
 const { items }: Props = $props();
+
+const permissions = $derived<Permission[]>(page.data.user?.permissions ?? []);
+const visibleItems = $derived(
+  items.filter(
+    (item) => !item.permission || permissions.includes(item.permission),
+  ),
+);
 </script>
 
 <ul class="flex h-full w-64 max-w-full flex-col gap-2 p-2">
-  {#each items as item}
+  {#each visibleItems as item}
     <li>
       <a
         href={item.href}
