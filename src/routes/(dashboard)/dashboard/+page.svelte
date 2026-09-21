@@ -1,4 +1,6 @@
 <script lang="ts">
+import { goto } from '$app/navigation';
+import { page } from '$app/state';
 import Button from '$lib/components/ui/Button.svelte';
 import Input from '$lib/components/ui/Input.svelte';
 import { gameMatchesQuery } from '$lib/games/games-filter';
@@ -11,6 +13,10 @@ interface Props {
 const { data }: Props = $props();
 
 const oudated = $derived(data.outdated);
+//? Créer un jeu a sa propre permission, distincte de celle de modifier un jeu.
+const canCreateGame = $derived(
+  page.data.user?.permissions.includes('game.create') ?? false,
+);
 let unread = 0;
 
 let query = $state('');
@@ -81,7 +87,14 @@ const translationStatusLabel = (status: TranslationStatus) => {
   query = e.currentTarget.value;
 }}
       />
-      <Button label="Ajouter un jeu" classes="w-50" inline />
+      {#if canCreateGame}
+        <Button
+          label="Ajouter un jeu"
+          classes="w-50"
+          inline
+          onclick={() => goto('/dashboard/games/new')}
+        />
+      {/if}
     </div>
     {#if query.trim()}
       <div class="mt-2 flex flex-col gap-1">

@@ -1,9 +1,9 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { error, fail, redirect } from '@sveltejs/kit';
+import { parseImageUrl } from '$lib/image-hosts';
 import { Impersonation, orm, Role, User } from '$lib/server/db';
 import { logger } from '$lib/server/logger';
 import { requirePermission } from '$lib/server/permissions';
-import { parseImageUrl } from '$lib/server/profile';
 import {
   checkCanAssignRole,
   checkCanImpersonate,

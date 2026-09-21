@@ -46,9 +46,32 @@ export const PERMISSIONS = {
     group: 'Administration',
     requires: 'admin.access',
   },
-  'manage.game': {
-    label: 'Gérer les jeux',
-    description: 'Modifier les jeux, éditions et traductions.',
+  'game.create': {
+    label: 'Créer des jeux',
+    description: 'Ajouter un nouveau jeu.',
+    group: 'Contenu',
+  },
+  'game.edit': {
+    label: 'Modifier les jeux',
+    description:
+      'Modifier un jeu et ses éditions, et actualiser ses données. Distinct de la création.',
+    group: 'Contenu',
+  },
+  'game.auto_check': {
+    label: "Gérer l'auto-check des jeux",
+    description:
+      "Activer ou désactiver la mise à jour automatique d'un jeu et de ses traductions à sa création. Sans cette permission, elle suit le site d'origine (activée pour F95zone).",
+    group: 'Contenu',
+  },
+  'translation.add': {
+    label: 'Ajouter des traductions',
+    description: 'Ajouter une traduction à un jeu.',
+    group: 'Contenu',
+  },
+  'translation.edit_others': {
+    label: 'Modifier les traductions des autres',
+    description:
+      "Modifier une traduction dont on n'est pas le traducteur, en créer une attribuée à quelqu'un d'autre et créer des comptes fantômes de traducteurs. Sans cette permission, on ne gère que les siennes.",
     group: 'Contenu',
   },
 } as const satisfies Record<string, PermissionDefinition>;

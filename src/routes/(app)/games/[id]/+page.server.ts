@@ -2,6 +2,11 @@ import { error } from '@sveltejs/kit';
 import { VIEW_ACTIVE_ONLY } from '$lib/server/config';
 import { Game, orm } from '$lib/server/db';
 import {
+  canAddTranslation,
+  canEditGame,
+  canEditTranslation,
+} from '$lib/server/game-access';
+import {
   translationQualityName,
   translationTypeName,
 } from '$lib/utils/entriesConvert';
@@ -27,7 +32,7 @@ const publicTranslators = (
     : named;
 };
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, locals }) => {
   const id = parseInt(params.id, 10);
 
   const game = await orm.em.findOne(
@@ -50,6 +55,12 @@ export const load: PageServerLoad = async ({ params }) => {
   if (VIEW_ACTIVE_ONLY && !game.active) error(403, 'Forbidden');
 
   return {
+    //? Ce que la personne connectée peut faire ici : sert à masquer les boutons (les actions
+    //? d'édition refuseront de toute façon, voir game-access.ts).
+    access: {
+      editGame: canEditGame(locals.user),
+      addTranslation: canAddTranslation(locals.user),
+    },
     game: {
       id: game.id,
       name: game.name,
@@ -90,6 +101,15 @@ export const load: PageServerLoad = async ({ params }) => {
               qualityLabel: translationQualityName(translation.quality),
               type: translation.type,
               typeLabel: translationTypeName(translation.type),
+              canEdit: canEditTranslation(
+                locals.user,
+                translation.gameTranslationTranslators
+                  .getItems()
+                  .map(({ user, type }) => ({
+                    userId: user.id,
+                    type: type ?? null,
+                  })),
+              ),
               active: translation.active,
               // createdAt: translation.createdAt,
               // updatedAt: translation.updatedAt,

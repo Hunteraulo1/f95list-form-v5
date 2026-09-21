@@ -48,8 +48,8 @@ const items: Item[] = [
   {
     label: 'Paramètres',
     icon: Settings,
-    href: '/settings',
-    permission: 'manage.game',
+    href: '/dashboard/settings',
+    permission: 'game.edit',
   },
   {
     label: 'Se déconnecter',

@@ -73,7 +73,15 @@ export const main = async () => {
   //? l'admin les reçoit explicitement, le modérateur une partie seulement.
   const grants: Record<string, readonly string[]> = {
     admin: PERMISSION_KEYS,
-    moderator: ['admin.access', 'manage.game'],
+    moderator: [
+      'admin.access',
+      'game.create',
+      'game.edit',
+      'game.auto_check',
+      'translation.add',
+      'translation.edit_others',
+    ],
+    translator: ['translation.add'],
   };
   for (const role of roles) {
     for (const permission of grants[role.name] ?? []) {

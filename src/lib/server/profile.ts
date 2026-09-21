@@ -1,5 +1,3 @@
-import { IMAGE_HOSTS } from '$lib/image-hosts';
-import { IMAGE_URL_MAX_LENGTH } from '$lib/profile';
 import { VIEW_ACTIVE_ONLY } from '$lib/server/config';
 import { GameTranslationTranslator, orm, User } from '$lib/server/db';
 import { isTranslationOutdated } from '$lib/server/my-translations';
@@ -7,35 +5,6 @@ import { editionStatusName } from '$lib/utils/entriesConvert';
 
 const PAGE_SIZE = 20;
 const SEARCH_MAX_LENGTH = 100;
-
-const hostsLabel = IMAGE_HOSTS.map((host) => new URL(host).hostname).join(', ');
-
-export type ImageUrlResult =
-  | { ok: true; url: string | null }
-  | { ok: false; message: string };
-
-//? Un lien d'image doit être en https et venir d'un hébergeur de la CSP (voir `image-hosts.ts`) ;
-//? vide = retirer l'image.
-export const parseImageUrl = (value: string): ImageUrlResult => {
-  const text = value.trim();
-  if (!text) return { ok: true, url: null };
-
-  const invalid = {
-    ok: false,
-    message: `Le lien doit être une adresse https d'un hébergeur autorisé (${hostsLabel}).`,
-  } as const;
-
-  if (text.length > IMAGE_URL_MAX_LENGTH) return invalid;
-
-  try {
-    const url = new URL(text);
-    const allowed = (IMAGE_HOSTS as readonly string[]).includes(url.origin);
-
-    return allowed ? { ok: true, url: url.href } : invalid;
-  } catch {
-    return invalid;
-  }
-};
 
 //? Le compte d'un slug (adresse canonique de son profil, en minuscules).
 export const findProfileBySlug = (slug: string) =>

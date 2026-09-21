@@ -47,6 +47,15 @@ export const GameSchema = defineEntity({
         .columnType('char(36)')
         .foreignKeyName('game_website_origin-website_id_fkey'),
     threadId: p.mediumint().unsigned().nullable(),
+    //? Timestamp (unix, secondes) du dernier changement connu par l'API de F95Checker : le scraper
+    //? ne redemande les données complètes que s'il augmente. Nul tant que le jeu n'a jamais été synchronisé.
+    lastChange: p.integer().unsigned().nullable(),
+    developer: p.string().length(255).nullable(),
+    lastUpdated: p.datetime().nullable(),
+    score: p.decimal().precision(3).scale(2).nullable(),
+    votes: p.integer().unsigned().nullable(),
+    downloads: p.json<unknown[]>().nullable(),
+    reviews: p.json<unknown[]>().nullable(),
     imageInternal: p.string().length(2048).nullable(),
     imageExternal: p.string().length(2048).nullable(),
     description: p.text().nullable(),

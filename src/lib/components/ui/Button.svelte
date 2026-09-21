@@ -11,6 +11,9 @@ interface Props {
   type?: 'button' | 'submit' | 'reset';
   onclick?: MouseEventHandler<HTMLButtonElement>;
   full?: boolean;
+  //? Grisé et inerte, avec au besoin une infobulle qui en donne la raison.
+  disabled?: boolean;
+  title?: string;
 }
 
 const {
@@ -21,6 +24,8 @@ const {
   type = 'button',
   onclick,
   full = false,
+  disabled = false,
+  title,
 }: Props = $props();
 
 const inlineStyle: ClassValue =
@@ -37,10 +42,13 @@ const classicStyle: ClassValue = 'bg-primary dark:bg-neutral-content';
   size === 'normal' && 'h-9 min-h-9 px-4 uppercase',
   size === 'big' && 'h-12 min-h-12 px-5.25 uppercase',
   full ? 'w-full' : ' w-fit',
+  disabled && 'cursor-not-allowed opacity-50',
   classes,
 )}
   {type}
   {onclick}
+  {disabled}
+  {title}
 >
   {label}
 </button>

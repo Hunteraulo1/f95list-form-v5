@@ -37,7 +37,7 @@ const getHostname = (link: string) => {
       style="background-image: url({data.game.image});"
     >
       <div
-        class="flex h-full w-full flex-col items-center justify-center bg-base-300/40 p-4 transition-all select-none hover:opacity-0"
+        class="flex h-full w-full flex-col items-center justify-center bg-base-300/80 p-4 transition-all select-none hover:opacity-0"
       >
         {data.game.name}
         <span class="text-sm">{data.game.description}</span>
@@ -71,8 +71,10 @@ const getHostname = (link: string) => {
   </section>
 
   <section class="flex w-full gap-4 rounded-xl bg-base-100 p-4">
-    <Button label="Actualiser les données" />
-    <Button label="Modifier le jeu" />
+    {#if data.access.editGame}
+      <Button label="Actualiser les données" />
+      <Button label="Modifier le jeu" />
+    {/if}
     <Button
       label="Signaler un problème"
       inline
@@ -84,7 +86,9 @@ const getHostname = (link: string) => {
   <section class="flex w-full flex-col gap-4 rounded-xl bg-base-100 p-4">
     <div class="flex items-center justify-between gap-2">
       <span class="font-bold">Traductions</span>
-      <Button label="Ajouter une traduction" size="small" />
+      {#if data.access.addTranslation}
+        <Button label="Ajouter une traduction" size="small" />
+      {/if}
     </div>
 
     {#each data.game.gameEditions as edition}
@@ -117,7 +121,9 @@ const getHostname = (link: string) => {
                   {#if translation.translators.length > 0}
                     Par
                     {#each translation.translators as translator, index (translator.name)}
-                      {#if index > 0}, {/if}
+                      {#if index > 0}
+                        ,
+                      {/if}
                       {#if translator.slug}
                         <a
                           href="/profile/{translator.slug}"
@@ -151,7 +157,9 @@ const getHostname = (link: string) => {
                     >Aucun fichier</span
                   >
                 {/if}
-                <Button label="Modifier" inline />
+                {#if translation.canEdit}
+                  <Button label="Modifier" inline />
+                {/if}
               </div>
             </div>
           {/each}

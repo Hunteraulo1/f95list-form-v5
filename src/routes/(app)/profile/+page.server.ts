@@ -1,10 +1,10 @@
 import { error, fail } from '@sveltejs/kit';
+import { parseImageUrl } from '$lib/image-hosts';
 import { parseMarkdownDocument } from '$lib/markdown/content';
 import { DESCRIPTION_MAX_LENGTH } from '$lib/profile';
 import { orm, User } from '$lib/server/db';
 import {
   loadProfileTranslations,
-  parseImageUrl,
   parseTranslationsQuery,
 } from '$lib/server/profile';
 import type { Actions, PageServerLoad } from './$types';
