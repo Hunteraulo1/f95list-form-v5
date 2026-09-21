@@ -45,10 +45,12 @@ const suggestionCount = $derived(
 const filteredTags = $derived.by(() => {
   const query = search.trim().toLowerCase();
 
-  return data.tags.filter((tag) => {
-    if (filter !== 'all' && stateOf(tag) !== filter) return false;
-    return !query || tag.name.toLowerCase().includes(query);
-  });
+  return data.tags
+    .filter((tag) => {
+      if (filter !== 'all' && stateOf(tag) !== filter) return false;
+      return !query || tag.name.toLowerCase().includes(query);
+    })
+    .map((tag) => ({ ...tag, status: stateOf(tag) }));
 });
 
 const targetName = (id: number | null) =>
@@ -153,15 +155,14 @@ const selectField =
       </thead>
       <tbody>
         {#each filteredTags as tag (tag.id)}
-          {@const (status = stateOf(tag))}
           <tr class="relative border-collapse odd:bg-base-100 even:bg-base-300">
             <td class="px-4 py-2 font-bold">
               <span class="block truncate">{tag.name}</span>
-              {#if status === 'pending'}
+              {#if tag.status === 'pending'}
                 <span class="block text-xs font-normal opacity-70">
                   À classer
                 </span>
-              {:else if status === 'none'}
+              {:else if tag.status === 'none'}
                 <span class="block text-xs font-normal opacity-70">
                   {tag.noEquivalent ? 'Sans équivalent chez F95zone' : 'Gardé sans équivalent'}
                 </span>
@@ -195,12 +196,12 @@ const selectField =
                   {/each}
                 </select>
                 <Button
-                  label={status === 'linked' ? 'Changer' : 'Lier'}
+                  label={tag.status === 'linked' ? 'Changer' : 'Lier'}
                   type="submit"
                   size="tiny"
                 />
               </form>
-              {#if status === 'linked'}
+              {#if tag.status === 'linked'}
                 <form
                   method="POST"
                   action="?/link"
@@ -223,7 +224,7 @@ const selectField =
               {/if}
             </td>
             <td class="px-4 py-2">
-              {#if status !== 'linked'}
+              {#if tag.status !== 'linked'}
                 <form
                   method="POST"
                   action="?/setActive"
@@ -234,10 +235,10 @@ const selectField =
                   <input
                     type="hidden"
                     name="active"
-                    value={String(status === 'pending')}
+                    value={String(tag.status === 'pending')}
                   >
                   <Button
-                    label={status === 'pending' ? 'Garder sans équivalent' : 'Remettre à classer'}
+                    label={tag.status === 'pending' ? 'Garder sans équivalent' : 'Remettre à classer'}
                     type="submit"
                     size="tiny"
                   />
