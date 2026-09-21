@@ -92,9 +92,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -301,9 +299,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -311,9 +307,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "hash"
-          ],
+          "columnNames": ["hash"],
           "composite": false,
           "constraint": true,
           "keyName": "api_key_hash_unique",
@@ -321,9 +315,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "composite": false,
           "constraint": false,
           "keyName": "api_key_user_id_index",
@@ -335,14 +327,10 @@
       "triggers": [],
       "foreignKeys": {
         "api_key_user_id_user_id_fkey": {
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "constraintName": "api_key_user_id_user_id_fkey",
           "localTableName": "api_key",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "user",
           "updateRule": "restrict",
           "deleteRule": "cascade"
@@ -442,9 +430,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -821,9 +807,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -831,9 +815,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "website"
-          ],
+          "columnNames": ["website"],
           "composite": false,
           "constraint": false,
           "keyName": "game_website_origin-website_id_fkey",
@@ -845,14 +827,10 @@
       "triggers": [],
       "foreignKeys": {
         "game_website_origin-website_id_fkey": {
-          "columnNames": [
-            "website"
-          ],
+          "columnNames": ["website"],
           "constraintName": "game_website_origin-website_id_fkey",
           "localTableName": "game",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "origin-website",
           "updateRule": "restrict",
           "deleteRule": "restrict"
@@ -996,12 +974,7 @@
           "default": null,
           "comment": null,
           "collation": null,
-          "enumItems": [
-            "in_progress",
-            "completed",
-            "abandoned",
-            "on_hold"
-          ],
+          "enumItems": ["in_progress", "completed", "abandoned", "on_hold"],
           "mappedType": "enum"
         },
         "updated_at": {
@@ -1042,9 +1015,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1052,9 +1023,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "game_id"
-          ],
+          "columnNames": ["game_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_edition_game_id_game_id_fkey",
@@ -1066,14 +1035,10 @@
       "triggers": [],
       "foreignKeys": {
         "game_edition_game_id_game_id_fkey": {
-          "columnNames": [
-            "game_id"
-          ],
+          "columnNames": ["game_id"],
           "constraintName": "game_edition_game_id_game_id_fkey",
           "localTableName": "game_edition",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game",
           "updateRule": "restrict",
           "deleteRule": "restrict"
@@ -1156,10 +1121,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "game_id",
-            "game_tag_id"
-          ],
+          "columnNames": ["game_id", "game_tag_id"],
           "composite": true,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1167,9 +1129,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "game_tag_id"
-          ],
+          "columnNames": ["game_tag_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_game_tags_game_tag_fk",
@@ -1181,27 +1141,19 @@
       "triggers": [],
       "foreignKeys": {
         "game_game_tags_game_fk": {
-          "columnNames": [
-            "game_id"
-          ],
+          "columnNames": ["game_id"],
           "constraintName": "game_game_tags_game_fk",
           "localTableName": "game_game_tags",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game",
           "updateRule": "restrict",
           "deleteRule": "cascade"
         },
         "game_game_tags_game_tag_fk": {
-          "columnNames": [
-            "game_tag_id"
-          ],
+          "columnNames": ["game_tag_id"],
           "constraintName": "game_game_tags_game_tag_fk",
           "localTableName": "game_game_tags",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game_tags",
           "updateRule": "restrict",
           "deleteRule": "cascade"
@@ -1335,9 +1287,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1345,9 +1295,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "f95_id"
-          ],
+          "columnNames": ["f95_id"],
           "composite": false,
           "constraint": true,
           "keyName": "game_tags_f95_id_unique",
@@ -1355,9 +1303,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "f95_tag_id"
-          ],
+          "columnNames": ["f95_tag_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_tags_f95_tag_fk",
@@ -1369,14 +1315,10 @@
       "triggers": [],
       "foreignKeys": {
         "game_tags_f95_tag_fk": {
-          "columnNames": [
-            "f95_tag_id"
-          ],
+          "columnNames": ["f95_tag_id"],
           "constraintName": "game_tags_f95_tag_fk",
           "localTableName": "game_tags",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game_tags",
           "updateRule": "restrict",
           "deleteRule": "set null"
@@ -1540,9 +1482,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1550,9 +1490,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "game_edition_id"
-          ],
+          "columnNames": ["game_edition_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_translation_game_edition_id_game_edition_id_fkey",
@@ -1564,14 +1502,10 @@
       "triggers": [],
       "foreignKeys": {
         "game_translation_game_edition_id_game_edition_id_fkey": {
-          "columnNames": [
-            "game_edition_id"
-          ],
+          "columnNames": ["game_edition_id"],
           "constraintName": "game_translation_game_edition_id_game_edition_id_fkey",
           "localTableName": "game_translation",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game_edition",
           "updateRule": "restrict",
           "deleteRule": "restrict"
@@ -1722,9 +1656,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1732,9 +1664,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "game_translation_id"
-          ],
+          "columnNames": ["game_translation_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_translation_file_q2YzPs4xJIF9_fkey",
@@ -1746,14 +1676,10 @@
       "triggers": [],
       "foreignKeys": {
         "game_translation_file_q2YzPs4xJIF9_fkey": {
-          "columnNames": [
-            "game_translation_id"
-          ],
+          "columnNames": ["game_translation_id"],
           "constraintName": "game_translation_file_q2YzPs4xJIF9_fkey",
           "localTableName": "game_translation_file",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game_translation",
           "updateRule": "restrict",
           "deleteRule": "restrict"
@@ -1846,10 +1772,7 @@
           "default": null,
           "comment": null,
           "collation": null,
-          "enumItems": [
-            "translator",
-            "proofreader"
-          ],
+          "enumItems": ["translator", "proofreader"],
           "mappedType": "enum"
         },
         "updated_at": {
@@ -1890,10 +1813,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "game_translation_id",
-            "user_id"
-          ],
+          "columnNames": ["game_translation_id", "user_id"],
           "composite": true,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -1901,9 +1821,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "composite": false,
           "constraint": false,
           "keyName": "game_translation_translator_user_id_index",
@@ -1915,27 +1833,19 @@
       "triggers": [],
       "foreignKeys": {
         "game_translation_translator_translation_fk": {
-          "columnNames": [
-            "game_translation_id"
-          ],
+          "columnNames": ["game_translation_id"],
           "constraintName": "game_translation_translator_translation_fk",
           "localTableName": "game_translation_translator",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "game_translation",
           "updateRule": "restrict",
           "deleteRule": "cascade"
         },
         "game_translation_translator_user_fk": {
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "constraintName": "game_translation_translator_user_fk",
           "localTableName": "game_translation_translator",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "user",
           "updateRule": "restrict",
           "deleteRule": "cascade"
@@ -2018,9 +1928,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -2028,9 +1936,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "target_id"
-          ],
+          "columnNames": ["target_id"],
           "composite": false,
           "constraint": false,
           "keyName": "impersonation_target_id_index",
@@ -2038,9 +1944,7 @@
           "unique": false
         },
         {
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "composite": false,
           "constraint": false,
           "keyName": "impersonation_user_id_index",
@@ -2052,27 +1956,19 @@
       "triggers": [],
       "foreignKeys": {
         "impersonation_target_id_user_id_fkey": {
-          "columnNames": [
-            "target_id"
-          ],
+          "columnNames": ["target_id"],
           "constraintName": "impersonation_target_id_user_id_fkey",
           "localTableName": "impersonation",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "user",
           "updateRule": "restrict",
           "deleteRule": "cascade"
         },
         "impersonation_user_id_user_id_fkey": {
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "constraintName": "impersonation_user_id_user_id_fkey",
           "localTableName": "impersonation",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "user",
           "updateRule": "restrict",
           "deleteRule": "cascade"
@@ -2189,9 +2085,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -2381,9 +2275,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -2391,9 +2283,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "name"
-          ],
+          "columnNames": ["name"],
           "composite": false,
           "constraint": true,
           "keyName": "role_name_unique",
@@ -2481,10 +2371,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "role_id",
-            "permission"
-          ],
+          "columnNames": ["role_id", "permission"],
           "composite": true,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -2492,9 +2379,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "role_id"
-          ],
+          "columnNames": ["role_id"],
           "composite": false,
           "constraint": false,
           "keyName": "role_permission_role_id_index",
@@ -2506,14 +2391,10 @@
       "triggers": [],
       "foreignKeys": {
         "role_permission_role_id_role_id_fkey": {
-          "columnNames": [
-            "role_id"
-          ],
+          "columnNames": ["role_id"],
           "constraintName": "role_permission_role_id_role_id_fkey",
           "localTableName": "role_permission",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "role",
           "updateRule": "restrict",
           "deleteRule": "cascade"
@@ -2725,11 +2606,7 @@
           "default": "'system'",
           "comment": null,
           "collation": null,
-          "enumItems": [
-            "system",
-            "light",
-            "dark"
-          ],
+          "enumItems": ["system", "light", "dark"],
           "mappedType": "enum"
         },
         "translator_rules_accepted_at": {
@@ -2804,9 +2681,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -2814,9 +2689,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "role_id"
-          ],
+          "columnNames": ["role_id"],
           "composite": false,
           "constraint": false,
           "keyName": "user_role_id_role_id_fkey",
@@ -2824,9 +2697,7 @@
           "unique": false
         },
         {
-          "columnNames": [
-            "slug"
-          ],
+          "columnNames": ["slug"],
           "composite": false,
           "constraint": true,
           "keyName": "user_slug_unique",
@@ -2834,9 +2705,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "zitadel_id"
-          ],
+          "columnNames": ["zitadel_id"],
           "composite": false,
           "constraint": true,
           "keyName": "zitadel_id_unique",
@@ -2848,14 +2717,10 @@
       "triggers": [],
       "foreignKeys": {
         "user_role_id_role_id_fkey": {
-          "columnNames": [
-            "role_id"
-          ],
+          "columnNames": ["role_id"],
           "constraintName": "user_role_id_role_id_fkey",
           "localTableName": "user",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "role",
           "updateRule": "restrict",
           "deleteRule": "restrict"
@@ -2989,9 +2854,7 @@
       },
       "indexes": [
         {
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "keyName": "PRIMARY",
@@ -2999,9 +2862,7 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "composite": false,
           "constraint": false,
           "keyName": "user_link_user_id_index",
@@ -3013,14 +2874,10 @@
       "triggers": [],
       "foreignKeys": {
         "user_link_user_id_user_id_fkey": {
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "constraintName": "user_link_user_id_user_id_fkey",
           "localTableName": "user_link",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "user",
           "updateRule": "restrict",
           "deleteRule": "cascade"

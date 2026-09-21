@@ -153,7 +153,7 @@ const selectField =
       </thead>
       <tbody>
         {#each filteredTags as tag (tag.id)}
-          {@const status = stateOf(tag)}
+          {@const (status = stateOf(tag))}
           <tr class="relative border-collapse odd:bg-base-100 even:bg-base-300">
             <td class="px-4 py-2 font-bold">
               <span class="block truncate">{tag.name}</span>

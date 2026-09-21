@@ -147,10 +147,10 @@ const getHostname = (link: string) => {
                 {/if}
                 {#if translation.file?.externalLink}
                   {@render downloadLink(
-                      translation.file.externalLink,
-                      getHostname(translation.file.externalLink),
-                      Boolean(translation.file.internalLink),
-                    )}
+  translation.file.externalLink,
+  getHostname(translation.file.externalLink),
+  Boolean(translation.file.internalLink),
+)}
                 {/if}
                 {#if !translation.file?.internalLink && !translation.file?.externalLink}
                   <span class="text-sm text-base-content/70 font-bold px-4"

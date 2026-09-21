@@ -12,6 +12,8 @@ export class Migration20260921120000_add_game_last_change extends Migration {
   }
 
   override async down(): Promise<void> {
-    await this.execute('alter table `game` drop column if exists `last_change`');
+    await this.execute(
+      'alter table `game` drop column if exists `last_change`',
+    );
   }
 }

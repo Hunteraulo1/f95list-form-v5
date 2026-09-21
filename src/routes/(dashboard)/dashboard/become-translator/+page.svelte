@@ -39,7 +39,8 @@ const error = $derived(form && 'error' in form ? form.error : null);
   {:else if !data.eligible}
     <p class="rounded-xl bg-base-100 p-6 text-center text-sm">
       Ton rôle actuel (« {data.roleLabel} ») est déjà égal ou supérieur à «
-      {data.translatorLabel} » : il n'y a rien à demander.
+      {data.translatorLabel}
+      » : il n'y a rien à demander.
     </p>
   {:else}
     <p class="text-center text-sm opacity-70">
