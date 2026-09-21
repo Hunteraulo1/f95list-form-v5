@@ -10,6 +10,8 @@ export interface Item {
   icon: LucideIcon;
   href: string;
   permission?: Permission;
+  //? Masqué selon un état que la permission ne dit pas (ex. un lien d'inscription déjà sans objet).
+  hidden?: boolean;
   class?: ClassValue;
 }
 
@@ -22,7 +24,9 @@ const { items }: Props = $props();
 const permissions = $derived<Permission[]>(page.data.user?.permissions ?? []);
 const visibleItems = $derived(
   items.filter(
-    (item) => !item.permission || permissions.includes(item.permission),
+    (item) =>
+      !item.hidden &&
+      (!item.permission || permissions.includes(item.permission)),
   ),
 );
 </script>

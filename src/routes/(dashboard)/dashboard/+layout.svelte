@@ -1,6 +1,7 @@
 <script lang="ts">
 import {
   BrickWallShield,
+  GraduationCap,
   KeyRound,
   Languages,
   LayoutDashboard,
@@ -11,14 +12,16 @@ import {
 import type { Snippet } from 'svelte';
 import type { Item } from '$lib/components/ui/dashboard/Sidebar.svelte';
 import Sidebar from '$lib/components/ui/dashboard/Sidebar.svelte';
+import type { LayoutData } from './$types';
 
 interface Props {
+  data: LayoutData;
   children: Snippet;
 }
 
-const { children }: Props = $props();
+const { data, children }: Props = $props();
 
-const items: Item[] = [
+const items = $derived<Item[]>([
   {
     label: 'Administration',
     icon: BrickWallShield,
@@ -34,6 +37,14 @@ const items: Item[] = [
     label: 'Mes traductions',
     icon: Languages,
     href: '/dashboard/translates',
+    hidden: !data.hasTranslations,
+  },
+  {
+    label: 'Devenir traducteur',
+    icon: GraduationCap,
+    href: '/dashboard/become-translator',
+    //? Proposé aux rôles plus faibles que traducteur (même règle que la page).
+    hidden: !data.canBecomeTranslator,
   },
   {
     label: 'Ma page',
@@ -57,7 +68,7 @@ const items: Item[] = [
     href: '/logout',
     class: 'text-red-500 font-bold',
   },
-];
+]);
 </script>
 
 <Sidebar {items} />

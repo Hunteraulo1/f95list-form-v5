@@ -349,6 +349,10 @@ export const UserSchema = defineEntity({
         .foreignKeyName('user_role_id_role_id_fkey'),
     zitadelId: uuidFk().unique().nullable(),
     discordNotification: p.boolean().default(true),
+    //? Quand et quelle version des règles du traducteur (`$lib/translator-rules`) ce compte a acceptées en
+    //? demandant à devenir traducteur : nuls s'il ne l'a jamais fait (compte créé ainsi, ou promu à la main).
+    translatorRulesAcceptedAt: p.datetime().nullable(),
+    translatorRulesVersion: p.smallint().unsigned().nullable(),
     ...timestamps(),
   },
 });
