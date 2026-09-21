@@ -33,6 +33,7 @@ import {
   User,
 } from '$lib/server/db';
 import { canAddTranslation, canManageAutoCheck } from '$lib/server/game-access';
+import { syncGameTagsF95 } from '$lib/server/game-tags';
 import type { SessionUser } from '$lib/server/hooks/auth';
 import { logger } from '$lib/server/logger';
 import { allocateSlug } from '$lib/server/slug';
@@ -472,6 +473,7 @@ export const createGame = async (input: CreateGameInput, viewer: SessionUser) =>
     }
 
     await em.flush();
+    await syncGameTagsF95(em, [game.id]);
     logger.info({ gameId: game.id, userId: viewer.id }, 'jeu créé');
 
     return game.id;

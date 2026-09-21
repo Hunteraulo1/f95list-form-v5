@@ -16,10 +16,7 @@ export const load = async () => {
           }
         : {},
       {
-        populate: [
-          'gameEdition.game.gameGameTags.gameTag',
-          'gameTranslationTranslators.user',
-        ],
+        populate: ['gameEdition.game', 'gameTranslationTranslators.user'],
         orderBy: { updatedAt: 'desc' },
       },
     ),
@@ -60,7 +57,8 @@ export const load = async () => {
       qualities: [translation.quality],
       types: translation.type ? [translation.type] : [],
       translatorIds: [...new Set(translatorIds)],
-      tagIds: game.gameGameTags.getItems().map(({ gameTag }) => gameTag.id),
+      //? Recherche sur la version filtrée des tags (ids F95Checker) ; les tags réels sont sur la page du jeu.
+      tagIds: game.tagsF95 ?? [],
       //? égalité de valeur (pas de référence, ce sont deux instances Date distinctes) ;
       //? on exclut le repli UNKNOWN_HISTORY_DATE, dont on ne sait rien de réel.
       updateType:
@@ -77,7 +75,9 @@ export const load = async () => {
     translators: [...translators]
       .map(([id, name]) => ({ id, name }))
       .sort((a, b) => a.name.localeCompare(b.name, 'fr')),
-    tags: tags.map((tag) => ({ id: tag.id, name: tag.name })),
+    tags: tags.flatMap((tag) =>
+      tag.f95Id ? [{ id: tag.f95Id, name: tag.name }] : [],
+    ),
   };
 
   return { games, filterOptions };

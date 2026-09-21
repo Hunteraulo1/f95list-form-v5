@@ -10,7 +10,6 @@ export const load = async () => {
     orm.em.find(Game, VIEW_ACTIVE_ONLY ? { active: true } : {}, {
       populate: [
         'gameEditions.gameTranslations.gameTranslationTranslators.user',
-        'gameGameTags.gameTag',
       ],
       orderBy: { name: 'asc' },
     }),
@@ -59,7 +58,8 @@ export const load = async () => {
         ),
       ],
       translatorIds: [...new Set(translatorIds)],
-      tagIds: game.gameGameTags.getItems().map(({ gameTag }) => gameTag.id),
+      //? Recherche sur la version filtrée des tags (ids F95Checker) ; les tags réels sont sur la page du jeu.
+      tagIds: game.tagsF95 ?? [],
     };
     return row;
   });
@@ -69,7 +69,9 @@ export const load = async () => {
     translators: [...translators]
       .map(([id, name]) => ({ id, name }))
       .sort((a, b) => a.name.localeCompare(b.name, 'fr')),
-    tags: tags.map((tag) => ({ id: tag.id, name: tag.name })),
+    tags: tags.flatMap((tag) =>
+      tag.f95Id ? [{ id: tag.f95Id, name: tag.name }] : [],
+    ),
   };
 
   return { games: gameRows, filterOptions };

@@ -56,6 +56,10 @@ export const GameSchema = defineEntity({
     votes: p.integer().unsigned().nullable(),
     downloads: p.json<unknown[]>().nullable(),
     reviews: p.json<unknown[]>().nullable(),
+    //? Version filtrée des tags du jeu : identifiants F95Checker (`game_tags.f95_id`, triés, sans doublon) de
+    //? ses tags F95zone et de ceux vers lesquels pointent ses autres tags (`game_tags.f95_tag_id`).
+    //? Recalculée par `syncGameTagsF95` ; nulle tant que le jeu n'a jamais été calculé.
+    tagsF95: p.json<number[]>().nullable(),
     imageInternal: p.string().length(2048).nullable(),
     imageExternal: p.string().length(2048).nullable(),
     description: p.text().nullable(),
@@ -77,6 +81,22 @@ export const GameTagsSchema = defineEntity({
   properties: {
     id: p.mediumint().unsigned().primary().autoincrement(),
     name: p.string().length(255),
+    //? Identifiant du tag chez F95Checker (celui que renvoie le scraper dans `thread.tags`) : nul pour
+    //? un tag qui n'existe pas côté F95, notamment ceux repris de la v4.
+    f95Id: p.smallint().unsigned().fieldName('f95_id').unique().nullable(),
+    //? Faux pour un tag que ni F95Checker ni le dictionnaire `F95_TAG_ID_BY_NAME` ne connaissent : il reste
+    //? sur ses jeux mais attend d'être classé (gardé ou écarté).
+    active: p.boolean().default(true),
+    //? Tag F95zone auquel ce tag est lié (jamais fusionné : il garde ses jeux). Sert à remplir `game.tags_f95`.
+    //? Nul pour un tag F95zone (il se représente lui-même) et pour un tag sans équivalent chez F95zone.
+    f95Tag: () =>
+      p
+        .manyToOne(GameTags)
+        .fieldName('f95_tag_id')
+        .foreignKeyName('game_tags_f95_tag_fk')
+        .deleteRule('set null')
+        .updateRule('restrict')
+        .nullable(),
     ...timestamps(),
   },
 });

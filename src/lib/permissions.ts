@@ -46,6 +46,13 @@ export const PERMISSIONS = {
     group: 'Administration',
     requires: 'admin.access',
   },
+  'manage.tags': {
+    label: 'Classer les tags',
+    description:
+      'Rattacher les tags sans équivalent aux tags de F95zone (fusion), les garder ou les écarter.',
+    group: 'Administration',
+    requires: 'admin.access',
+  },
   'game.create': {
     label: 'Créer des jeux',
     description: 'Ajouter un nouveau jeu.',

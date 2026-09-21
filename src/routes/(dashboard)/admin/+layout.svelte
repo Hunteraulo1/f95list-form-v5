@@ -1,5 +1,11 @@
 <script lang="ts">
-import { ChartSpline, KeyRound, LayoutDashboard, Users } from '@lucide/svelte';
+import {
+  ChartSpline,
+  KeyRound,
+  LayoutDashboard,
+  Tags,
+  Users,
+} from '@lucide/svelte';
 import type { Snippet } from 'svelte';
 import type { Item } from '$lib/components/ui/dashboard/Sidebar.svelte';
 import Sidebar from '$lib/components/ui/dashboard/Sidebar.svelte';
@@ -32,6 +38,12 @@ const items: Item[] = [
     icon: Users,
     href: '/admin/roles',
     permission: 'manage.roles',
+  },
+  {
+    label: 'Tags',
+    icon: Tags,
+    href: '/admin/tags',
+    permission: 'manage.tags',
   },
   {
     label: 'Gestion API',
