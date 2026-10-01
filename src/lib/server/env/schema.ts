@@ -11,6 +11,14 @@ export const envSchema = v.object({
 
   ZITADEL_CLIENT_SECRET: v.optional(v.string()),
 
+  SCRAPER_URL: v.optional(v.string()),
+
+  SCRAPER_AUTH_TOKEN: v.optional(v.string()),
+
+  LIBRETRANSLATE_URL: v.optional(v.string()),
+
+  LIBRETRANSLATE_API_KEY: v.optional(v.string()),
+
   LOG_LEVEL: v.optional(v.picklist(['debug', 'info', 'warn', 'error']), 'info'),
 });
 

@@ -10,9 +10,11 @@ import { GameTags, OriginWebsite, orm } from '$lib/server/db';
 import {
   canAddTranslation,
   canCreateGame,
+  canEditGame,
   canManageAutoCheck,
 } from '$lib/server/game-access';
 import { createGame, isStaff, parseGameForm } from '$lib/server/game-create';
+import { translateGameDescriptionInBackground } from '$lib/server/game-description-fr';
 import {
   editionStatusName,
   translationQualityName,
@@ -58,6 +60,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     //? Ce que cette personne peut faire ici (voir game-access.ts et game-create.ts).
     canAddTranslation: canAddTranslation(locals.user),
     canManageAutoCheck: canManageAutoCheck(locals.user),
+    canEditGame: canEditGame(locals.user),
     staff: isStaff(locals.user),
     self: { id: locals.user.id, name: locals.user.name },
   };
@@ -85,6 +88,14 @@ export const actions: Actions = {
       }
 
       throw cause;
+    }
+
+    //? Comme en v4 : sans description française saisie à la main, elle est traduite en arrière-plan.
+    if (!parsed.input.game.descriptionFr) {
+      translateGameDescriptionInBackground(
+        gameId,
+        parsed.input.game.description,
+      );
     }
 
     redirect(303, `/games/${gameId}`);

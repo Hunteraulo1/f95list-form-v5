@@ -34,17 +34,16 @@ const { data, form }: Props = $props();
 //? (simplement masqué hors de son étape), donc l'envoi contient tout.
 const STEP = {
   site: 0,
-  thread: 1,
-  infos: 2,
-  translation: 3,
-  autoCheck: 4,
-  review: 5,
+  infos: 1,
+  translation: 2,
+  autoCheck: 3,
+  review: 4,
 } as const;
 
 const stepLabels = $derived(
   data.canManageAutoCheck
-    ? ['Site', 'Thread', 'Infos jeu', 'Traduction', 'Auto-check', 'Validation']
-    : ['Site', 'Thread', 'Infos jeu', 'Traduction'],
+    ? ['Site', 'Infos jeu', 'Traduction', 'Auto-check', 'Validation']
+    : ['Site', 'Infos jeu', 'Traduction'],
 );
 const maxStep = $derived(stepLabels.length - 1);
 
@@ -86,6 +85,9 @@ interface Duplicate {
 }
 let duplicate = $state<Duplicate | null>(null);
 let checking = $state(false);
+let previewing = $state(false);
+//? Thread déjà pré-rempli (évite de rappeler le scraper en vain en navigant entre les étapes).
+let prefilledThreadId: string | null = $state(null);
 
 const origin = $derived(data.origins.find(({ id }) => id === game.originId));
 const hasThread = $derived(origin?.hasThread ?? false);
@@ -119,9 +121,22 @@ const fieldState = $derived(
     translatorCount,
   }),
 );
+//? Un jeu auto-scrapé (F95zone) garde ses infos à jour tout seul : sans le droit de modifier un
+//? jeu, l'étape « Infos jeu » n'a rien à y faire (voir `prefillFromThread`). Sauf si le
+//? pré-remplissage n'a pas suffi (scraper indisponible, tag inconnu…) : l'étape reste alors
+//? modifiable plutôt que de bloquer définitivement la création.
+const infosPrefilled = $derived(
+  !fieldState.errors.name &&
+    !fieldState.errors.image &&
+    !fieldState.errors.tags &&
+    !fieldState.errors.editionVersion,
+);
+const skipInfos = $derived(
+  autoCheckAvailable && !data.canEditGame && infosPrefilled,
+);
 const blockFinalSubmit = $derived(fieldState.blocking || duplicate !== null);
 const blockNextStep = $derived(
-  step === STEP.thread && (!threadValid || duplicate !== null),
+  step === STEP.site && hasThread && (!threadValid || duplicate !== null),
 );
 const imagePreview = $derived.by(() => {
   const parsed = parseImageUrl(game.image);
@@ -193,6 +208,38 @@ const checkThread = async () => {
   }
 };
 
+//? Pré-remplit « Infos jeu » depuis l'aperçu F95zone du scraper (une fois par thread) : ne touche
+//? jamais un champ déjà saisi à la main, et une erreur n'empêche pas de continuer sans.
+const prefillFromThread = async () => {
+  const threadId = game.threadId.trim();
+  if (!autoCheckAvailable || !threadValid || prefilledThreadId === threadId)
+    return;
+
+  previewing = true;
+  try {
+    const response = await fetch(
+      `/dashboard/games/new/preview?threadId=${encodeURIComponent(threadId)}`,
+    );
+    const result = await response.json();
+    if (result.ok) {
+      const { data } = result;
+      if (!game.name.trim()) game.name = data.name;
+      if (!game.image.trim() && data.image) game.image = data.image;
+      if (!game.description.trim() && data.description)
+        game.description = data.description;
+      if (!game.editionVersion.trim() && data.version)
+        game.editionVersion = data.version;
+      if (data.status) game.status = data.status;
+      if (tags.length === 0 && data.tagIds?.length) tags = data.tagIds;
+    }
+    prefilledThreadId = threadId;
+  } catch {
+    //? Pré-remplissage de confort : la saisie manuelle reste possible sans lui.
+  } finally {
+    previewing = false;
+  }
+};
+
 //? Entrée dans un champ passe à l'étape suivante (sans bouton d'envoi, le navigateur ne le ferait pas).
 const advanceOnEnter = (event: KeyboardEvent) => {
   const target = event.target as HTMLElement;
@@ -210,24 +257,27 @@ const advanceOnEnter = (event: KeyboardEvent) => {
 };
 
 const changeStep = async (amount: number) => {
-  let target = Math.min(Math.max(step + amount, 0), maxStep);
-
-  //? Un site sans thread saute l'étape « Thread » ; sans auto-check, l'étape « Auto-check ».
-  if (target === STEP.thread && !hasThread) target += amount;
-  if (target === STEP.autoCheck && !autoCheckAvailable) target += amount;
-
-  if (step === STEP.thread && amount > 0) {
+  //? Avant de calculer la cible : le pré-remplissage doit avoir eu sa chance de tourner, sinon
+  //? `skipInfos` (ci-dessous) jugerait encore les champs vides.
+  if (step === STEP.site && amount > 0 && hasThread) {
     await checkThread();
     if (duplicate) return;
+    await prefillFromThread();
   }
+
+  let target = Math.min(Math.max(step + amount, 0), maxStep);
+
+  //? Jeu auto-scrapé sans droit de modifier un jeu : l'étape « Infos jeu » est sautée.
+  if (target === STEP.infos && skipInfos) target += amount;
+  //? Sans auto-check, l'étape « Auto-check » est sautée.
+  if (target === STEP.autoCheck && !autoCheckAvailable) target += amount;
 
   step = Math.min(Math.max(target, 0), maxStep);
 };
 
 //? Les erreurs du serveur ramènent à l'étape du premier champ fautif.
 const stepOfError = (key: string): number => {
-  if (key === 'originId') return STEP.site;
-  if (key === 'threadId') return STEP.thread;
+  if (key === 'originId' || key === 'threadId') return STEP.site;
   if (
     [
       'name',
@@ -250,10 +300,7 @@ const goToFirstError = async () => {
   if (keys.length === 0) return;
 
   const target = Math.min(...keys.map(stepOfError));
-  step =
-    target === STEP.thread && !hasThread
-      ? STEP.site
-      : Math.min(target, maxStep);
+  step = Math.min(target, maxStep);
   await tick();
   document.querySelector('[data-error]')?.scrollIntoView({ block: 'center' });
 };
@@ -381,6 +428,9 @@ const goToFirstError = async () => {
       {#if checking}
         <span class="text-xs opacity-70">Vérification du thread…</span>
       {/if}
+      {#if previewing}
+        <span class="text-xs opacity-70">Pré-remplissage depuis F95zone…</span>
+      {/if}
     </div>
 
     <div class="rounded-xl bg-base-200/40 px-4 py-3">
@@ -433,11 +483,10 @@ const goToFirstError = async () => {
         </select>
       </GameField>
 
-      <!-- Étape « Thread » -->
       <GameField
         label="ID du thread"
         id="threadId"
-        hidden={hiddenOutside(STEP.thread) || !hasThread}
+        hidden={hiddenOutside(STEP.site) || !hasThread}
       >
         <input
           id="threadId"
@@ -457,14 +506,18 @@ const goToFirstError = async () => {
         label="Nom du jeu"
         id="name"
         hidden={hiddenOutside(STEP.infos)}
+        help={skipInfos
+          ? 'Rempli automatiquement depuis F95zone : modifiable seulement avec le droit de modifier un jeu.'
+          : undefined}
       >
         <input
           id="name"
           name="name"
           placeholder="Nom du jeu"
           maxlength={GAME_NAME_MAX_LENGTH}
-          class="{field} {tone('name')}"
+          class="{field} {tone('name')} {skipInfos ? 'opacity-60' : ''}"
           bind:value={game.name}
+          readonly={skipInfos}
         >
       </GameField>
 
@@ -513,14 +566,18 @@ const goToFirstError = async () => {
         id="image"
         hidden={hiddenOutside(STEP.infos)}
         class="relative"
+        help={skipInfos
+          ? 'Remplie automatiquement depuis F95zone : modifiable seulement avec le droit de modifier un jeu.'
+          : undefined}
       >
         <input
           id="image"
           name="image"
           type="text"
           placeholder="Lien de l'image du jeu"
-          class="{field} {tone('image')}"
+          class="{field} {tone('image')} {skipInfos ? 'opacity-60' : ''}"
           bind:value={game.image}
+          readonly={skipInfos}
           onfocus={() => (imageFocused = true)}
           onblur={() => (imageFocused = false)}
         >
@@ -546,15 +603,20 @@ const goToFirstError = async () => {
         label="Version du jeu"
         id="editionVersion"
         hidden={hiddenOutside(STEP.infos)}
-        help="Dernière version sortie du jeu pour la branche concernée (pas la version de la traduction)."
+        help={skipInfos
+          ? 'Remplie automatiquement depuis F95zone : modifiable seulement avec le droit de modifier un jeu.'
+          : 'Dernière version sortie du jeu pour la branche concernée (pas la version de la traduction).'}
       >
         <input
           id="editionVersion"
           name="editionVersion"
           placeholder="Version du jeu"
           maxlength={VERSION_MAX_LENGTH}
-          class="{field} {tone('editionVersion')}"
+          class="{field} {tone('editionVersion')} {skipInfos
+            ? 'opacity-60'
+            : ''}"
           bind:value={game.editionVersion}
+          readonly={skipInfos}
         >
       </GameField>
 
@@ -562,6 +624,9 @@ const goToFirstError = async () => {
         label="Description du jeu"
         id="description"
         hidden={hiddenOutside(STEP.infos)}
+        help={skipInfos
+          ? 'Remplie automatiquement depuis F95zone : modifiable seulement avec le droit de modifier un jeu.'
+          : undefined}
       >
         <textarea
           id="description"
@@ -570,8 +635,9 @@ const goToFirstError = async () => {
           maxlength={DESCRIPTION_MAX_LENGTH}
           class="{field} h-10 max-h-32 min-h-10 resize-y py-2 {tone(
             'description',
-          )}"
+          )} {skipInfos ? 'opacity-60' : ''}"
           bind:value={game.description}
+          readonly={skipInfos}
         ></textarea>
       </GameField>
 
@@ -579,6 +645,9 @@ const goToFirstError = async () => {
         label="Description française"
         id="descriptionFr"
         hidden={hiddenOutside(STEP.infos)}
+        help={skipInfos
+          ? 'Traduite automatiquement depuis la description : modifiable seulement avec le droit de modifier un jeu.'
+          : undefined}
       >
         <textarea
           id="descriptionFr"
@@ -587,8 +656,9 @@ const goToFirstError = async () => {
           maxlength={DESCRIPTION_MAX_LENGTH}
           class="{field} h-10 max-h-32 min-h-10 resize-y py-2 {tone(
             'descriptionFr',
-          )}"
+          )} {skipInfos ? 'opacity-60' : ''}"
           bind:value={game.descriptionFr}
+          readonly={skipInfos}
         ></textarea>
       </GameField>
 
@@ -597,12 +667,16 @@ const goToFirstError = async () => {
         id="tags"
         hidden={hiddenOutside(STEP.infos)}
         class="col-span-full"
+        help={skipInfos
+          ? 'Remplis automatiquement depuis F95zone : modifiables seulement avec le droit de modifier un jeu.'
+          : undefined}
       >
         <div class="w-full">
           <TagPicker
             tags={data.tags}
             bind:selected={tags}
             invalid={Boolean(fieldState.errors.tags || errors.tags)}
+            disabled={skipInfos}
           />
         </div>
       </GameField>
