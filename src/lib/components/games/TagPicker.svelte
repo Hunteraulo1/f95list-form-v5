@@ -43,9 +43,9 @@ const toggle = (id: number) => {
 
 <div
   class={cn(
-  'flex flex-col gap-2 rounded-xl border-2 border-base-content/30 bg-base-100 p-3',
-  invalid && 'border-error',
-)}
+    'flex flex-col gap-2 rounded-xl border-2 border-base-content/30 bg-base-100 p-3',
+    invalid && 'border-error',
+  )}
 >
   {#if chosen.length > 0}
     <ul class="flex flex-wrap gap-1" aria-label="Tags choisis">
@@ -74,11 +74,11 @@ const toggle = (id: number) => {
     aria-label="Rechercher un tag"
     bind:value={search}
     onkeydown={(event) => {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    if (matches[0]) toggle(matches[0].id);
-  }
-}}
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        if (matches[0]) toggle(matches[0].id);
+      }
+    }}
   >
 
   <ul

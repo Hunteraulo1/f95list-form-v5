@@ -34,8 +34,8 @@ const lineClass =
       {#each tocItems as item (item.label)}
         <div
           class="rounded-md px-1.5 py-1 text-[0.62rem] hover:bg-base-300 hover:text-base-content {item.active
-  ? 'bg-primary/16 font-semibold text-base-content hover:bg-primary hover:text-base-content'
-  : 'text-base-content/80'}"
+            ? 'bg-primary/16 font-semibold text-base-content hover:bg-primary hover:text-base-content'
+            : 'text-base-content/80'}"
         >
           {item.label}
         </div>

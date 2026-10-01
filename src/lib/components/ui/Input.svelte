@@ -27,10 +27,10 @@ const classicStyle = 'bg-neutral-content';
 
 <input
   class={cn(
-  'shadow-mini inline-flex h-9 cursor-pointer items-center justify-center rounded-xl border-2 border-transparent px-4 text-sm font-bold text-primary transition-all hover:border-primary',
-  inline ? inlineStyle : classicStyle,
-  classes,
-)}
+    'shadow-mini inline-flex h-9 cursor-pointer items-center justify-center rounded-xl border-2 border-transparent px-4 text-sm font-bold text-primary transition-all hover:border-primary',
+    inline ? inlineStyle : classicStyle,
+    classes,
+  )}
   {value}
   {placeholder}
   {oninput}

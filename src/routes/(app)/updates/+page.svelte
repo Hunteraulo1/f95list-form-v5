@@ -109,9 +109,9 @@ const gamesByDay = $derived.by(() => {
   </div>
   <div
     class={cn(
-  'relative top-24 right-2 transition-all not-md:fixed not-md:w-12 md:top-0 md:w-full',
-  isOpen && 'w-75! max-w-full p-4',
-)}
+      'relative top-24 right-2 transition-all not-md:fixed not-md:w-12 md:top-0 md:w-full',
+      isOpen && 'w-75! max-w-full p-4',
+    )}
   >
     <div
       class="flex h-full w-full flex-col items-end rounded-xl bg-base-300 p-1 md:sticky md:top-8 md:h-[calc(100vh-4rem)] md:w-full md:p-4"
@@ -120,8 +120,8 @@ const gamesByDay = $derived.by(() => {
         type="button"
         class="rounded-lg p-2 hover:bg-base-200 md:hidden"
         onclick={() => {
-  isOpen = !isOpen;
-}}
+          isOpen = !isOpen;
+        }}
       >
         {#if isOpen}
           <X />
@@ -139,8 +139,8 @@ const gamesByDay = $derived.by(() => {
           classes="w-full"
           value={query}
           oninput={(e) => {
-  query = e.currentTarget.value;
-}}
+            query = e.currentTarget.value;
+          }}
         />
         <div class="flex items-center justify-between gap-2">
           <span class="text-sm font-bold">Filtres</span>

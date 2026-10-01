@@ -48,9 +48,9 @@ let isOpen = $state(false);
   <Menu
     onclick={() => (isOpen = true)}
     class={cn(
-  isOpen && 'hidden',
-  'size-8 cursor-pointer rounded-lg p-1 hover:bg-base-100 md:hidden dark:hover:bg-base-300',
-)}
+      isOpen && 'hidden',
+      'size-8 cursor-pointer rounded-lg p-1 hover:bg-base-100 md:hidden dark:hover:bg-base-300',
+    )}
   />
   <a href="/" class="aspect-8/1 h-1/2 sm:h-full">
     {#if isDark}
@@ -72,8 +72,8 @@ let isOpen = $state(false);
     <X
       class="absolute top-8 left-8 size-8 cursor-pointer rounded-lg p-1 hover:bg-base-300 md:hidden"
       onclick={() => {
-  isOpen = false;
-}}
+        isOpen = false;
+      }}
     />
     <div class="mb-4 flex w-full md:hidden">
       {#if isDark}

@@ -53,12 +53,12 @@ const error = $derived(form && 'error' in form ? form.error : null);
       action="?/accept"
       class="flex flex-col gap-3"
       use:enhance={() => {
-  submitting = true;
-  return async ({ update }) => {
-    await update({ reset: false });
-    submitting = false;
-  };
-}}
+        submitting = true;
+        return async ({ update }) => {
+          await update({ reset: false });
+          submitting = false;
+        };
+      }}
     >
       <ul class="flex flex-col gap-3">
         {#each data.rules as rule (rule.id)}
@@ -86,10 +86,14 @@ const error = $derived(form && 'error' in form ? form.error : null);
 
       <div class="flex justify-center">
         <Button
-          label={submitting ? 'Envoi…' : "J'accepte les règles et je deviens traducteur"}
+          label={submitting
+            ? 'Envoi…'
+            : "J'accepte les règles et je deviens traducteur"}
           type="submit"
           disabled={!allChecked || submitting}
-          title={allChecked ? undefined : 'Coche toutes les règles pour continuer.'}
+          title={allChecked
+            ? undefined
+            : 'Coche toutes les règles pour continuer.'}
         />
       </div>
     </form>

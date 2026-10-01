@@ -284,21 +284,21 @@ const goToFirstError = async () => {
     autocomplete="off"
     onkeydown={advanceOnEnter}
     use:enhance={({ cancel }) => {
-  //? Seule la dernière étape envoie : partout ailleurs, on avance.
-  if (step < maxStep) {
-    cancel();
-    void changeStep(1);
-    return;
-  }
+      //? Seule la dernière étape envoie : partout ailleurs, on avance.
+      if (step < maxStep) {
+        cancel();
+        void changeStep(1);
+        return;
+      }
 
-  submitting = true;
+      submitting = true;
 
-  return async ({ update }) => {
-    await update({ reset: false });
-    submitting = false;
-    await goToFirstError();
-  };
-}}
+      return async ({ update }) => {
+        await update({ reset: false });
+        submitting = false;
+        await goToFirstError();
+      };
+    }}
   >
     {#if errorEntries.length > 0}
       <div
@@ -350,7 +350,9 @@ const goToFirstError = async () => {
                     >{translation.edition ?? 'Édition de base'}</span
                   >
                   —
-                  {translation.type}{translation.version ? ` (${translation.version})` : ''}
+                  {translation.type}{translation.version
+                    ? ` (${translation.version})`
+                    : ''}
                 </li>
               {/each}
             </ul>
@@ -396,11 +398,11 @@ const goToFirstError = async () => {
         class="mt-2 grid grid-cols-1 gap-2 text-xs sm:grid-cols-2 lg:grid-cols-4"
       >
         {#each [
-   ['Site', origin?.name ?? '—'],
-   ['Thread ID', game.threadId.trim() || '—'],
-   ['Nom', game.name.trim() || '—'],
-   ['Version', game.editionVersion.trim() || '—'],
- ] as [title, value] (title)}
+          ['Site', origin?.name ?? '—'],
+          ['Thread ID', game.threadId.trim() || '—'],
+          ['Nom', game.name.trim() || '—'],
+          ['Version', game.editionVersion.trim() || '—'],
+        ] as [title, value] (title)}
           <div class="rounded-xl bg-base-100 px-3 py-2">
             <p class="opacity-60">{title}</p>
             <p class="truncate font-bold">{value}</p>
@@ -566,7 +568,9 @@ const goToFirstError = async () => {
           name="description"
           placeholder="Description du jeu"
           maxlength={DESCRIPTION_MAX_LENGTH}
-          class="{field} h-10 max-h-32 min-h-10 resize-y py-2 {tone('description')}"
+          class="{field} h-10 max-h-32 min-h-10 resize-y py-2 {tone(
+            'description',
+          )}"
           bind:value={game.description}
         ></textarea>
       </GameField>
@@ -581,7 +585,9 @@ const goToFirstError = async () => {
           name="descriptionFr"
           placeholder="Description française"
           maxlength={DESCRIPTION_MAX_LENGTH}
-          class="{field} h-10 max-h-32 min-h-10 resize-y py-2 {tone('descriptionFr')}"
+          class="{field} h-10 max-h-32 min-h-10 resize-y py-2 {tone(
+            'descriptionFr',
+          )}"
           bind:value={game.descriptionFr}
         ></textarea>
       </GameField>
@@ -670,11 +676,15 @@ const goToFirstError = async () => {
           >
           <button
             type="button"
-            class="{iconButton} {game.editionVersion.trim() && shape.versionRequired ? '' : 'opacity-50'}"
+            class="{iconButton} {game.editionVersion.trim() &&
+            shape.versionRequired
+              ? ''
+              : 'opacity-50'}"
             aria-label="Copier la version du jeu"
             title="Copier la version du jeu"
             disabled={!shape.versionRequired}
-            onclick={() => (game.translationVersion = game.editionVersion.trim())}
+            onclick={() =>
+              (game.translationVersion = game.editionVersion.trim())}
           >
             <Copy size="16" />
           </button>
@@ -716,8 +726,8 @@ const goToFirstError = async () => {
           id="translators"
           hidden={hiddenOutside(STEP.translation) || !shape.translators}
           help={data.staff
-  ? "Vous pouvez ne pas être le traducteur et désigner d'autres personnes."
-  : "Le compte qui crée la traduction en est le traducteur. Vous pouvez ajouter d'autres traducteurs."}
+            ? "Vous pouvez ne pas être le traducteur et désigner d'autres personnes."
+            : "Le compte qui crée la traduction en est le traducteur. Vous pouvez ajouter d'autres traducteurs."}
         >
           <div class="flex w-full flex-col gap-2">
             <input
@@ -755,8 +765,12 @@ const goToFirstError = async () => {
               name="translators"
               bind:value={translators}
               canCreate={data.staff}
-              placeholder={data.staff ? 'Rechercher un traducteur…' : 'Ajouter un autre traducteur…'}
-              invalid={Boolean(fieldState.errors.translators || errors.translators)}
+              placeholder={data.staff
+                ? 'Rechercher un traducteur…'
+                : 'Ajouter un autre traducteur…'}
+              invalid={Boolean(
+                fieldState.errors.translators || errors.translators,
+              )}
             />
           </div>
         </GameField>
@@ -796,7 +810,11 @@ const goToFirstError = async () => {
         </GameField>
       {:else}
         <p
-          class="col-span-full text-sm opacity-70 {hiddenOutside(STEP.translation) ? 'hidden' : ''}"
+          class="col-span-full text-sm opacity-70 {hiddenOutside(
+            STEP.translation,
+          )
+            ? 'hidden'
+            : ''}"
         >
           Vous n'avez pas le droit d'ajouter une traduction : le jeu sera créé
           sans traduction.
@@ -855,10 +873,10 @@ const goToFirstError = async () => {
           classes="w-full md:w-40 only:ml-auto"
           disabled={blockNextStep}
           title={duplicate
-  ? 'Un jeu existe déjà avec ce thread : changez de thread ou consultez sa fiche'
-  : blockNextStep
-    ? 'ID du thread requis'
-    : undefined}
+            ? 'Un jeu existe déjà avec ce thread : changez de thread ou consultez sa fiche'
+            : blockNextStep
+              ? 'ID du thread requis'
+              : undefined}
           onclick={() => changeStep(1)}
         />
       {:else}
@@ -868,8 +886,8 @@ const goToFirstError = async () => {
           classes="w-full md:w-40"
           disabled={blockFinalSubmit || submitting}
           title={blockFinalSubmit
-  ? "Corrigez les champs en erreur (rouge) avant d'envoyer — les avertissements (jaune) ne bloquent pas"
-  : undefined}
+            ? "Corrigez les champs en erreur (rouge) avant d'envoyer — les avertissements (jaune) ne bloquent pas"
+            : undefined}
         />
       {/if}
     </div>

@@ -26,9 +26,9 @@ const styles: Partial<Record<Props['item'], ClassValue>> = {
 
 <span
   class={cn(
-  'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold whitespace-nowrap',
-  (item && styles[item]) || 'bg-base-300 text-base-content',
-)}
+    'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold whitespace-nowrap',
+    (item && styles[item]) || 'bg-base-300 text-base-content',
+  )}
 >
   {label}
 </span>

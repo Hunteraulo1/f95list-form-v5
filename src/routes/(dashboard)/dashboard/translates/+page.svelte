@@ -134,8 +134,8 @@ const roleLabel = (role: string | null | undefined) =>
       <Languages size="64" opacity=".2" />
       <p class="text-sm opacity-60">
         {data.query.q || data.query.status || data.query.role
-  ? 'Aucune traduction ne correspond.'
-  : "Vous n'avez aucune traduction."}
+          ? 'Aucune traduction ne correspond.'
+          : "Vous n'avez aucune traduction."}
       </p>
     </div>
   {:else}
@@ -169,10 +169,10 @@ const roleLabel = (role: string | null | undefined) =>
         {#each data.translations as item (item.translationId)}
           <tr
             class={cn(
-  'relative border-collapse odd:bg-base-100 even:bg-base-300',
-  item.outdated && 'odd:bg-yellow-500/70! even:bg-yellow-500/60!',
-  !item.followed && 'odd:bg-red-600/40! even:bg-red-600/30!',
-)}
+              'relative border-collapse odd:bg-base-100 even:bg-base-300',
+              item.outdated && 'odd:bg-yellow-500/70! even:bg-yellow-500/60!',
+              !item.followed && 'odd:bg-red-600/40! even:bg-red-600/30!',
+            )}
           >
             <td class="px-4 py-2">
               <span class="flex flex-col">
@@ -197,18 +197,22 @@ const roleLabel = (role: string | null | undefined) =>
                 <Menu
                   label="Plus d'actions pour {item.name}"
                   items={[
-  {
-    label: item.followed ? 'Abandonner' : 'Reprendre',
-    icon: item.followed ? BellOff : Bell,
-    danger: item.followed,
-    onselect: () => submitForm(`follow-${item.translationId}`),
-  },
-  {
-    label: item.anonymous ? 'Afficher mon nom' : 'Rester anonyme',
-    icon: item.anonymous ? Eye : EyeOff,
-    onselect: () => submitForm(`anonymous-${item.translationId}`),
-  },
-]}
+                    {
+                      label: item.followed ? 'Abandonner' : 'Reprendre',
+                      icon: item.followed ? BellOff : Bell,
+                      danger: item.followed,
+                      onselect: () =>
+                        submitForm(`follow-${item.translationId}`),
+                    },
+                    {
+                      label: item.anonymous
+                        ? 'Afficher mon nom'
+                        : 'Rester anonyme',
+                      icon: item.anonymous ? Eye : EyeOff,
+                      onselect: () =>
+                        submitForm(`anonymous-${item.translationId}`),
+                    },
+                  ]}
                 />
 
                 <!-- Les entrées du menu soumettent ces formulaires : ils restent cachés dans la ligne. -->
@@ -218,14 +222,14 @@ const roleLabel = (role: string | null | undefined) =>
                   action="?/follow"
                   class="hidden"
                   use:enhance={({ cancel }) => {
-  if (
-    item.followed &&
-    !confirm(
-      `Abandonner « ${item.name} » ? Vous ne suivrez plus ses mises à jour et vous n'aurez plus d'alertes.`,
-    )
-  )
-    cancel();
-}}
+                    if (
+                      item.followed &&
+                      !confirm(
+                        `Abandonner « ${item.name} » ? Vous ne suivrez plus ses mises à jour et vous n'aurez plus d'alertes.`,
+                      )
+                    )
+                      cancel();
+                  }}
                 >
                   <input
                     type="hidden"

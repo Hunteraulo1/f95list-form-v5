@@ -36,7 +36,10 @@ const visibleItems = $derived(
     <li>
       <a
         href={item.href}
-        class={cn('flex items-center gap-2 rounded-lg p-2 hover:bg-base-100', item.class)}
+        class={cn(
+          'flex items-center gap-2 rounded-lg p-2 hover:bg-base-100',
+          item.class,
+        )}
         class:bg-base-300={page.url.pathname === item.href}
       >
         <item.icon />

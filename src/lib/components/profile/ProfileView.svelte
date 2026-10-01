@@ -213,7 +213,9 @@ const editButton =
 
         {#if translations.items.length === 0}
           <p class="py-8 text-center text-sm opacity-60">
-            {query.q ? 'Aucune traduction ne correspond.' : 'Aucune traduction.'}
+            {query.q
+              ? 'Aucune traduction ne correspond.'
+              : 'Aucune traduction.'}
           </p>
         {:else}
           <table class="w-full table-fixed border-spacing-2">
@@ -257,7 +259,9 @@ const editButton =
                   </td>
                   <td class="px-4 py-2 text-center">{item.version}</td>
                   <td
-                    class="px-4 py-2 text-center {item.outdated ? 'text-yellow-500' : ''}"
+                    class="px-4 py-2 text-center {item.outdated
+                      ? 'text-yellow-500'
+                      : ''}"
                   >
                     {item.tversion}
                   </td>

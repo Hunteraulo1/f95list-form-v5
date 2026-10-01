@@ -56,14 +56,14 @@ const closeModal = () => {
       action="?/create"
       class="flex gap-2"
       use:enhance={() =>
-  async ({ result, update }) => {
-    await update();
+        async ({ result, update }) => {
+          await update();
 
-    if (result.type === 'success' && result.data?.created) {
-      created = result.data.created as { name: string; key: string };
-      name = '';
-    }
-  }}
+          if (result.type === 'success' && result.data?.created) {
+            created = result.data.created as { name: string; key: string };
+            name = '';
+          }
+        }}
     >
       <input type="hidden" name="name" value={name}>
       <Input
@@ -122,7 +122,10 @@ const closeModal = () => {
                 {key.lastUsedAt ? formatDate(key.lastUsedAt) : 'Jamais'}
               </td>
               <td
-                class={cn('px-4 py-2 text-center', key.used >= key.quota && 'font-bold text-error')}
+                class={cn(
+                  'px-4 py-2 text-center',
+                  key.used >= key.quota && 'font-bold text-error',
+                )}
               >
                 {key.used}
                 / {key.quota}
@@ -133,14 +136,14 @@ const closeModal = () => {
                   action="?/revoke"
                   class="flex justify-center"
                   use:enhance={({ cancel }) => {
-  if (
-    !confirm(
-      `Révoquer la clé « ${key.name} » ? Les applications qui l'utilisent perdront l'accès.`,
-    )
-  ) {
-    cancel();
-  }
-}}
+                    if (
+                      !confirm(
+                        `Révoquer la clé « ${key.name} » ? Les applications qui l'utilisent perdront l'accès.`,
+                      )
+                    ) {
+                      cancel();
+                    }
+                  }}
                 >
                   <input type="hidden" name="id" value={key.id}>
                   <Button

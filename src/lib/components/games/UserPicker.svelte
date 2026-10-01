@@ -94,8 +94,8 @@ const remove = (ref: string) => {
           <button
             type="button"
             class="flex cursor-pointer items-center gap-1 rounded-lg px-2 py-0.5 text-xs font-bold {person.isNew
-  ? 'bg-warning text-warning-content'
-  : 'bg-primary text-neutral-content'}"
+              ? 'bg-warning text-warning-content'
+              : 'bg-primary text-neutral-content'}"
             title="Retirer {person.label}"
             onclick={() => remove(person.ref)}
           >
@@ -113,7 +113,9 @@ const remove = (ref: string) => {
   <div class="relative">
     <input
       type="search"
-      class="shadow-mini h-9 w-full rounded-xl border-2 bg-neutral-content px-3 text-sm font-bold text-primary outline-none hover:border-primary focus:border-primary {invalid ? 'border-error' : 'border-transparent'}"
+      class="shadow-mini h-9 w-full rounded-xl border-2 bg-neutral-content px-3 text-sm font-bold text-primary outline-none hover:border-primary focus:border-primary {invalid
+        ? 'border-error'
+        : 'border-transparent'}"
       {placeholder}
       aria-label={placeholder}
       autocomplete="off"
@@ -121,15 +123,15 @@ const remove = (ref: string) => {
       onfocus={() => (open = true)}
       onblur={() => setTimeout(() => (open = false), 150)}
       onkeydown={(event) => {
-  if (event.key === 'Escape') open = false;
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    const first = found[0];
-    if (first) add({ ref: userRef(first.id), label: first.name });
-    else if (canCreate && term)
-      add({ ref: newUserRef(term), label: term, isNew: true });
-  }
-}}
+        if (event.key === 'Escape') open = false;
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          const first = found[0];
+          if (first) add({ ref: userRef(first.id), label: first.name });
+          else if (canCreate && term)
+            add({ ref: newUserRef(term), label: term, isNew: true });
+        }
+      }}
     >
 
     {#if open && term}
@@ -159,7 +161,8 @@ const remove = (ref: string) => {
               type="button"
               class="w-full cursor-pointer rounded-lg px-2 py-1 text-left hover:bg-base-200"
               onmousedown={(event) => event.preventDefault()}
-              onclick={() => add({ ref: newUserRef(term), label: term, isNew: true })}
+              onclick={() =>
+                add({ ref: newUserRef(term), label: term, isNew: true })}
             >
               Créer « <span class="font-bold">{term}</span> » (compte fantôme)
             </button>

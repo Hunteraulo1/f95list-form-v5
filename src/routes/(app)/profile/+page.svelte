@@ -99,12 +99,12 @@ const descriptionError = $derived(
 
 <ProfileView
   profile={{
-  name: user.name,
-  roleLabel: user.role.label,
-  avatar: user.avatar,
-  banner: user.banner,
-  description: user.description,
-}}
+    name: user.name,
+    roleLabel: user.role.label,
+    avatar: user.avatar,
+    banner: user.banner,
+    description: user.description,
+  }}
   descriptionDocument={data.descriptionDocument}
   translations={data.translations}
   query={data.query}
@@ -120,10 +120,10 @@ const descriptionError = $derived(
       action="?/description"
       class="flex flex-col gap-3"
       use:enhance={() =>
-  async ({ result, update }) => {
-    await update({ reset: false });
-    if (result.type === 'success') editingDescription = false;
-  }}
+        async ({ result, update }) => {
+          await update({ reset: false });
+          if (result.type === 'success') editingDescription = false;
+        }}
     >
       <MarkdownEditor
         bind:value={description}
@@ -163,10 +163,10 @@ const descriptionError = $derived(
       action="?/{imageField}"
       class="flex flex-col gap-4"
       use:enhance={() =>
-  async ({ result, update }) => {
-    await update({ reset: false });
-    if (result.type === 'success') imageField = null;
-  }}
+        async ({ result, update }) => {
+          await update({ reset: false });
+          if (result.type === 'success') imageField = null;
+        }}
     >
       <label class="flex flex-col gap-1 text-sm font-bold">
         Adresse de l'image

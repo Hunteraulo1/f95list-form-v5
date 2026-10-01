@@ -84,8 +84,8 @@ const translationStatusLabel = (status: TranslationStatus) => {
         placeholder="Rechercher un nom ou un n° de thread"
         value={query}
         oninput={(e) => {
-  query = e.currentTarget.value;
-}}
+          query = e.currentTarget.value;
+        }}
       />
       {#if canCreateGame}
         <Button
@@ -115,7 +115,8 @@ const translationStatusLabel = (status: TranslationStatus) => {
             <span
               class="shrink-0 rounded-lg px-2 py-1 text-xs font-bold uppercase"
               class:bg-success={game.translationStatus === 'up_to_date'}
-              class:text-success-content={game.translationStatus === 'up_to_date'}
+              class:text-success-content={game.translationStatus ===
+                'up_to_date'}
               class:bg-warning={game.translationStatus === 'outdated'}
               class:text-warning-content={game.translationStatus === 'outdated'}
               class:bg-error={game.translationStatus === 'none'}

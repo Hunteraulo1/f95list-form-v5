@@ -20,19 +20,19 @@ const { labels, current }: Props = $props();
       {#if index > 0}
         <span
           class={cn(
-  'absolute top-3 right-1/2 h-0.5 w-full -translate-y-1/2',
-  index <= current ? 'bg-primary' : 'bg-base-content/20',
-)}
+            'absolute top-3 right-1/2 h-0.5 w-full -translate-y-1/2',
+            index <= current ? 'bg-primary' : 'bg-base-content/20',
+          )}
           aria-hidden="true"
         ></span>
       {/if}
       <span
         class={cn(
-  'relative z-10 flex size-6 items-center justify-center rounded-full text-xs font-bold',
-  index <= current
-    ? 'bg-primary text-neutral-content'
-    : 'bg-base-300 text-base-content/70',
-)}
+          'relative z-10 flex size-6 items-center justify-center rounded-full text-xs font-bold',
+          index <= current
+            ? 'bg-primary text-neutral-content'
+            : 'bg-base-300 text-base-content/70',
+        )}
       >
         {#if index < current}
           <Check size="14" aria-hidden="true" />

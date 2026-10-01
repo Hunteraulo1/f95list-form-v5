@@ -108,8 +108,8 @@ const slides: HeroSlide[] = [
       aria-label="toggle"
       class="hover:text-primary"
       onclick={() => {
-  toogleSlide = !toogleSlide;
-}}
+        toogleSlide = !toogleSlide;
+      }}
     >
       {#if toogleSlide}
         <Play size="16" />

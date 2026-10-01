@@ -88,12 +88,12 @@ const selectField =
         method="POST"
         action="?/fetchF95zone"
         use:enhance={() => {
-  fetching = true;
-  return async ({ update }) => {
-    await update();
-    fetching = false;
-  };
-}}
+          fetching = true;
+          return async ({ update }) => {
+            await update();
+            fetching = false;
+          };
+        }}
       >
         <Button
           label={fetching ? 'Récupération…' : 'Récupérer les tags de F95zone'}
@@ -106,21 +106,23 @@ const selectField =
         method="POST"
         action="?/applySuggestions"
         use:enhance={({ cancel }) => {
-  if (
-    !confirm(
-      `Lier ${suggestionCount} tag${suggestionCount > 1 ? 's' : ''} selon les suggestions du dictionnaire ?`,
-    )
-  ) {
-    cancel();
-  }
-}}
+          if (
+            !confirm(
+              `Lier ${suggestionCount} tag${suggestionCount > 1 ? 's' : ''} selon les suggestions du dictionnaire ?`,
+            )
+          ) {
+            cancel();
+          }
+        }}
       >
         <Button
           label="Appliquer les suggestions ({suggestionCount})"
           type="submit"
           size="small"
           disabled={suggestionCount === 0}
-          title={suggestionCount === 0 ? 'Aucun tag ne correspond au dictionnaire.' : undefined}
+          title={suggestionCount === 0
+            ? 'Aucun tag ne correspond au dictionnaire.'
+            : undefined}
         />
       </form>
       <Input
@@ -164,7 +166,9 @@ const selectField =
                 </span>
               {:else if tag.status === 'none'}
                 <span class="block text-xs font-normal opacity-70">
-                  {tag.noEquivalent ? 'Sans équivalent chez F95zone' : 'Gardé sans équivalent'}
+                  {tag.noEquivalent
+                    ? 'Sans équivalent chez F95zone'
+                    : 'Gardé sans équivalent'}
                 </span>
               {/if}
             </td>
@@ -175,8 +179,8 @@ const selectField =
                 action="?/link"
                 class="flex items-center justify-center gap-1"
                 use:enhance={() =>
-  async ({ update }) =>
-    update({ reset: false })}
+                  async ({ update }) =>
+                    update({ reset: false })}
               >
                 <input type="hidden" name="id" value={tag.id}>
                 <select
@@ -238,7 +242,9 @@ const selectField =
                     value={String(tag.status === 'pending')}
                   >
                   <Button
-                    label={tag.status === 'pending' ? 'Garder sans équivalent' : 'Remettre à classer'}
+                    label={tag.status === 'pending'
+                      ? 'Garder sans équivalent'
+                      : 'Remettre à classer'}
                     type="submit"
                     size="tiny"
                   />

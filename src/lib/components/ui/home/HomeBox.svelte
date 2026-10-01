@@ -25,9 +25,9 @@ const { children, title, description, buttons, classes, masterClasses }: Props =
 
 <div
   class={cn(
-  'relative z-0 h-full min-h-60 w-full rounded-xl bg-base-300 px-8 py-4 lg:grid lg:grid-cols-2',
-  masterClasses,
-)}
+    'relative z-0 h-full min-h-60 w-full rounded-xl bg-base-300 px-8 py-4 lg:grid lg:grid-cols-2',
+    masterClasses,
+  )}
 >
   <div class="flex h-full flex-col justify-center gap-4 p-8">
     <h4 class="text-4xl font-bold">{title}</h4>

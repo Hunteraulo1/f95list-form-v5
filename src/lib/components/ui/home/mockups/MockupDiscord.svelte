@@ -26,9 +26,9 @@ const messages = [
       {#each channels as channel (channel.name)}
         <div
           class={cn(
-  'flex items-center gap-1 rounded-md px-1.5 py-1 text-[0.62rem] font-medium text-base-content/80 hover:bg-base-300 hover:text-base-content',
-  channel.active && 'bg-primary/18 hover:bg-primary/25',
-)}
+            'flex items-center gap-1 rounded-md px-1.5 py-1 text-[0.62rem] font-medium text-base-content/80 hover:bg-base-300 hover:text-base-content',
+            channel.active && 'bg-primary/18 hover:bg-primary/25',
+          )}
         >
           <channel.icon class="size-3" aria-hidden="true" />
           <span class="truncate select-none">{channel.name}</span>

@@ -43,9 +43,9 @@ const { items, label = "Plus d'actions" }: Props = $props();
           disabled={item.disabled}
           title={item.title}
           class={cn(
-  'flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold outline-hidden select-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-highlighted:bg-base-200',
-  item.danger && 'text-error',
-)}
+            'flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold outline-hidden select-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-highlighted:bg-base-200',
+            item.danger && 'text-error',
+          )}
         >
           {#if item.icon}
             <item.icon size="16" />

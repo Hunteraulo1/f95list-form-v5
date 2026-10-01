@@ -133,7 +133,9 @@ const message = $derived(
         name="q"
         value={data.query.q}
         maxlength="100"
-        placeholder={data.canViewEmails ? 'Nom, Discord ou e-mail…' : 'Nom ou Discord…'}
+        placeholder={data.canViewEmails
+          ? 'Nom, Discord ou e-mail…'
+          : 'Nom ou Discord…'}
       >
     </label>
     <label class="flex flex-col gap-1 text-sm font-bold">
@@ -249,24 +251,26 @@ const message = $derived(
                 <Button
                   label="Modifier"
                   size="tiny"
-                  classes={cn(!user.canEdit && 'pointer-events-none opacity-50')}
+                  classes={cn(
+                    !user.canEdit && 'pointer-events-none opacity-50',
+                  )}
                   onclick={() => {
-  editing = user;
-  nameDraft = user.name;
-}}
+                    editing = user;
+                    nameDraft = user.name;
+                  }}
                 />
                 {#if data.canImpersonate}
                   <Menu
                     label="Plus d'actions pour {user.name}"
                     items={[
-  {
-    label: 'Prendre sa place',
-    icon: LogIn,
-    disabled: !user.canImpersonate,
-    title: user.impersonateBlockedReason ?? undefined,
-    onselect: () => submitForm(`impersonate-${user.id}`),
-  },
-]}
+                      {
+                        label: 'Prendre sa place',
+                        icon: LogIn,
+                        disabled: !user.canImpersonate,
+                        title: user.impersonateBlockedReason ?? undefined,
+                        onselect: () => submitForm(`impersonate-${user.id}`),
+                      },
+                    ]}
                   />
 
                   <!-- L'entrée du menu soumet ce formulaire : il reste caché dans la ligne. -->
@@ -310,7 +314,9 @@ const message = $derived(
   open={editing !== null}
   onclose={() => (editing = null)}
   title="Modifier l'utilisateur"
-  description={editing?.ghost ? "Compte fantôme : il n'a ni e-mail ni connexion." : undefined}
+  description={editing?.ghost
+    ? "Compte fantôme : il n'a ni e-mail ni connexion."
+    : undefined}
 >
   {#if editing}
     {#key editing.id}
@@ -319,10 +325,10 @@ const message = $derived(
         action="?/updateUser"
         class="flex flex-col gap-4"
         use:enhance={() =>
-  async ({ result, update }) => {
-    await update({ reset: false });
-    if (result.type === 'success') editing = null;
-  }}
+          async ({ result, update }) => {
+            await update({ reset: false });
+            if (result.type === 'success') editing = null;
+          }}
       >
         <input type="hidden" name="id" value={editing.id}>
 
@@ -337,9 +343,10 @@ const message = $derived(
           >
           <span
             class={cn(
-  'text-xs font-normal',
-  slugCheck && (slugCheck.available ? 'text-success' : 'font-bold text-error'),
-)}
+              'text-xs font-normal',
+              slugCheck &&
+                (slugCheck.available ? 'text-success' : 'font-bold text-error'),
+            )}
           >
             {#if slugCheck?.available === false}
               {slugCheck.message}
@@ -402,7 +409,10 @@ const message = $derived(
           <Button
             label="Enregistrer"
             type="submit"
-            classes={cn(slugCheck?.available === false && 'pointer-events-none opacity-50')}
+            classes={cn(
+              slugCheck?.available === false &&
+                'pointer-events-none opacity-50',
+            )}
           />
         </div>
       </form>

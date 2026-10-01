@@ -29,11 +29,11 @@ const closeOnOutsideClick = (event: MouseEvent) => {
 <details bind:this={details} class="relative w-full">
   <summary
     class={cn(
-  'flex cursor-pointer list-none items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold transition-all select-none',
-  hasSelection
-    ? 'bg-primary text-primary-content'
-    : 'bg-base-200 hover:bg-base-300',
-)}
+      'flex cursor-pointer list-none items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold transition-all select-none',
+      hasSelection
+        ? 'bg-primary text-primary-content'
+        : 'bg-base-200 hover:bg-base-300',
+    )}
   >
     <span class="max-w-40 truncate">{summary}</span>
     <ChevronDown class="size-3.5 shrink-0 opacity-70" />

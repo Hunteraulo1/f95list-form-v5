@@ -134,7 +134,10 @@ const formatDate = (iso: string) => dateFormat.format(new Date(iso));
               {key.lastUsedAt ? formatDate(key.lastUsedAt) : 'Jamais'}
             </td>
             <td
-              class={cn('px-4 py-2 text-center', key.used >= key.quota && 'font-bold text-error')}
+              class={cn(
+                'px-4 py-2 text-center',
+                key.used >= key.quota && 'font-bold text-error',
+              )}
             >
               {key.used}
               / {key.quota}
@@ -150,8 +153,8 @@ const formatDate = (iso: string) => dateFormat.format(new Date(iso));
                 action="?/setKeyQuota"
                 class="flex items-center gap-1"
                 use:enhance={() =>
-  async ({ update }) =>
-    update({ reset: false })}
+                  async ({ update }) =>
+                    update({ reset: false })}
               >
                 <input type="hidden" name="id" value={key.id}>
                 <input
@@ -171,14 +174,14 @@ const formatDate = (iso: string) => dateFormat.format(new Date(iso));
                 action="?/revoke"
                 class="flex justify-center"
                 use:enhance={({ cancel }) => {
-  if (
-    !confirm(
-      `Révoquer la clé « ${key.name} » de ${key.owner.name} ? Les applications qui l'utilisent perdront l'accès.`,
-    )
-  ) {
-    cancel();
-  }
-}}
+                  if (
+                    !confirm(
+                      `Révoquer la clé « ${key.name} » de ${key.owner.name} ? Les applications qui l'utilisent perdront l'accès.`,
+                    )
+                  ) {
+                    cancel();
+                  }
+                }}
               >
                 <input type="hidden" name="id" value={key.id}>
                 <Button

@@ -95,9 +95,9 @@ const plural = (count: number, word: string) =>
           <a
             href="/admin/roles?role={encodeURIComponent(item.name)}"
             class={cn(
-  'flex items-center justify-between gap-2 rounded-lg p-2 hover:bg-base-200',
-  item.id === role.id && 'bg-base-300',
-)}
+              'flex items-center justify-between gap-2 rounded-lg p-2 hover:bg-base-200',
+              item.id === role.id && 'bg-base-300',
+            )}
           >
             <span class="flex min-w-0 flex-col">
               <span class="truncate font-bold">{item.label}</span>
@@ -155,13 +155,13 @@ const plural = (count: number, word: string) =>
               method="POST"
               action="?/deleteRole"
               use:enhance={({ cancel }) => {
-  if (
-    !confirm(
-      `Supprimer le rôle « ${role.label} » ? Cette action est définitive.`,
-    )
-  )
-    cancel();
-}}
+                if (
+                  !confirm(
+                    `Supprimer le rôle « ${role.label} » ? Cette action est définitive.`,
+                  )
+                )
+                  cancel();
+              }}
             >
               <input type="hidden" name="id" value={role.id}>
               <Button
@@ -169,9 +169,9 @@ const plural = (count: number, word: string) =>
                 type="submit"
                 size="small"
                 classes={cn(
-  'hover:bg-red-400 hover:text-white',
-  role.users > 0 && 'pointer-events-none opacity-50',
-)}
+                  'hover:bg-red-400 hover:text-white',
+                  role.users > 0 && 'pointer-events-none opacity-50',
+                )}
               />
             </form>
           {/if}
@@ -284,9 +284,11 @@ const plural = (count: number, word: string) =>
                 {#each items as item (item.key)}
                   <label
                     class={cn(
-  'flex items-start gap-2 rounded-lg border border-base-300 p-3',
-  isDisabled(item.key) ? 'opacity-70' : 'cursor-pointer hover:bg-base-200',
-)}
+                      'flex items-start gap-2 rounded-lg border border-base-300 p-3',
+                      isDisabled(item.key)
+                        ? 'opacity-70'
+                        : 'cursor-pointer hover:bg-base-200',
+                    )}
                   >
                     <input
                       type="checkbox"
@@ -295,7 +297,8 @@ const plural = (count: number, word: string) =>
                       class="mt-1"
                       checked={role.isSuper || (checks[item.key] ?? false)}
                       disabled={isDisabled(item.key)}
-                      onchange={(e) => setChecked(item.key, e.currentTarget.checked)}
+                      onchange={(e) =>
+                        setChecked(item.key, e.currentTarget.checked)}
                     >
                     <span class="flex flex-col text-sm">
                       <span class="font-bold">{item.label}</span>
@@ -337,10 +340,10 @@ const plural = (count: number, word: string) =>
     action="?/createRole"
     class="flex flex-col gap-4"
     use:enhance={() =>
-  async ({ update }) => {
-    await update();
-    createOpen = false;
-  }}
+      async ({ update }) => {
+        await update();
+        createOpen = false;
+      }}
   >
     <label class="flex flex-col gap-1 text-sm font-bold">
       Libellé

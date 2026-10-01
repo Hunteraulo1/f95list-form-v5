@@ -114,17 +114,19 @@ onMount(async () => {
   <div class="flex items-center justify-between gap-2">
     <div class="flex gap-1" role="tablist" aria-label="Mode de l'éditeur">
       {#each [
-   { key: 'write', label: 'Écrire' },
-   { key: 'preview', label: 'Aperçu' },
- ] as tab (tab.key)}
+        { key: 'write', label: 'Écrire' },
+        { key: 'preview', label: 'Aperçu' },
+      ] as tab (tab.key)}
         <button
           type="button"
           role="tab"
           aria-selected={mode === tab.key}
           class={cn(
-  'cursor-pointer rounded-lg px-3 py-1 text-sm font-bold transition-all',
-  mode === tab.key ? 'bg-primary text-neutral-content' : 'hover:bg-base-100',
-)}
+            'cursor-pointer rounded-lg px-3 py-1 text-sm font-bold transition-all',
+            mode === tab.key
+              ? 'bg-primary text-neutral-content'
+              : 'hover:bg-base-100',
+          )}
           onclick={() => (mode = tab.key as 'write' | 'preview')}
         >
           {tab.label}
@@ -154,7 +156,9 @@ onMount(async () => {
           <button
             type="button"
             class="flex cursor-pointer items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold hover:bg-base-100"
-            title={item.shortcut ? `${item.label} (${item.shortcut})` : item.label}
+            title={item.shortcut
+              ? `${item.label} (${item.shortcut})`
+              : item.label}
             aria-label={item.label}
             onclick={() => run(item.action)}
           >
@@ -178,17 +182,21 @@ onMount(async () => {
           autocompletion={false}
           onready={(ready: EditorView) => (view = ready)}
           styles={{
-  '&': { width: '100%', minHeight: '12rem', backgroundColor: 'transparent' },
-  '&.cm-focused': { outline: 'none' },
-  '.cm-scroller': {
-    fontFamily:
-      'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-    fontSize: '0.875rem',
-    lineHeight: '1.6',
-  },
-  '.cm-content': { padding: '0.75rem 1rem' },
-  '.cm-gutters': { display: 'none' },
-}}
+            '&': {
+              width: '100%',
+              minHeight: '12rem',
+              backgroundColor: 'transparent',
+            },
+            '&.cm-focused': { outline: 'none' },
+            '.cm-scroller': {
+              fontFamily:
+                'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+              fontSize: '0.875rem',
+              lineHeight: '1.6',
+            },
+            '.cm-content': { padding: '0.75rem 1rem' },
+            '.cm-gutters': { display: 'none' },
+          }}
         />
       {:else}
         <textarea
