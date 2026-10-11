@@ -1,6 +1,7 @@
 <script lang="ts">
 import Button from '#lib/components/ui/Button.svelte';
 import ColorBadge from '#lib/components/ui/games/ColorBadge.svelte';
+import EditGameModal from '#lib/components/ui/games/EditGameModal.svelte';
 import ReportGameModal from '#lib/components/ui/games/ReportGameModal.svelte';
 import type { PageData } from './$types.js';
 
@@ -11,6 +12,7 @@ interface Props {
 const { data }: Props = $props();
 
 let reportOpen = $state(false);
+let editOpen = $state(false);
 
 const reportTranslations = $derived(
   data.game.gameEditions.flatMap((edition) =>
@@ -73,7 +75,7 @@ const getHostname = (link: string) => {
   <section class="flex w-full gap-4 rounded-xl bg-base-100 p-4">
     {#if data.access.editGame}
       <Button label="Actualiser les données" />
-      <Button label="Modifier le jeu" />
+      <Button label="Modifier le jeu" onclick={() => (editOpen = true)} />
     {/if}
     <Button
       label="Signaler un problème"
@@ -179,6 +181,18 @@ const getHostname = (link: string) => {
   gameName={data.game.name}
   translations={reportTranslations}
 />
+
+<!-- Montée seulement ouverte : elle repart ainsi des valeurs actuelles du jeu à chaque fois. -->
+{#if editOpen && data.edit}
+  <EditGameModal
+    values={data.edit.values}
+    origins={data.edit.origins}
+    tags={data.edit.tags}
+    hasInternalImage={data.edit.hasInternalImage}
+    canManageAutoCheck={data.edit.canManageAutoCheck}
+    onclose={() => (editOpen = false)}
+  />
+{/if}
 
 {#snippet downloadLink(
   link: string,

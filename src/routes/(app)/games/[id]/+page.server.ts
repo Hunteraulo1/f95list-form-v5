@@ -1,16 +1,20 @@
-import { error } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
+import { threadBase } from '#lib/games/game-form.ts';
 import { VIEW_ACTIVE_ONLY } from '#lib/server/config.ts';
-import { Game, orm } from '#lib/server/db/index.ts';
+import { Game, GameTags, OriginWebsite, orm } from '#lib/server/db/index.ts';
 import {
   canAddTranslation,
   canEditGame,
   canEditTranslation,
+  canManageAutoCheck,
 } from '#lib/server/game-access.ts';
+import { translateGameDescriptionInBackground } from '#lib/server/game-description-fr.ts';
+import { parseGameEditForm, updateGame } from '#lib/server/game-edit.ts';
 import {
   translationQualityName,
   translationTypeName,
 } from '#lib/utils/entriesConvert.ts';
-import type { PageServerLoad } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 
 //? Les crédités anonymes sont regroupés sous un seul « Anonyme » : ni nom, ni identifiant, ni nombre.
 const publicTranslators = (
@@ -54,13 +58,51 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   if (!game) error(404, 'Not found');
   if (VIEW_ACTIVE_ONLY && !game.active) error(403, 'Forbidden');
 
+  const editGame = canEditGame(locals.user);
+  //? De quoi remplir la fenêtre « Modifier le jeu » : chargé seulement pour qui peut s'en servir.
+  const [origins, allTags] = editGame
+    ? await Promise.all([
+        orm.em.find(OriginWebsite, {}, { orderBy: { name: 'asc' } }),
+        orm.em.find(GameTags, {}, { orderBy: { name: 'asc' } }),
+      ])
+    : [[], []];
+
   return {
     //? Ce que la personne connectée peut faire ici : sert à masquer les boutons (les actions
     //? d'édition refuseront de toute façon, voir game-access.ts).
     access: {
-      editGame: canEditGame(locals.user),
+      editGame,
       addTranslation: canAddTranslation(locals.user),
     },
+    edit: editGame
+      ? {
+          values: {
+            name: game.name,
+            originId: game.origin.id,
+            threadId: game.threadId ?? null,
+            link: game.link,
+            image: game.imageExternal ?? null,
+            description: game.description ?? null,
+            descriptionFr: game.descriptionFr ?? null,
+            autoCheck: game.autoCheck,
+            tagIds: game.gameGameTags
+              .getItems()
+              .map(({ gameTag }) => gameTag.id),
+          },
+          //? L'image affichée est celle hébergée chez nous : changer le lien ne la remplace pas.
+          hasInternalImage: Boolean(game.imageInternal),
+          origins: origins.map((origin) => ({
+            id: origin.id,
+            name: origin.name,
+            //? Site à thread : le lien se déduit du numéro ; sinon il est saisi à la main.
+            hasThread: threadBase(origin.name) !== null,
+            //? L'auto-check n'existe que pour F95zone (comme en v4).
+            autoCheck: origin.name === 'F95zone',
+          })),
+          tags: allTags.map((tag) => ({ id: tag.id, name: tag.name })),
+          canManageAutoCheck: canManageAutoCheck(locals.user),
+        }
+      : null,
     game: {
       id: game.id,
       name: game.name,
@@ -129,4 +171,31 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         })),
     },
   };
+};
+
+export const actions: Actions = {
+  edit: async ({ locals, params, request }) => {
+    if (!locals.user) error(401, 'Non connecté');
+    if (!canEditGame(locals.user)) error(403, 'Accès refusé');
+
+    const game = await orm.em.findOne(Game, { id: parseInt(params.id, 10) });
+    if (!game) error(404, 'Not found');
+
+    const parsed = await parseGameEditForm(
+      await request.formData(),
+      locals.user,
+      game,
+    );
+    if (!parsed.ok) return fail(400, { errors: parsed.errors });
+
+    await updateGame(game.id, parsed.input, locals.user);
+
+    //? Comme à la création : sans description française saisie à la main, elle est traduite en
+    //? arrière-plan.
+    if (!parsed.input.descriptionFr) {
+      translateGameDescriptionInBackground(game.id, parsed.input.description);
+    }
+
+    return { edited: true };
+  },
 };

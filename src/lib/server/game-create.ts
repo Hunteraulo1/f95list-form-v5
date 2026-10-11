@@ -109,15 +109,24 @@ const optionalText = (
   return value || null;
 };
 
-//? Lit et valide le formulaire. Chaque champ fautif reçoit son message ; rien n'est écrit en base.
-export const parseGameForm = async (
-  data: FormData,
-  viewer: SessionUser,
-): Promise<ParsedGameForm> => {
-  const errors: FieldErrors = {};
-  const staff = isStaff(viewer);
+export interface GameFields {
+  name: string;
+  origin: OriginWebsite | null;
+  link: string;
+  threadId: number | null;
+  image: string | null;
+  description: string | null;
+  descriptionFr: string | null;
+  tagIds: number[];
+}
 
-  // --- le jeu
+//? Champs propres au jeu, communs à la création et à la modification. `current` : le jeu en cours
+//? de modification, qui n'est pas son propre doublon et dont l'image peut rester telle quelle.
+export const parseGameFields = async (
+  data: FormData,
+  errors: FieldErrors,
+  current?: { id: number; image: string | null },
+): Promise<GameFields> => {
   const name = text(data, 'name');
   if (!name) errors.name = 'Le nom est requis.';
   else if (name.length > GAME_NAME_MAX_LENGTH) {
@@ -153,7 +162,11 @@ export const parseGameForm = async (
 
   const imageRaw = text(data, 'image');
   let image: string | null = null;
-  if (!imageRaw) {
+  if (current && imageRaw === (current.image ?? '')) {
+    //? Une image inchangée n'est pas revalidée : certaines images migrées viennent d'hébergeurs qui
+    //? ne sont plus autorisés, et cela ne doit pas empêcher de modifier autre chose sur le jeu.
+    image = current.image;
+  } else if (!imageRaw) {
     //? Tous les jeux des sites à thread ont une image ; ailleurs elle reste facultative.
     if (origin && threadBase(origin.name))
       errors.image = "L'image est requise.";
@@ -193,6 +206,53 @@ export const parseGameForm = async (
   ) {
     errors.tags = "Un des tags choisis n'existe pas.";
   }
+
+  // --- doublons : même lien, ou même thread sur le même site
+  if (origin && link && !errors.link && !errors.threadId) {
+    const duplicate = await orm.em.findOne(Game, {
+      $or: [
+        { link },
+        ...(threadId !== null ? [{ origin: origin.id, threadId }] : []),
+      ],
+      ...(current && { id: { $ne: current.id } }),
+    });
+    if (duplicate) {
+      const field = threadBase(origin.name) ? 'threadId' : 'link';
+      errors[field] =
+        `Ce jeu existe déjà : « ${duplicate.name} » (/games/${duplicate.id}).`;
+    }
+  }
+
+  return {
+    name,
+    origin,
+    link,
+    threadId,
+    image,
+    description,
+    descriptionFr,
+    tagIds,
+  };
+};
+
+//? Lit et valide le formulaire. Chaque champ fautif reçoit son message ; rien n'est écrit en base.
+export const parseGameForm = async (
+  data: FormData,
+  viewer: SessionUser,
+): Promise<ParsedGameForm> => {
+  const errors: FieldErrors = {};
+  const staff = isStaff(viewer);
+
+  const {
+    name,
+    origin,
+    link,
+    threadId,
+    image,
+    description,
+    descriptionFr,
+    tagIds,
+  } = await parseGameFields(data, errors);
 
   //? L'auto-check ne concerne que F95zone. Sans le droit de le choisir, le jeu suit son site
   //? d'origine (activé pour F95zone) et la traduction n'est pas suivie.
@@ -322,21 +382,6 @@ export const parseGameForm = async (
     if (proofreaders.some((ref) => translatorKeys.has(refKey(ref)))) {
       errors.proofreaders =
         'Une personne ne peut pas être à la fois traducteur et relecteur.';
-    }
-  }
-
-  // --- doublons : même lien, ou même thread sur le même site
-  if (origin && link && !errors.link && !errors.threadId) {
-    const duplicate = await orm.em.findOne(Game, {
-      $or: [
-        { link },
-        ...(threadId !== null ? [{ origin: origin.id, threadId }] : []),
-      ],
-    });
-    if (duplicate) {
-      const field = threadBase(origin.name) ? 'threadId' : 'link';
-      errors[field] =
-        `Ce jeu existe déjà : « ${duplicate.name} » (/games/${duplicate.id}).`;
     }
   }
 
