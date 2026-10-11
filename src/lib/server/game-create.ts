@@ -236,6 +236,36 @@ export const parseGameFields = async (
   };
 };
 
+export interface EditionFields {
+  name: string | null;
+  version: string;
+  status: EditionStatus | undefined;
+}
+
+//? Champs propres à une édition, communs à la création d'un jeu et à l'ajout d'une traduction
+//? sur une nouvelle édition.
+export const parseEditionFields = (
+  data: FormData,
+  errors: FieldErrors,
+): EditionFields => {
+  const editionName = optionalText(
+    data,
+    'editionName',
+    EDITION_NAME_MAX_LENGTH,
+    "Le nom de l'édition",
+    errors,
+  );
+  const editionVersion = text(data, 'editionVersion');
+  if (!editionVersion) errors.editionVersion = 'La version du jeu est requise.';
+  else if (editionVersion.length > VERSION_MAX_LENGTH) {
+    errors.editionVersion = `La version ne peut pas dépasser ${VERSION_MAX_LENGTH} caractères.`;
+  }
+  const status = oneOf(EDITION_STATUSES, text(data, 'status'));
+  if (!status) errors.status = 'Choisissez le statut du jeu.';
+
+  return { name: editionName, version: editionVersion, status };
+};
+
 export interface TranslationFields {
   type: TranslationType | undefined;
   quality: TranslationQuality | undefined;
@@ -406,20 +436,11 @@ export const parseGameForm = async (
     chooseAutoCheck && autoCheck && data.get('editionAutoCheck') === 'on';
 
   // --- l'édition
-  const editionName = optionalText(
-    data,
-    'editionName',
-    EDITION_NAME_MAX_LENGTH,
-    "Le nom de l'édition",
-    errors,
-  );
-  const editionVersion = text(data, 'editionVersion');
-  if (!editionVersion) errors.editionVersion = 'La version du jeu est requise.';
-  else if (editionVersion.length > VERSION_MAX_LENGTH) {
-    errors.editionVersion = `La version ne peut pas dépasser ${VERSION_MAX_LENGTH} caractères.`;
-  }
-  const status = oneOf(EDITION_STATUSES, text(data, 'status'));
-  if (!status) errors.status = 'Choisissez le statut du jeu.';
+  const {
+    name: editionName,
+    version: editionVersion,
+    status,
+  } = parseEditionFields(data, errors);
 
   // --- la traduction : sans le droit d'en ajouter, le jeu reçoit « pas de traduction »
   const {
@@ -506,6 +527,50 @@ export const personResolver = async (em: EntityManager, needed: boolean) => {
   };
 };
 
+//? Ajoute à une édition une traduction, son fichier et ses crédits (rien n'est écrit tant que
+//? l'appelant n'a pas fait `flush`). Sert à la création d'un jeu et à l'ajout d'une traduction.
+export const addTranslation = async (
+  em: EntityManager,
+  edition: GameEdition,
+  t: CreateGameInput['translation'],
+) => {
+  const translation = em.create(GameTranslation, {
+    gameEdition: edition,
+    version: t.version,
+    quality: t.quality,
+    type: t.type,
+    active: true,
+  });
+
+  em.create(GameTranslationFile, {
+    gameTranslation: translation,
+    version: t.version,
+    active: true,
+    externalLink: t.link,
+    internalLink: null,
+  });
+
+  const resolve = await personResolver(
+    em,
+    t.translators.length + t.proofreaders.length > 0,
+  );
+
+  for (const [refs, type] of [
+    [t.translators, 'translator'],
+    [t.proofreaders, 'proofreader'],
+  ] as const) {
+    for (const ref of refs) {
+      em.create(GameTranslationTranslator, {
+        gameTranslation: translation,
+        user: await resolve(ref),
+        type,
+      });
+    }
+  }
+
+  return translation;
+};
+
 //? Crée le jeu, ses tags, sa première édition, sa traduction, son fichier et ses traducteurs d'un
 //? seul tenant : tout ou rien. Retourne l'identifiant du jeu.
 export const createGame = async (input: CreateGameInput, viewer: SessionUser) =>
@@ -542,39 +607,7 @@ export const createGame = async (input: CreateGameInput, viewer: SessionUser) =>
       active: true,
     });
 
-    const translation = em.create(GameTranslation, {
-      gameEdition: edition,
-      version: t.version,
-      quality: t.quality,
-      type: t.type,
-      active: true,
-    });
-
-    em.create(GameTranslationFile, {
-      gameTranslation: translation,
-      version: t.version,
-      active: true,
-      externalLink: t.link,
-      internalLink: null,
-    });
-
-    const resolve = await personResolver(
-      em,
-      t.translators.length + t.proofreaders.length > 0,
-    );
-
-    for (const [refs, type] of [
-      [t.translators, 'translator'],
-      [t.proofreaders, 'proofreader'],
-    ] as const) {
-      for (const ref of refs) {
-        em.create(GameTranslationTranslator, {
-          gameTranslation: translation,
-          user: await resolve(ref),
-          type,
-        });
-      }
-    }
+    await addTranslation(em, edition, t);
 
     await em.flush();
     await syncGameTagsF95(em, [game.id]);

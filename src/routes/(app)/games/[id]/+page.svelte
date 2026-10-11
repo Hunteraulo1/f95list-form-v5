@@ -6,6 +6,7 @@ import EditTranslationModal, {
   type EditTranslationValues,
 } from '#lib/components/ui/games/EditTranslationModal.svelte';
 import ReportGameModal from '#lib/components/ui/games/ReportGameModal.svelte';
+import { goto } from '$app/navigation';
 import type { PageData } from './$types.js';
 
 interface Props {
@@ -99,7 +100,12 @@ const getHostname = (link: string) => {
     <div class="flex items-center justify-between gap-2">
       <span class="font-bold">Traductions</span>
       {#if data.access.addTranslation}
-        <Button label="Ajouter une traduction" size="small" />
+        <Button
+          label="Ajouter une traduction"
+          size="small"
+          onclick={() =>
+            goto(`/dashboard/games/${data.game.id}/translations/new`)}
+        />
       {/if}
     </div>
 

@@ -141,12 +141,42 @@ export interface FieldStateInput {
   translatorCount: number;
 }
 
+export interface TranslationFieldStateInput {
+  type: TranslationType;
+  translationVersion: string;
+  translationLink: string;
+  translatorCount: number;
+}
+
+//? Champs de la traduction en erreur pendant la saisie : communs à l'ajout d'un jeu et à l'ajout
+//? d'une traduction. Comme `computeFieldState`, ne sert qu'à guider : le serveur reste seul juge.
+export const translationFieldErrors = (v: TranslationFieldStateInput) => {
+  const errors: Record<string, boolean> = {};
+  const shape = translationShape(v.type);
+
+  if (shape.versionRequired && !v.translationVersion.trim()) {
+    errors.translationVersion = true;
+  }
+
+  const link = v.translationLink.trim();
+  if (shape.link === 'required') {
+    if (!parseWebUrl(link)) errors.translationLink = true;
+  } else if (shape.link === 'optional' && link && !parseWebUrl(link)) {
+    errors.translationLink = true;
+  }
+
+  if (shape.translators === 'required' && v.translatorCount === 0) {
+    errors.translators = true;
+  }
+
+  return errors;
+};
+
 //? Champs en erreur (rouge, bloquants) ou à surveiller (jaune) pendant la saisie, comme dans la v4.
 //? Le serveur revérifie tout et reste seul juge : ceci ne sert qu'à guider et à bloquer l'envoi.
 export const computeFieldState = (v: FieldStateInput) => {
   const errors: Record<string, boolean> = {};
   const warns: Record<string, boolean> = {};
-  const shape = translationShape(v.type);
 
   if (!v.name.trim()) errors.name = true;
 
@@ -166,20 +196,7 @@ export const computeFieldState = (v: FieldStateInput) => {
   if (!version || version.length > VERSION_MAX_LENGTH)
     errors.editionVersion = true;
 
-  if (shape.versionRequired && !v.translationVersion.trim()) {
-    errors.translationVersion = true;
-  }
-
-  const link = v.translationLink.trim();
-  if (shape.link === 'required') {
-    if (!parseWebUrl(link)) errors.translationLink = true;
-  } else if (shape.link === 'optional' && link && !parseWebUrl(link)) {
-    errors.translationLink = true;
-  }
-
-  if (shape.translators === 'required' && v.translatorCount === 0) {
-    errors.translators = true;
-  }
+  Object.assign(errors, translationFieldErrors(v));
 
   if (!v.description.trim()) warns.description = true;
 
