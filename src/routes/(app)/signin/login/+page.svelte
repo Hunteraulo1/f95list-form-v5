@@ -1,6 +1,7 @@
 <script lang="ts">
 import { tick } from 'svelte';
 import Button from '#lib/components/ui/Button.svelte';
+import Modal from '#lib/components/ui/Modal.svelte';
 import { submitForm } from '#lib/utils/form.ts';
 import { enhance } from '$app/forms';
 import type { ActionData, PageData } from './$types';
@@ -17,6 +18,7 @@ let keyError = $state<string | null>(null);
 let assertion = $state('');
 //? Connexion validée : l'adresse de l'application où repartir (voir `finish` côté serveur).
 let callback = $state<string | null>(null);
+let legacyOpen = $state(false);
 
 const fieldStyle =
   'shadow-mini h-9 w-full rounded-xl border-2 border-transparent bg-neutral-content px-4 text-sm font-bold text-primary outline-none hover:border-primary focus:border-primary';
@@ -45,6 +47,9 @@ const submit = () => {
       window.location.assign(callback);
       return;
     }
+    //? Membre de l'ancien site : un lien pour choisir son mot de passe vient de lui être envoyé.
+    if (result.type === 'success' && result.data?.legacy) legacyOpen = true;
+
     //? Zitadel a émis un défi pour une clé (second facteur ou clé d'accès) : au navigateur de jouer.
     if (result.type === 'success' && result.data?.key) {
       await useKey(result.data.key as KeyOptions);
@@ -284,3 +289,25 @@ const useKey = async (options: KeyOptions) => {
     <input type="hidden" name="assertion" value={assertion}>
   </form>
 </div>
+
+<Modal
+  bind:open={legacyOpen}
+  size="small"
+  title="Le site a été mis à jour"
+  description="Ton compte de l'ancien site a bien été retrouvé, mais ton mot de passe n'a pas pu être repris."
+>
+  <div class="flex flex-col gap-3 p-1 text-sm">
+    <p>
+      Un lien vient d'être envoyé à l'adresse e-mail de ton compte pour en
+      choisir un nouveau.
+    </p>
+    <p class="opacity-70">
+      Une fois ton mot de passe choisi, tu retrouveras ton profil, ton rôle et
+      tes traductions. Pense à regarder dans tes courriers indésirables.
+    </p>
+  </div>
+
+  {#snippet footer()}
+    <Button label="J'ai compris" onclick={() => (legacyOpen = false)} />
+  {/snippet}
+</Modal>

@@ -34,6 +34,13 @@ export const PERMISSIONS = {
     group: 'Administration',
     requires: 'manage.users',
   },
+  'users.security': {
+    label: "Débloquer la connexion d'un utilisateur",
+    description:
+      "Retirer la double authentification d'un compte qui a perdu son second facteur, et lui envoyer un e-mail de réinitialisation du mot de passe.",
+    group: 'Administration',
+    requires: 'manage.users',
+  },
   'manage.roles': {
     label: 'Gérer les rôles',
     description: 'Modifier les permissions et quotas des rôles plus faibles.',

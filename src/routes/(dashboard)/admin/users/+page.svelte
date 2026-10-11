@@ -1,5 +1,12 @@
 <script lang="ts">
-import { ArrowDownAZ, ArrowUpAZ, LogIn, UserRound } from '@lucide/svelte';
+import {
+  ArrowDownAZ,
+  ArrowUpAZ,
+  KeyRound,
+  LogIn,
+  ShieldOff,
+  UserRound,
+} from '@lucide/svelte';
 import Button from '#lib/components/ui/Button.svelte';
 import Menu from '#lib/components/ui/Menu.svelte';
 import Modal from '#lib/components/ui/Modal.svelte';
@@ -98,9 +105,15 @@ const sortHref = (key: SortKey) =>
     page: 1,
   });
 
-//? Les refus de « prendre sa place » s'affichent en haut de page (la fenêtre de modification n'est pas ouverte).
+//? Les refus de « prendre sa place » et les résultats du déblocage d'une connexion s'affichent en
+//? haut de page (la fenêtre de modification n'est pas ouverte).
 const impersonateError = $derived(
-  form && 'impersonate' in form && 'message' in form ? form.message : null,
+  form && ('impersonate' in form || 'security' in form) && 'message' in form
+    ? form.message
+    : null,
+);
+const securityDone = $derived(
+  form && 'security' in form && 'done' in form ? form.done : null,
 );
 
 const message = $derived(
@@ -121,6 +134,13 @@ const message = $derived(
       role="alert"
     >
       {impersonateError}
+    </p>
+  {:else if securityDone}
+    <p
+      class="rounded-xl bg-success/20 p-3 text-sm font-bold text-success"
+      role="status"
+    >
+      {securityDone}
     </p>
   {/if}
 
@@ -259,27 +279,86 @@ const message = $derived(
                     nameDraft = user.name;
                   }}
                 />
-                {#if data.canImpersonate}
+                {#if data.canImpersonate || data.canSecure}
                   <Menu
                     label="Plus d'actions pour {user.name}"
                     items={[
-                      {
-                        label: 'Prendre sa place',
-                        icon: LogIn,
-                        disabled: !user.canImpersonate,
-                        title: user.impersonateBlockedReason ?? undefined,
-                        onselect: () => submitForm(`impersonate-${user.id}`),
-                      },
+                      ...(data.canImpersonate
+                        ? [
+                            {
+                              label: 'Prendre sa place',
+                              icon: LogIn,
+                              disabled: !user.canImpersonate,
+                              title: user.impersonateBlockedReason ?? undefined,
+                              onselect: () =>
+                                submitForm(`impersonate-${user.id}`),
+                            },
+                          ]
+                        : []),
+                      ...(data.canSecure
+                        ? [
+                            {
+                              label:
+                                'Envoyer une réinitialisation du mot de passe',
+                              icon: KeyRound,
+                              disabled: !user.canSecure,
+                              onselect: () =>
+                                submitForm(`password-reset-${user.id}`),
+                            },
+                            {
+                              label: 'Retirer la double authentification',
+                              icon: ShieldOff,
+                              danger: true,
+                              disabled: !user.canSecure,
+                              onselect: () =>
+                                submitForm(`second-factor-${user.id}`),
+                            },
+                          ]
+                        : []),
                     ]}
                   />
 
-                  <!-- L'entrée du menu soumet ce formulaire : il reste caché dans la ligne. -->
+                  <!-- Les entrées du menu soumettent ces formulaires : ils restent cachés dans la ligne. -->
                   <form
                     id="impersonate-{user.id}"
                     method="POST"
                     action="?/impersonate"
                     class="hidden"
                     use:enhance
+                  >
+                    <input type="hidden" name="id" value={user.id}>
+                  </form>
+                  <form
+                    id="password-reset-{user.id}"
+                    method="POST"
+                    action="?/sendPasswordReset"
+                    class="hidden"
+                    use:enhance={({ cancel }) => {
+                      if (
+                        !confirm(
+                          `Envoyer à ${user.name} un e-mail pour choisir un nouveau mot de passe ?`,
+                        )
+                      ) {
+                        cancel();
+                      }
+                    }}
+                  >
+                    <input type="hidden" name="id" value={user.id}>
+                  </form>
+                  <form
+                    id="second-factor-{user.id}"
+                    method="POST"
+                    action="?/removeSecondFactor"
+                    class="hidden"
+                    use:enhance={({ cancel }) => {
+                      if (
+                        !confirm(
+                          `Retirer la double authentification de ${user.name} ? Son application d'authentification et ses clés de sécurité seront supprimées : il se connectera avec son seul mot de passe.`,
+                        )
+                      ) {
+                        cancel();
+                      }
+                    }}
                   >
                     <input type="hidden" name="id" value={user.id}>
                   </form>

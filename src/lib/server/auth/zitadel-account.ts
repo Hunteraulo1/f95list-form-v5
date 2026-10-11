@@ -485,3 +485,57 @@ export const createAccount = async (
     throw cause;
   }
 };
+
+//? Le compte n'a-t-il aucun moyen de se connecter (ni mot de passe, ni fournisseur comme Discord, ni
+//? clé d'accès) ? C'est l'état d'un compte importé de l'ancien site tant que son lien n'a pas servi.
+export const hasNoSignInMethod = async (
+  config: ServiceConfig,
+  zitadelId: string,
+) =>
+  (
+    (
+      await zitadelApi<{ authMethodTypes?: string[] }>(
+        config,
+        'GET',
+        `/v2/users/${zitadelId}/authentication_methods`,
+      )
+    ).authMethodTypes ?? []
+  ).length === 0;
+
+//? Crée chez Zitadel le compte d'un membre de l'ancien site : sans mot de passe (il le choisira par
+//? le lien de réinitialisation), avec son adresse marquée vérifiée, puisque ce lien n'arrive qu'à
+//? elle. Son identifiant de connexion est son pseudo ou, s'il est déjà pris chez Zitadel, son
+//? e-mail. Retourne l'identifiant Zitadel, ou nul si les deux sont pris.
+export const importAccount = async (
+  config: ServiceConfig,
+  account: { pseudo: string; email: string },
+): Promise<string | null> => {
+  for (const username of [account.pseudo, account.email]) {
+    try {
+      const { userId } = await zitadelApi<{ userId: string }>(
+        config,
+        'POST',
+        '/v2/users/human',
+        {
+          username,
+          profile: {
+            givenName: account.pseudo,
+            familyName: account.pseudo,
+            nickName: account.pseudo,
+            displayName: account.pseudo,
+          },
+          email: { email: account.email, isVerified: true },
+        },
+      );
+
+      return userId;
+    } catch (cause) {
+      const taken =
+        cause instanceof ZitadelApiError &&
+        (cause.status === 409 || /already exists/i.test(cause.message));
+      if (!taken) throw cause;
+    }
+  }
+
+  return null;
+};

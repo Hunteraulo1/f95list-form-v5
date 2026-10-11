@@ -1,4 +1,5 @@
 import { error, fail, redirect } from '@sveltejs/kit';
+import { activateLegacyAccount } from '#lib/server/auth/legacy-accounts.ts';
 import { readPasswordPolicy } from '#lib/server/auth/zitadel-account.ts';
 import {
   findUserId,
@@ -41,14 +42,15 @@ export const actions: Actions = {
     }
 
     try {
+      const template = `${url.origin}/signin/reset?userId={{.UserID}}&code={{.Code}}`;
       const userId = await findUserId(config, login);
       if (userId) {
-        await requestPasswordReset(
-          config,
-          userId,
-          `${url.origin}/signin/reset?userId={{.UserID}}&code={{.Code}}`,
-        );
+        await requestPasswordReset(config, userId, template);
         logger.info({ zitadelId: userId }, 'réinitialisation demandée');
+      } else {
+        //? Membre de l'ancien site, pas encore chez Zitadel : son compte y est créé, et il reçoit
+        //? le même e-mail pour choisir son mot de passe.
+        await activateLegacyAccount(config, login, template);
       }
     } catch (cause) {
       logger.warn({ err: cause }, 'réinitialisation non envoyée');

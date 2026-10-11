@@ -116,7 +116,8 @@ const submit = () => {
         >
         <span class="font-normal opacity-70">
           Un lien pour choisir un nouveau mot de passe sera envoyé à l'adresse
-          e-mail du compte.
+          e-mail du compte. C'est aussi la marche à suivre si tu avais un compte
+          sur l'ancien site : tu retrouveras ton profil et tes traductions.
         </span>
       </label>
 

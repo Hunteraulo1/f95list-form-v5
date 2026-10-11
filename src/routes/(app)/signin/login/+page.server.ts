@@ -1,5 +1,6 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { discordConfig } from '#lib/server/auth/discord.ts';
+import { sendLegacyLink } from '#lib/server/auth/legacy-accounts.ts';
 import {
   checkKey,
   checkTotp,
@@ -131,6 +132,21 @@ export const actions: Actions = {
 
     const check = await startPasswordSession(config, login, password);
     if (!check.ok) {
+      //? Membre de l'ancien site : son mot de passe n'a pas été repris. On lui envoie le lien pour
+      //? en choisir un, et la page l'en avertit plutôt que d'annoncer un mot de passe incorrect.
+      if (check.reason === 'invalid') {
+        try {
+          const sent = await sendLegacyLink(
+            config,
+            login,
+            `${url.origin}/signin/reset?userId={{.UserID}}&code={{.Code}}`,
+          );
+          if (sent) return { login, legacy: true };
+        } catch (cause) {
+          logger.warn({ err: cause }, "lien de l'ancien site non envoyé");
+        }
+      }
+
       return fail(400, {
         login,
         message:

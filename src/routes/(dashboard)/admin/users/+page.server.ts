@@ -3,9 +3,16 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { parseImageUrl } from '#lib/image-hosts.ts';
 import { DISCORD_ID_PATTERN, USER_NAME_MAX_LENGTH } from '#lib/profile.ts';
 import {
+  readSecurity,
+  removeSecurityKey,
+  removeTotp,
+} from '#lib/server/auth/zitadel-account.ts';
+import { requestPasswordReset } from '#lib/server/auth/zitadel-login.ts';
+import {
   assignZitadelRole,
   isLinkedToZitadel,
 } from '#lib/server/auth/zitadel-roles.ts';
+import { serviceConfig } from '#lib/server/auth/zitadel-service.ts';
 import { Impersonation, orm, Role, User } from '#lib/server/db/index.ts';
 import { logger } from '#lib/server/logger.ts';
 import { requirePermission } from '#lib/server/permissions.ts';
@@ -93,6 +100,12 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     Number.parseInt(url.searchParams.get('page') ?? '1', 10) || 1,
   );
 
+  //? Retirer une double authentification ou envoyer une réinitialisation passe par Zitadel.
+  const canSecure =
+    !locals.impersonator &&
+    serviceConfig() !== null &&
+    locals.user.permissions.includes('users.security');
+
   const roleTargets = await loadRoleTargets();
   const targetById = new Map(roleTargets.map((role) => [role.id, role]));
   const roles = await orm.em.find(Role, {}, { orderBy: { priority: 'desc' } });
@@ -168,6 +181,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     totalPages,
     canViewEmails,
     canImpersonate,
+    canSecure,
     roles: roles.flatMap((role) => {
       const target = targetById.get(role.id);
       if (!target) return [];
@@ -211,6 +225,13 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         isSelf: user.id === locals.user?.id,
         canEdit: manage.allowed,
         blockedReason: manage.allowed ? null : manage.message,
+        //? Débloquer sa connexion : pour un compte lié à Zitadel, qu'on a le droit de gérer, et jamais
+        //? le sien (ses propres réglages sont dans ses paramètres).
+        canSecure:
+          canSecure &&
+          manage.allowed &&
+          user.id !== locals.user?.id &&
+          isLinkedToZitadel(user.zitadelId),
         canImpersonate: impersonate.allowed,
         impersonateBlockedReason: impersonate.allowed
           ? null
@@ -218,6 +239,45 @@ export const load: PageServerLoad = async ({ locals, url }) => {
       };
     }),
   };
+};
+
+const ZITADEL_DOWN =
+  "Zitadel n'a pas pu faire l'opération : rien n'a été modifié, réessayez.";
+
+//? Le compte visé par une action de déblocage, après tous les contrôles : permission, pas en tant
+//? qu'un autre, compte existant et lié à Zitadel, rôle qu'on a le droit de gérer, et pas le sien.
+const loadSecurityTarget = async (locals: App.Locals, request: Request) => {
+  requirePermission(locals, 'manage.users');
+  requirePermission(locals, 'users.security');
+  const refuse = (status: number, message: string) =>
+    fail(status, { security: true, message });
+
+  if (!locals.user) return refuse(401, 'Non connecté.');
+  if (locals.impersonator) {
+    return refuse(403, "Revenez d'abord à votre compte.");
+  }
+
+  const config = serviceConfig();
+  if (!config)
+    return refuse(503, "Zitadel n'est pas configuré sur ce serveur.");
+
+  const id = String((await request.formData()).get('id') ?? '');
+  const user = await orm.em.findOne(User, { id }, { populate: ['role'] });
+  if (!user) return refuse(404, 'Utilisateur introuvable.');
+  if (user.id === locals.user.id) {
+    return refuse(403, 'Pour votre propre compte, passez par vos paramètres.');
+  }
+  if (!isLinkedToZitadel(user.zitadelId)) {
+    return refuse(400, "Ce compte ne s'est encore jamais connecté.");
+  }
+
+  const role = (await loadRoleTargets()).find(({ id }) => id === user.role.id);
+  const check: RoleCheck = role
+    ? checkCanManageUser(roleActor(locals.user), { id: user.id, role })
+    : { allowed: false, message: 'Rôle inconnu.' };
+  if (!check.allowed) return refuse(403, check.message);
+
+  return { config, user, zitadelId: user.zitadelId as string };
 };
 
 export const actions: Actions = {
@@ -339,6 +399,80 @@ export const actions: Actions = {
 
   //? Prend la place d'un autre compte : le compte réel reste connu du serveur, et le bandeau de la
   //? page permet de revenir à tout moment. La prise de place expire d'elle-même (voir config.ts).
+  //? Un compte qui a perdu son second facteur ne peut plus se connecter : on lui retire son
+  //? application d'authentification et ses clés de sécurité. Il se reconnecte avec son seul mot de
+  //? passe, et en enregistre de nouveaux s'il le souhaite. Ses clés d'accès ne sont pas touchées.
+  removeSecondFactor: async ({ locals, request }) => {
+    const target = await loadSecurityTarget(locals, request);
+    if (!('config' in target)) return target;
+    const { config, user, zitadelId } = target;
+
+    try {
+      const security = await readSecurity(config, zitadelId);
+      if (!security.totp && security.keys.length === 0) {
+        return {
+          security: true,
+          done: `${user.name} n'a pas de double authentification active.`,
+        };
+      }
+
+      if (security.totp) await removeTotp(config, zitadelId);
+      for (const key of security.keys) {
+        await removeSecurityKey(config, zitadelId, key.id);
+      }
+    } catch (cause) {
+      logger.warn(
+        { err: cause, targetId: user.id },
+        'second facteur non retiré',
+      );
+
+      return fail(502, { security: true, message: ZITADEL_DOWN });
+    }
+
+    logger.info(
+      { userId: locals.user?.id, targetId: user.id },
+      'double authentification retirée par un administrateur',
+    );
+
+    return {
+      security: true,
+      done: `Double authentification de ${user.name} retirée : il se connecte maintenant avec son seul mot de passe.`,
+    };
+  },
+
+  //? Envoie à l'utilisateur l'e-mail « mot de passe oublié » : c'est lui qui choisit son nouveau mot
+  //? de passe, l'administrateur ne le voit jamais.
+  sendPasswordReset: async ({ locals, request, url }) => {
+    const target = await loadSecurityTarget(locals, request);
+    if (!('config' in target)) return target;
+    const { config, user, zitadelId } = target;
+
+    try {
+      await requestPasswordReset(
+        config,
+        zitadelId,
+        `${url.origin}/signin/reset?userId={{.UserID}}&code={{.Code}}`,
+      );
+    } catch (cause) {
+      logger.warn(
+        { err: cause, targetId: user.id },
+        'réinitialisation non envoyée',
+      );
+
+      return fail(502, { security: true, message: ZITADEL_DOWN });
+    }
+
+    logger.info(
+      { userId: locals.user?.id, targetId: user.id },
+      'réinitialisation du mot de passe envoyée par un administrateur',
+    );
+
+    return {
+      security: true,
+      done: `E-mail de réinitialisation du mot de passe envoyé à ${user.name}.`,
+    };
+  },
+
   impersonate: async ({ locals, request }) => {
     requirePermission(locals, 'manage.users');
     requirePermission(locals, 'users.impersonate');

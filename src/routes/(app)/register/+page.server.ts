@@ -71,7 +71,11 @@ export const actions: Actions = {
     //? Mêmes règles que le changement de pseudo : il doit être libre ici, et donner un lien de
     //? profil libre. La collation ignore la casse et les accents.
     if ((await orm.em.count(User, { name: pseudo })) > 0) {
-      return fail(409, { ...values, message: 'Ce pseudo est déjà pris.' });
+      return fail(409, {
+        ...values,
+        message:
+          "Ce pseudo est déjà pris. Si c'est ton compte de l'ancien site, ne te réinscris pas : utilise « Mot de passe oublié » sur la page de connexion pour le retrouver.",
+      });
     }
     const slug = await checkNameSlug(pseudo);
     if (!slug.ok) return fail(409, { ...values, message: slug.message });
