@@ -65,6 +65,7 @@ const items = $derived<Item[]>([
     label: 'Se déconnecter',
     icon: LogOut,
     href: '/logout',
+    reload: true,
     class: 'text-red-500 font-bold',
   },
 ]);

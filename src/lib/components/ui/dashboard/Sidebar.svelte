@@ -12,6 +12,8 @@ export interface Item {
   permission?: Permission;
   //? Masqué selon un état que la permission ne dit pas (ex. un lien d'inscription déjà sans objet).
   hidden?: boolean;
+  //? Lien traité par le serveur (déconnexion) : navigation complète, sans préchargement au survol.
+  reload?: boolean;
   class?: ClassValue;
 }
 
@@ -36,6 +38,8 @@ const visibleItems = $derived(
     <li>
       <a
         href={item.href}
+        data-sveltekit-reload={item.reload ? '' : undefined}
+        data-sveltekit-preload-data={item.reload ? 'off' : undefined}
         class={cn(
           'flex items-center gap-2 rounded-lg p-2 hover:bg-base-100',
           item.class,

@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "vite dev",
     "dev:up": "docker compose -f ./docker/dev/compose.yml up -d mariadb-dev",
+    "dev:auth": "docker compose -f ./docker/dev/compose.yml up -d zitadel-login",
     "dev:down": "docker compose -f ./docker/dev/compose.yml down",
     "build": "vite build",
     "preview": "vite preview",

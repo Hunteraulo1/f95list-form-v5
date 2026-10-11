@@ -4,6 +4,7 @@ import bannerDark from '#lib/assets/banner-dark.webp';
 import bannerLight from '#lib/assets/banner-light.png';
 import { getTheme, toggleTheme } from '#lib/stores/theme.svelte.ts';
 import { cn } from '#lib/utils/cn.ts';
+import { page } from '$app/state';
 
 interface Props {
   isHome?: boolean;
@@ -15,9 +16,12 @@ const isDark = $derived(getTheme() === 'dark');
 interface Nav {
   title: string;
   href: string;
+  //? Lien traité par le serveur : navigation complète, sans préchargement au survol.
+  reload?: boolean;
 }
 
-const nav: Nav[] = [
+//? Sans compte connecté, le tableau de bord laisse la place à la connexion.
+const nav = $derived<Nav[]>([
   {
     title: 'Home',
     href: '/',
@@ -30,11 +34,10 @@ const nav: Nav[] = [
     title: 'Mises à jour',
     href: '/updates',
   },
-  {
-    title: 'Tableau de bord',
-    href: '/dashboard',
-  },
-];
+  page.data.user
+    ? { title: 'Tableau de bord', href: '/dashboard' }
+    : { title: 'Se connecter', href: '/auth/login', reload: true },
+]);
 
 let isOpen = $state(false);
 </script>
@@ -82,9 +85,15 @@ let isOpen = $state(false);
         <img src={bannerLight} alt="bannière de f95 france">
       {/if}
     </div>
-    {#each nav as { title, href }}
+    {#each nav as { title, href, reload }}
       <li>
-        <a {href}>{title}</a>
+        <a
+          {href}
+          data-sveltekit-reload={reload ? '' : undefined}
+          data-sveltekit-preload-data={reload ? 'off' : undefined}
+        >
+          {title}
+        </a>
       </li>
     {/each}
   </ul>

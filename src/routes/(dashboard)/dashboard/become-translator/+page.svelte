@@ -32,6 +32,11 @@ const error = $derived(form && 'error' in form ? form.error : null);
         Ton compte a maintenant le rôle « {data.translatorLabel} » : tu peux
         ajouter des jeux et des traductions.
       </p>
+      <p class="text-sm opacity-70">
+        Pour ajouter une traduction à un jeu qui existe déjà, passe par la
+        <a href="/games" class="underline hover:text-primary">page du jeu</a>
+        : le bouton « Ajouter une traduction » s'y trouve.
+      </p>
       <a href="/dashboard/games/new">
         <Button label="Ajouter un jeu" />
       </a>

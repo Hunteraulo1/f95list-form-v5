@@ -421,6 +421,35 @@ export const ImpersonationSchema = defineEntity({
 export class Impersonation extends ImpersonationSchema.class {}
 ImpersonationSchema.setClass(Impersonation);
 
+//? Une connexion à l'application, ouverte après l'authentification chez Zitadel. Le navigateur n'en
+//? garde qu'un jeton aléatoire en cookie ; seul son hash SHA-256 est stocké ici, jamais le jeton.
+export const SessionSchema = defineEntity({
+  name: 'Session',
+  tableName: 'session',
+  properties: {
+    id: p.string().length(64).primary(),
+    user: () =>
+      p
+        .manyToOne(User)
+        .fieldName('user_id')
+        .columnType('char(36)')
+        .foreignKeyName('session_user_id_user_id_fkey')
+        .deleteRule('cascade')
+        .updateRule('restrict'),
+    //? Jetons Zitadel de cette connexion : `idToken` sert à la déconnexion chez Zitadel, les deux
+    //? autres à appeler son API au nom de l'utilisateur.
+    idToken: p.text().nullable(),
+    accessToken: p.text().nullable(),
+    refreshToken: p.text().nullable(),
+    accessTokenExpiresAt: p.datetime().nullable(),
+    expiresAt: p.datetime(),
+    ...timestamps(),
+  },
+});
+
+export class Session extends SessionSchema.class {}
+SessionSchema.setClass(Session);
+
 export const ConfigSchema = defineEntity({
   name: 'Config',
   tableName: 'config',

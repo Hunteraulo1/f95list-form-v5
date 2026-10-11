@@ -1,3 +1,4 @@
+import type { Cookies } from '@sveltejs/kit';
 import type { Handle } from '@sveltejs/kit/hooks';
 import {
   enforcePermissionDependencies,
@@ -5,6 +6,8 @@ import {
   type Permission,
   SUPER_ROLE,
 } from '#lib/permissions.ts';
+import { findSession } from '#lib/server/auth/session.ts';
+import { zitadelConfig } from '#lib/server/auth/zitadel.ts';
 import { DEV_USER_ID, IMPERSONATION_TTL_MS } from '#lib/server/config.ts';
 import {
   Impersonation,
@@ -17,6 +20,7 @@ import {
   loadRoleTargets,
   roleActor,
 } from '#lib/server/role-guard.ts';
+import { dev } from '$app/env';
 import { logger } from '../logger';
 
 //? Données exposées au client : volontairement sans zitadelId.
@@ -112,16 +116,31 @@ const resolveImpersonation = async (
   return target;
 };
 
-//? Temporaire : le compte réel est toujours DEV_USER_ID (voir config.ts).
-export const handleAuth: Handle = async ({ event, resolve }) => {
-  const real = await loadUser(DEV_USER_ID);
+//? Le compte connecté : celui de la session du cookie. Tant que Zitadel n'est pas renseigné dans
+//? l'environnement, et seulement en développement, c'est le compte fixe DEV_USER_ID (voir config.ts) :
+//? de quoi travailler sans serveur d'authentification. Jamais en production.
+const resolveRealUser = async (cookies: Cookies) => {
+  if (!zitadelConfig()) {
+    if (!dev) return null;
 
-  if (!real) {
-    logger.warn(
-      { userId: DEV_USER_ID },
-      'DEV_USER_ID introuvable en base, aucun utilisateur connecté',
-    );
+    const user = await loadUser(DEV_USER_ID);
+    if (!user) {
+      logger.warn(
+        { userId: DEV_USER_ID },
+        'DEV_USER_ID introuvable en base, aucun utilisateur connecté',
+      );
+    }
+
+    return user;
   }
+
+  const session = await findSession(cookies);
+
+  return session ? loadUser(session.user.id) : null;
+};
+
+export const handleAuth: Handle = async ({ event, resolve }) => {
+  const real = await resolveRealUser(event.cookies);
 
   //? `user` est le compte avec lequel on navigue ; `impersonator` le vrai compte quand on a pris
   //? la place d'un autre (null sinon).

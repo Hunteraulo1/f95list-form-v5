@@ -15,6 +15,7 @@ import {
   OriginWebsite,
   Role,
   RolePermission,
+  Session,
   User,
   UserLink,
 } from './src/lib/server/db/entities';
@@ -41,6 +42,7 @@ export default defineConfig({
     OriginWebsite,
     Role,
     RolePermission,
+    Session,
     User,
     UserLink,
   ],
