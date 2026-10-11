@@ -1,8 +1,9 @@
 <script lang="ts">
 import {
-  ChartSpline,
+  ArrowLeft,
   KeyRound,
   LayoutDashboard,
+  Settings,
   Tags,
   Users,
 } from '@lucide/svelte';
@@ -18,13 +19,13 @@ const { children }: Props = $props();
 
 const items: Item[] = [
   {
-    label: 'Tableau de bord',
-    icon: LayoutDashboard,
+    label: 'Retour',
+    icon: ArrowLeft,
     href: '/dashboard',
   },
   {
-    label: 'Statistiques',
-    icon: ChartSpline,
+    label: 'Tableau de bord',
+    icon: LayoutDashboard,
     href: '/admin',
   },
   {
@@ -50,6 +51,12 @@ const items: Item[] = [
     icon: KeyRound,
     href: '/admin/api',
     permission: 'manage.api',
+  },
+  {
+    label: 'Paramètres',
+    icon: Settings,
+    href: '/admin/settings',
+    permission: 'manage.settings',
   },
 ];
 </script>

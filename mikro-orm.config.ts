@@ -2,6 +2,7 @@ import { defineConfig } from '@mikro-orm/mariadb';
 import { Migrator } from '@mikro-orm/migrations';
 import { config } from 'dotenv';
 import {
+  AdminLink,
   ApiKey,
   Config,
   Game,
@@ -29,6 +30,7 @@ if (!process.env.DATABASE_URL) {
 export default defineConfig({
   clientUrl: process.env.DATABASE_URL,
   entities: [
+    AdminLink,
     ApiKey,
     Config,
     Game,

@@ -450,6 +450,25 @@ export const SessionSchema = defineEntity({
 export class Session extends SessionSchema.class {}
 SessionSchema.setClass(Session);
 
+//? Lien utile affiché sur l'accueil de l'administration (/admin), réglable sur /admin/settings :
+//? un raccourci vers un outil de l'équipe (Zitadel, tableau de suivi…).
+export const AdminLinkSchema = defineEntity({
+  name: 'AdminLink',
+  tableName: 'admin_link',
+  properties: {
+    id: uuidPk(),
+    label: p.string().length(64),
+    description: p.string().length(255).nullable(),
+    url: p.string().length(2048),
+    //? Ordre d'affichage, du plus petit au plus grand.
+    position: p.integer().unsigned().default(0),
+    ...timestamps(),
+  },
+});
+
+export class AdminLink extends AdminLinkSchema.class {}
+AdminLinkSchema.setClass(AdminLink);
+
 export const ConfigSchema = defineEntity({
   name: 'Config',
   tableName: 'config',

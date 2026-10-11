@@ -53,6 +53,13 @@ export const PERMISSIONS = {
     group: 'Administration',
     requires: 'admin.access',
   },
+  'manage.settings': {
+    label: "Régler l'administration",
+    description:
+      "Modifier les paramètres de l'espace d'administration, comme ses liens utiles.",
+    group: 'Administration',
+    requires: 'admin.access',
+  },
   'game.create': {
     label: 'Créer des jeux',
     description: 'Ajouter un nouveau jeu.',
