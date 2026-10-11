@@ -7,6 +7,7 @@ import HomeBoxExtension from '#lib/components/ui/home/HomeBoxExtension.svelte';
 import HomeBoxMockup from '#lib/components/ui/home/HomeBoxMockups.svelte';
 import HomeList from '#lib/components/ui/home/HomeGameList.svelte';
 import HomeHero from '#lib/components/ui/home/HomeHero.svelte';
+import HomeStaffList from '#lib/components/ui/home/HomeStaffList.svelte';
 import { getTheme } from '#lib/stores/theme.svelte.ts';
 import type { PageData } from './$types';
 
@@ -54,4 +55,6 @@ const { data }: Props = $props();
       browser={data.extensionBrowser}
     />
   </div>
+
+  <HomeStaffList classes="mt-8" title="L'équipe" staff={data.staff} />
 </Container>
