@@ -118,6 +118,16 @@ const error = $derived(form && 'message' in form ? form : null);
         >
       </label>
 
+      <label class="flex cursor-pointer items-start gap-3 text-sm">
+        <input
+          type="checkbox"
+          name="adult"
+          class="mt-0.5 size-5 shrink-0 cursor-pointer"
+          required
+        >
+        <span>Je certifie avoir 18 ans ou plus.</span>
+      </label>
+
       {#if error}
         <p class="text-sm font-bold text-error" role="alert">{error.message}</p>
       {/if}

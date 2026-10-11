@@ -4,6 +4,7 @@ import {
   EMAIL_PATTERN,
   USER_NAME_MAX_LENGTH,
 } from '#lib/profile.ts';
+import { confirmAge } from '#lib/server/age-gate.ts';
 import {
   type AccountCreation,
   createAccount,
@@ -27,7 +28,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ locals, request, url }) => {
+  default: async ({ cookies, locals, request, url }) => {
     if (locals.user) redirect(303, '/dashboard');
 
     const config = serviceConfig();
@@ -41,6 +42,13 @@ export const actions: Actions = {
     //? Renvoyés au formulaire en cas d'erreur, pour ne pas tout ressaisir (jamais le mot de passe).
     const values = { pseudo, email };
 
+    //? Case à cocher : absente du formulaire quand elle est décochée.
+    if (!form.has('adult')) {
+      return fail(400, {
+        ...values,
+        message: 'Tu dois certifier avoir 18 ans ou plus pour créer un compte.',
+      });
+    }
     if (!pseudo || pseudo.length > USER_NAME_MAX_LENGTH) {
       return fail(400, {
         ...values,
@@ -94,6 +102,8 @@ export const actions: Actions = {
       });
     }
 
+    //? L'âge vient d'être certifié : inutile de le redemander sur cet appareil.
+    confirmAge(cookies, url);
     logger.info({ zitadelId: result.zitadelId }, 'compte inscrit');
 
     return { created: true, pseudo };
