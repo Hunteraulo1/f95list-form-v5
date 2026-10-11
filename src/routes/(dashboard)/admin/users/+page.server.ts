@@ -1,6 +1,7 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { parseImageUrl } from '$lib/image-hosts';
+import { DISCORD_ID_PATTERN, USER_NAME_MAX_LENGTH } from '$lib/profile';
 import { Impersonation, orm, Role, User } from '$lib/server/db';
 import { logger } from '$lib/server/logger';
 import { requirePermission } from '$lib/server/permissions';
@@ -17,7 +18,6 @@ import type { Actions, PageServerLoad } from './$types';
 
 const PAGE_SIZE = 20;
 const SEARCH_MAX_LENGTH = 100;
-const NAME_MAX_LENGTH = 64;
 
 //? Par défaut on ne liste que les comptes réels : les fantômes (traducteurs sans compte, sans
 //? zitadelId) sont nombreux et ne se connectent pas ; « all » les remet tous.
@@ -242,10 +242,10 @@ export const actions: Actions = {
     const manage = checkCanManageUser(actor, { id: user.id, role: current });
     if (!manage.allowed) return fail(403, { id, message: manage.message });
 
-    if (!name || name.length > NAME_MAX_LENGTH) {
+    if (!name || name.length > USER_NAME_MAX_LENGTH) {
       return fail(400, {
         id,
-        message: `Le nom est requis (${NAME_MAX_LENGTH} caractères max).`,
+        message: `Le nom est requis (${USER_NAME_MAX_LENGTH} caractères max).`,
       });
     }
     //? Un avatar inchangé n'est pas revalidé : certains avatars migrés viennent d'hébergeurs qui ne
@@ -255,7 +255,7 @@ export const actions: Actions = {
         ? { ok: true as const, url: user.avatar ?? null }
         : parseImageUrl(avatar);
     if (!image.ok) return fail(400, { id, message: image.message });
-    if (discord && !/^\d{5,32}$/.test(discord)) {
+    if (discord && !DISCORD_ID_PATTERN.test(discord)) {
       return fail(400, {
         id,
         message: "L'identifiant Discord doit être numérique (5 à 32 chiffres).",

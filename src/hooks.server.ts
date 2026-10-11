@@ -7,6 +7,7 @@ import { handleAuth } from '$lib/server/hooks/auth';
 import { handleLogging } from '$lib/server/hooks/logging';
 import { handleRateLimit } from '$lib/server/hooks/rate-limit';
 import { handleSecurityHeaders } from '$lib/server/hooks/security-headers';
+import { handleTheme } from '$lib/server/hooks/theme';
 import { logger } from '$lib/server/logger';
 
 const handleDbContext: Handle = ({ event, resolve }) =>
@@ -16,6 +17,7 @@ export const handle = sequence(
   handleDbContext,
   handleRateLimit,
   handleAuth,
+  handleTheme,
   handleLogging,
   handleSecurityHeaders,
   //? En dernier pour que ses réponses 401/429 passent aussi par le logging et les en-têtes de sécurité.

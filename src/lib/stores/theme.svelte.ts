@@ -1,3 +1,5 @@
+import type { ThemePreference } from '$lib/profile';
+
 export type Theme = 'light' | 'dark';
 
 function getInitialTheme(): Theme {
@@ -24,4 +26,14 @@ export function setTheme(next: Theme) {
 
 export function toggleTheme() {
   setTheme(theme === 'dark' ? 'light' : 'dark');
+}
+
+//? Applique le thème choisi dans les paramètres du compte. « system » retire le choix gardé sur
+//? l'appareil : la page suit de nouveau le réglage du navigateur.
+export function applyThemePreference(preference: ThemePreference) {
+  if (preference !== 'system') return setTheme(preference);
+
+  delete document.documentElement.dataset.theme;
+  localStorage.removeItem('theme');
+  theme = getInitialTheme();
 }

@@ -60,7 +60,6 @@ const items = $derived<Item[]>([
     label: 'Paramètres',
     icon: Settings,
     href: '/dashboard/settings',
-    permission: 'game.edit',
   },
   {
     label: 'Se déconnecter',
