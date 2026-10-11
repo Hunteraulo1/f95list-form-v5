@@ -2,6 +2,7 @@
 import type { Snippet } from 'svelte';
 import { isExemptFromAgeGate } from '#lib/age-gate.ts';
 import favicon from '#lib/assets/favicon.svg';
+import Footer from '#lib/components/Footer.svelte';
 import Button from '#lib/components/ui/Button.svelte';
 import ImpersonationBanner from '#lib/components/ui/ImpersonationBanner.svelte';
 import Modal from '#lib/components/ui/Modal.svelte';
@@ -58,6 +59,8 @@ const confirmUrl = $derived(
       {@render children()}
     </div>
   </main>
+
+  <Footer />
 
   <Modal
     open={gated}
