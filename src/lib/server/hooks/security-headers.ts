@@ -1,5 +1,5 @@
-import type { Handle } from '@sveltejs/kit';
-import { dev } from '$app/environment';
+import type { Handle } from '@sveltejs/kit/hooks';
+import { dev } from '$app/env';
 
 export const handleSecurityHeaders: Handle = async ({ event, resolve }) => {
   const response = await resolve(event);

@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { ClassValue } from 'clsx';
 import type { MouseEventHandler } from 'svelte/elements';
-import { cn } from '$lib/utils/cn';
+import { cn } from '#lib/utils/cn.ts';
 
 interface Props {
   label: string;

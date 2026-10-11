@@ -1,8 +1,8 @@
 <script lang="ts">
 import { ArrowRight } from '@lucide/svelte';
 import { onMount } from 'svelte';
-import type { Game, GameTranslation } from '$lib/server/db/entities';
-import { cn } from '$lib/utils/cn';
+import type { Game, GameTranslation } from '#lib/server/db/entities.ts';
+import { cn } from '#lib/utils/cn.ts';
 
 interface LatestTranslation {
   id: GameTranslation['id'];

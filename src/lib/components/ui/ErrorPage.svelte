@@ -1,7 +1,6 @@
 <script lang="ts">
-import type { Page } from '@sveltejs/kit';
-import { page } from '$app/state';
-import Button from '$lib/components/ui/Button.svelte';
+import Button from '#lib/components/ui/Button.svelte';
+import { type Page, page } from '$app/state';
 
 export type ErrorMessages = Partial<
   Record<Page['status'], App.Error['message']>

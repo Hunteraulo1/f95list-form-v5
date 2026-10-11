@@ -1,8 +1,8 @@
 import { fail } from '@sveltejs/kit';
-import { GameTags, orm } from '$lib/server/db';
-import { fetchF95zoneTags } from '$lib/server/f95zone-tags';
-import { linkGameTag, listGameTags } from '$lib/server/game-tags';
-import { requirePermission } from '$lib/server/permissions';
+import { GameTags, orm } from '#lib/server/db/index.ts';
+import { fetchF95zoneTags } from '#lib/server/f95zone-tags.ts';
+import { linkGameTag, listGameTags } from '#lib/server/game-tags.ts';
+import { requirePermission } from '#lib/server/permissions.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 const parseId = (value: FormDataEntryValue | null) => {

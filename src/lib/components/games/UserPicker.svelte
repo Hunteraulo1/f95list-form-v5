@@ -1,6 +1,6 @@
 <script lang="ts">
 import { X } from '@lucide/svelte';
-import { newUserRef, userRef } from '$lib/games/game-form';
+import { newUserRef, userRef } from '#lib/games/game-form.ts';
 
 export interface PickedUser {
   //? `user:<id>` (compte existant) ou `new:<nom>` (compte fantôme à créer).

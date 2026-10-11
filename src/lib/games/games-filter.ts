@@ -1,9 +1,9 @@
-import type { GameEdition, GameTranslation } from '$lib/server/db';
+import type { GameEdition, GameTranslation } from '#lib/server/db/index.ts';
 import {
   editionStatusName,
   translationQualityName,
   translationTypeName,
-} from '$lib/utils/entriesConvert';
+} from '#lib/utils/entriesConvert.ts';
 
 export interface GamesFilterableGame {
   name: string;

@@ -1,9 +1,9 @@
 import type {
   GamesFilterableGame,
   GamesFilterOptions,
-} from '$lib/games/games-filter';
-import { VIEW_ACTIVE_ONLY } from '$lib/server/config';
-import { Game, GameTags, OriginWebsite, orm } from '$lib/server/db';
+} from '#lib/games/games-filter.ts';
+import { VIEW_ACTIVE_ONLY } from '#lib/server/config.ts';
+import { Game, GameTags, OriginWebsite, orm } from '#lib/server/db/index.ts';
 
 export const load = async () => {
   const [games, origins, tags] = await Promise.all([

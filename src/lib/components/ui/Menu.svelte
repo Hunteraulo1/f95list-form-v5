@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Ellipsis, type LucideIcon } from '@lucide/svelte';
 import { DropdownMenu } from 'bits-ui';
-import { cn } from '$lib/utils/cn';
+import { cn } from '#lib/utils/cn.ts';
 
 export interface MenuItem {
   label: string;

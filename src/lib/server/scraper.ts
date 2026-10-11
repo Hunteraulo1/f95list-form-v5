@@ -1,5 +1,5 @@
-import type { EditionStatus } from '$lib/games/game-form';
-import { envConfig } from '$lib/server/env';
+import type { EditionStatus } from '#lib/games/game-form.ts';
+import { envConfig } from '#lib/server/env/index.ts';
 
 export interface ThreadPreview {
   name: string;

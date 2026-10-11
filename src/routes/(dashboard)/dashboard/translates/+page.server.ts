@@ -1,11 +1,11 @@
 import { error, fail } from '@sveltejs/kit';
-import { GameTranslationTranslator, orm } from '$lib/server/db';
-import { isTranslationOutdated } from '$lib/server/my-translations';
+import { GameTranslationTranslator, orm } from '#lib/server/db/index.ts';
+import { isTranslationOutdated } from '#lib/server/my-translations.ts';
 import {
   editionStatusName,
   translationQualityName,
   translationTypeName,
-} from '$lib/utils/entriesConvert';
+} from '#lib/utils/entriesConvert.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 const PAGE_SIZE = 20;

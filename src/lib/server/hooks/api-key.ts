@@ -1,13 +1,14 @@
 import type { QueryResult } from '@mikro-orm/core';
-import { type Handle, json } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 import {
   effectiveDailyQuota,
   hashApiKey,
   nextResetUtc,
   todayUtc,
   usedToday,
-} from '$lib/server/api-keys';
-import { ApiKey, orm } from '$lib/server/db';
+} from '#lib/server/api-keys.ts';
+import { ApiKey, orm } from '#lib/server/db/index.ts';
 
 const BEARER_KEY = /^Bearer (f95_\S+)$/i;
 

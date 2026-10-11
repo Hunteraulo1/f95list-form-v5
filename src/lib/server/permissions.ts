@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import type { Permission } from '$lib/permissions';
+import type { Permission } from '#lib/permissions.ts';
 
 export const requirePermission = (
   locals: App.Locals,

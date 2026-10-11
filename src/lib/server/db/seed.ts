@@ -69,7 +69,7 @@ export const main = async () => {
     { name: 'superadmin', label: 'Super admin', priority: SUPER_ROLE_PRIORITY },
   ].map((role) => em.create(Role, { ...role, isSystem: true }));
 
-  //? Le rôle « superadmin » a toutes les permissions sans ligne ici (voir $lib/permissions) ;
+  //? Le rôle « superadmin » a toutes les permissions sans ligne ici (voir #lib/permissions) ;
   //? l'admin les reçoit explicitement, le modérateur une partie seulement.
   const grants: Record<string, readonly string[]> = {
     admin: PERMISSION_KEYS,

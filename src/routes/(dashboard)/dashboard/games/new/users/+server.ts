@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
-import { orm, User } from '$lib/server/db';
-import { canCreateGame } from '$lib/server/game-access';
+import { orm, User } from '#lib/server/db/index.ts';
+import { canCreateGame } from '#lib/server/game-access.ts';
 import type { RequestHandler } from './$types';
 
 const SEARCH_MAX_LENGTH = 64;

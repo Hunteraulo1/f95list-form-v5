@@ -1,4 +1,4 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 
 //? Le thème choisi dans les paramètres du compte est posé dès le rendu serveur, pour qu'il suive
 //? l'utilisateur d'un appareil à l'autre sans flash. Le choix fait sur l'appareil (bouton de

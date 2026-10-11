@@ -30,10 +30,6 @@ export default defineConfig(({ command }) => {
         },
         adapter: adapter(),
 
-        alias: {
-          $features: './src/features',
-        },
-
         csp: {
           mode: 'auto',
           directives: {

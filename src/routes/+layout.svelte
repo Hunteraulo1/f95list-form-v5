@@ -1,8 +1,8 @@
 <script lang="ts">
 import type { Snippet } from 'svelte';
-import favicon from '$lib/assets/favicon.svg';
-import ImpersonationBanner from '$lib/components/ui/ImpersonationBanner.svelte';
-import QueryProvider from '$lib/query/QueryProvider.svelte';
+import favicon from '#lib/assets/favicon.svg';
+import ImpersonationBanner from '#lib/components/ui/ImpersonationBanner.svelte';
+import QueryProvider from '#lib/query/QueryProvider.svelte';
 import '../app.css';
 import type { LayoutData } from './$types';
 

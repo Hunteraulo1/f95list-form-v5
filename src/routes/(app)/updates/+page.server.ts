@@ -1,9 +1,14 @@
 import type {
   GamesFilterableGame,
   GamesFilterOptions,
-} from '$lib/games/games-filter';
-import { UNKNOWN_HISTORY_DATE, VIEW_ACTIVE_ONLY } from '$lib/server/config';
-import { GameTags, GameTranslation, OriginWebsite, orm } from '$lib/server/db';
+} from '#lib/games/games-filter.ts';
+import { UNKNOWN_HISTORY_DATE, VIEW_ACTIVE_ONLY } from '#lib/server/config.ts';
+import {
+  GameTags,
+  GameTranslation,
+  OriginWebsite,
+  orm,
+} from '#lib/server/db/index.ts';
 
 export const load = async () => {
   const [translations, origins, tags] = await Promise.all([

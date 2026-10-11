@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
-import { VIEW_ACTIVE_ONLY } from '$lib/server/config';
-import { GameTranslation, orm } from '$lib/server/db';
+import { VIEW_ACTIVE_ONLY } from '#lib/server/config.ts';
+import { GameTranslation, orm } from '#lib/server/db/index.ts';
 
 interface LatestTranslationRow {
   id: string;

@@ -1,15 +1,15 @@
 <script lang="ts">
 import { ArrowDownAZ, ArrowUpAZ, ImageOff, PenOff } from '@lucide/svelte';
 import type { Snippet } from 'svelte';
-import { goto } from '$app/navigation';
-import Button from '$lib/components/ui/Button.svelte';
-import MarkdownContent from '$lib/components/ui/MarkdownContent.svelte';
-import type { MarkdownBlock } from '$lib/markdown/content';
+import Button from '#lib/components/ui/Button.svelte';
+import MarkdownContent from '#lib/components/ui/MarkdownContent.svelte';
+import type { MarkdownBlock } from '#lib/markdown/content.ts';
 import type {
   loadProfileTranslations,
   ProfileSort,
   ProfileTranslationsQuery,
-} from '$lib/server/profile';
+} from '#lib/server/profile.ts';
+import { goto } from '$app/navigation';
 
 export type ProfileField = 'avatar' | 'banner' | 'description';
 

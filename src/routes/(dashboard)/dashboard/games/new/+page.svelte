@@ -1,14 +1,13 @@
 <script lang="ts">
 import { Copy, Link2, Link2Off } from '@lucide/svelte';
 import { tick, untrack } from 'svelte';
-import { enhance } from '$app/forms';
-import GameField from '$lib/components/games/GameField.svelte';
-import TagPicker from '$lib/components/games/TagPicker.svelte';
+import GameField from '#lib/components/games/GameField.svelte';
+import TagPicker from '#lib/components/games/TagPicker.svelte';
 import UserPicker, {
   type PickedUser,
-} from '$lib/components/games/UserPicker.svelte';
-import WizardSteps from '$lib/components/games/WizardSteps.svelte';
-import Button from '$lib/components/ui/Button.svelte';
+} from '#lib/components/games/UserPicker.svelte';
+import WizardSteps from '#lib/components/games/WizardSteps.svelte';
+import Button from '#lib/components/ui/Button.svelte';
 import {
   computeFieldState,
   DESCRIPTION_MAX_LENGTH,
@@ -18,8 +17,9 @@ import {
   threadLink,
   translationShape,
   VERSION_MAX_LENGTH,
-} from '$lib/games/game-form';
-import { IMAGE_HOSTS_LABEL, parseImageUrl } from '$lib/image-hosts';
+} from '#lib/games/game-form.ts';
+import { IMAGE_HOSTS_LABEL, parseImageUrl } from '#lib/image-hosts.ts';
+import { enhance } from '$app/forms';
 import type { ActionData, PageData } from './$types';
 
 interface Props {

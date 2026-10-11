@@ -1,6 +1,6 @@
 <script lang="ts">
 import { X } from '@lucide/svelte';
-import { cn } from '$lib/utils/cn';
+import { cn } from '#lib/utils/cn.ts';
 
 interface Tag {
   id: number;

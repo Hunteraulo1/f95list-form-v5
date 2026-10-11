@@ -1,4 +1,4 @@
-import type { GameEdition, GameTranslation } from '$lib/server/db';
+import type { GameEdition, GameTranslation } from '#lib/server/db/index.ts';
 
 export const editionStatusName = (status: GameEdition['status']) => {
   switch (status) {

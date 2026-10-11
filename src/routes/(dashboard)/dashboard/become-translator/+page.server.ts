@@ -1,10 +1,10 @@
 import { error, fail } from '@sveltejs/kit';
-import { orm, Role, User } from '$lib/server/db';
-import { logger } from '$lib/server/logger';
+import { orm, Role, User } from '#lib/server/db/index.ts';
+import { logger } from '#lib/server/logger.ts';
 import {
   TRANSLATOR_RULES,
   TRANSLATOR_RULES_VERSION,
-} from '$lib/translator-rules';
+} from '#lib/translator-rules.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 const TRANSLATOR_ROLE = 'translator';

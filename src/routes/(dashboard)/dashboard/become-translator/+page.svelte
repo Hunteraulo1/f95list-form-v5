@@ -1,6 +1,6 @@
 <script lang="ts">
+import Button from '#lib/components/ui/Button.svelte';
 import { enhance } from '$app/forms';
-import Button from '$lib/components/ui/Button.svelte';
 import type { ActionData, PageData } from './$types';
 
 interface Props {

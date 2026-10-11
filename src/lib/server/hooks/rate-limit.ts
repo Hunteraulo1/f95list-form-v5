@@ -1,4 +1,5 @@
-import { error, type Handle } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS_PER_WINDOW = 120;

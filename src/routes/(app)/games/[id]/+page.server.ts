@@ -1,15 +1,15 @@
 import { error } from '@sveltejs/kit';
-import { VIEW_ACTIVE_ONLY } from '$lib/server/config';
-import { Game, orm } from '$lib/server/db';
+import { VIEW_ACTIVE_ONLY } from '#lib/server/config.ts';
+import { Game, orm } from '#lib/server/db/index.ts';
 import {
   canAddTranslation,
   canEditGame,
   canEditTranslation,
-} from '$lib/server/game-access';
+} from '#lib/server/game-access.ts';
 import {
   translationQualityName,
   translationTypeName,
-} from '$lib/utils/entriesConvert';
+} from '#lib/utils/entriesConvert.ts';
 import type { PageServerLoad } from './$types';
 
 //? Les crédités anonymes sont regroupés sous un seul « Anonyme » : ni nom, ni identifiant, ni nombre.

@@ -1,4 +1,4 @@
-import type { SessionUser } from '$lib/server/hooks/auth';
+import type { SessionUser } from '#lib/server/hooks/auth.ts';
 
 //? Règles d'accès aux jeux et traductions, écrites une seule fois : la fiche de jeu s'en sert pour
 //? masquer les boutons, et les actions serveur d'édition devront s'en servir pour refuser (masquer

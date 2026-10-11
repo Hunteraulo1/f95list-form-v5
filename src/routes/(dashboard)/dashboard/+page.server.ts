@@ -1,5 +1,5 @@
-import { Game, orm } from '$lib/server/db';
-import { countOutdatedTranslations } from '$lib/server/my-translations';
+import { Game, orm } from '#lib/server/db/index.ts';
+import { countOutdatedTranslations } from '#lib/server/my-translations.ts';
 
 export type TranslationStatus = 'up_to_date' | 'outdated' | 'none';
 

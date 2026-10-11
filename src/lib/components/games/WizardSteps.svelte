@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Check } from '@lucide/svelte';
-import { cn } from '$lib/utils/cn';
+import { cn } from '#lib/utils/cn.ts';
 
 interface Props {
   labels: string[];

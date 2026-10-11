@@ -1,16 +1,16 @@
 <script lang="ts">
 import { tick } from 'svelte';
-import { enhance } from '$app/forms';
-import { page } from '$app/state';
 import ProfileView, {
   type ProfileField,
-} from '$lib/components/profile/ProfileView.svelte';
-import Button from '$lib/components/ui/Button.svelte';
-import MarkdownEditor from '$lib/components/ui/MarkdownEditor.svelte';
-import Modal from '$lib/components/ui/Modal.svelte';
-import { IMAGE_HOSTS } from '$lib/image-hosts';
-import { DESCRIPTION_MAX_LENGTH } from '$lib/profile';
-import { submitForm } from '$lib/utils/form';
+} from '#lib/components/profile/ProfileView.svelte';
+import Button from '#lib/components/ui/Button.svelte';
+import MarkdownEditor from '#lib/components/ui/MarkdownEditor.svelte';
+import Modal from '#lib/components/ui/Modal.svelte';
+import { IMAGE_HOSTS } from '#lib/image-hosts.ts';
+import { DESCRIPTION_MAX_LENGTH } from '#lib/profile.ts';
+import { submitForm } from '#lib/utils/form.ts';
+import { enhance } from '$app/forms';
+import { page } from '$app/state';
 import type { ActionData, PageData } from './$types';
 
 interface Props {

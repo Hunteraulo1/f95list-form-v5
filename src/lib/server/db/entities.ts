@@ -317,7 +317,7 @@ export const RolePermissionSchema = defineEntity({
         .foreignKeyName('role_permission_role_id_role_id_fkey')
         .deleteRule('cascade')
         .updateRule('restrict'),
-    //? Clé du catalogue `$lib/permissions`.
+    //? Clé du catalogue `#lib/permissions`.
     permission: p.string().length(64).primary(),
     ...timestamps(),
   },
@@ -332,7 +332,7 @@ export const UserSchema = defineEntity({
   properties: {
     id: uuidPk(),
     name: p.string().length(64),
-    //? Adresse de son profil (/profile/<slug>), fabriquée depuis le nom (voir `$lib/slug`) et unique.
+    //? Adresse de son profil (/profile/<slug>), fabriquée depuis le nom (voir `#lib/slug`) et unique.
     slug: p.string().length(64).unique(),
     //? Un compte fantôme (traducteur sans compte, revendicable) n'a ni e-mail ni zitadelId.
     email: p.string().length(128).nullable(),
@@ -349,7 +349,7 @@ export const UserSchema = defineEntity({
         .foreignKeyName('user_role_id_role_id_fkey'),
     zitadelId: uuidFk().unique().nullable(),
     discordNotification: p.boolean().default(true),
-    //? Quand et quelle version des règles du traducteur (`$lib/translator-rules`) ce compte a acceptées en
+    //? Quand et quelle version des règles du traducteur (`#lib/translator-rules`) ce compte a acceptées en
     //? demandant à devenir traducteur : nuls s'il ne l'a jamais fait (compte créé ainsi, ou promu à la main).
     translatorRulesAcceptedAt: p.datetime().nullable(),
     translatorRulesVersion: p.smallint().unsigned().nullable(),

@@ -16,15 +16,15 @@ import {
 } from '@lucide/svelte';
 import { onMount, tick } from 'svelte';
 import type CodeMirrorComponent from 'svelte-codemirror-editor';
-import { browser } from '$app/environment';
-import MarkdownContent from '$lib/components/ui/MarkdownContent.svelte';
-import { parseMarkdownDocument } from '$lib/markdown/content';
+import MarkdownContent from '#lib/components/ui/MarkdownContent.svelte';
+import { parseMarkdownDocument } from '#lib/markdown/content.ts';
 import {
   applyMarkdownAction,
   MARKDOWN_TOOLBAR,
   type MarkdownAction,
-} from '$lib/markdown/toolbar';
-import { cn } from '$lib/utils/cn';
+} from '#lib/markdown/toolbar.ts';
+import { cn } from '#lib/utils/cn.ts';
+import { browser } from '$app/env';
 
 interface Props {
   value?: string;

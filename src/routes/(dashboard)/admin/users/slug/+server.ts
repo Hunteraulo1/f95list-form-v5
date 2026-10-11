@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
-import { requirePermission } from '$lib/server/permissions';
-import { checkNameSlug } from '$lib/server/slug';
-import { slugBase } from '$lib/slug';
+import { requirePermission } from '#lib/server/permissions.ts';
+import { checkNameSlug } from '#lib/server/slug.ts';
+import { slugBase } from '#lib/slug.ts';
 import type { RequestHandler } from './$types';
 
 const NAME_MAX_LENGTH = 64;

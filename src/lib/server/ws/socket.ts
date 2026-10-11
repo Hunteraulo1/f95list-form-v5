@@ -3,7 +3,7 @@ import type { Duplex } from 'node:stream';
 import pino from 'pino';
 import { WebSocketServer } from 'ws';
 
-// Deliberately not $lib/server/logger or $env: this module is also imported by
+// Deliberately not #lib/server/logger or $env: this module is also imported by
 // server.ts, which runs outside SvelteKit/Vite and can't resolve those aliases.
 const logger = pino({ level: process.env.LOG_LEVEL ?? 'info' });
 

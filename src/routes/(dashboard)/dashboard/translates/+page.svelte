@@ -8,12 +8,12 @@ import {
   EyeOff,
   Languages,
 } from '@lucide/svelte';
+import Button from '#lib/components/ui/Button.svelte';
+import Menu from '#lib/components/ui/Menu.svelte';
+import { cn } from '#lib/utils/cn.ts';
+import { submitForm } from '#lib/utils/form.ts';
 import { enhance } from '$app/forms';
 import { goto } from '$app/navigation';
-import Button from '$lib/components/ui/Button.svelte';
-import Menu from '$lib/components/ui/Menu.svelte';
-import { cn } from '$lib/utils/cn';
-import { submitForm } from '$lib/utils/form';
 import type { ActionData, PageData } from './$types';
 
 interface Props {

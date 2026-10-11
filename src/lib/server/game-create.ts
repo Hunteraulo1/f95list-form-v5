@@ -17,8 +17,8 @@ import {
   threadLink,
   translationShape,
   VERSION_MAX_LENGTH,
-} from '$lib/games/game-form';
-import { parseImageUrl } from '$lib/image-hosts';
+} from '#lib/games/game-form.ts';
+import { parseImageUrl } from '#lib/image-hosts.ts';
 import {
   Game,
   GameEdition,
@@ -31,13 +31,16 @@ import {
   orm,
   Role,
   User,
-} from '$lib/server/db';
-import { canAddTranslation, canManageAutoCheck } from '$lib/server/game-access';
-import { syncGameTagsF95 } from '$lib/server/game-tags';
-import type { SessionUser } from '$lib/server/hooks/auth';
-import { logger } from '$lib/server/logger';
-import { allocateSlug } from '$lib/server/slug';
-import { slugBase, slugify } from '$lib/slug';
+} from '#lib/server/db/index.ts';
+import {
+  canAddTranslation,
+  canManageAutoCheck,
+} from '#lib/server/game-access.ts';
+import { syncGameTagsF95 } from '#lib/server/game-tags.ts';
+import type { SessionUser } from '#lib/server/hooks/auth.ts';
+import { logger } from '#lib/server/logger.ts';
+import { allocateSlug } from '#lib/server/slug.ts';
+import { slugBase, slugify } from '#lib/slug.ts';
 
 const USER_NAME_MAX_LENGTH = 64;
 

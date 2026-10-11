@@ -1,4 +1,4 @@
-import { parseImageUrl } from '$lib/image-hosts';
+import { parseImageUrl } from '#lib/image-hosts.ts';
 
 //? Règles du formulaire « Ajouter un jeu », partagées entre la page (champs affichés selon le type)
 //? et le serveur (validation). Elles reprennent les conventions des données existantes : une

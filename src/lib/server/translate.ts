@@ -1,5 +1,5 @@
-import { envConfig } from '$lib/server/env';
-import { logger } from '$lib/server/logger';
+import { envConfig } from '#lib/server/env/index.ts';
+import { logger } from '#lib/server/logger.ts';
 
 //? LibreTranslate limite la taille des requêtes : découpage conservateur, comme en v4.
 const MAX_CHUNK_CHARS = 4000;

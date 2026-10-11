@@ -1,5 +1,5 @@
 <script lang="ts">
-import ProfileView from '$lib/components/profile/ProfileView.svelte';
+import ProfileView from '#lib/components/profile/ProfileView.svelte';
 import type { PageData } from './$types';
 
 interface Props {

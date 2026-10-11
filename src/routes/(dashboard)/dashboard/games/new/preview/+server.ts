@@ -1,7 +1,7 @@
 import { error, json } from '@sveltejs/kit';
-import { GameTags, orm } from '$lib/server/db';
-import { canCreateGame } from '$lib/server/game-access';
-import { previewThread } from '$lib/server/scraper';
+import { GameTags, orm } from '#lib/server/db/index.ts';
+import { canCreateGame } from '#lib/server/game-access.ts';
+import { previewThread } from '#lib/server/scraper.ts';
 import type { RequestHandler } from './$types';
 
 //? Aperçu F95zone pour pré-remplir l'étape « Infos jeu » de l'assistant : le serveur du scraper ne

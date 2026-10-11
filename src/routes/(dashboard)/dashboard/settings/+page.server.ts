@@ -4,10 +4,10 @@ import {
   DISCORD_ID_PATTERN,
   THEME_PREFERENCES,
   USER_NAME_MAX_LENGTH,
-} from '$lib/profile';
-import { orm, User } from '$lib/server/db';
-import { logger } from '$lib/server/logger';
-import { checkNameSlug } from '$lib/server/slug';
+} from '#lib/profile.ts';
+import { orm, User } from '#lib/server/db/index.ts';
+import { logger } from '#lib/server/logger.ts';
+import { checkNameSlug } from '#lib/server/slug.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = ({ locals }) => {

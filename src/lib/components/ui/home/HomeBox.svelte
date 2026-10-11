@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { ClassValue } from 'clsx';
 import type { Snippet } from 'svelte';
-import { cn } from '$lib/utils/cn';
+import { cn } from '#lib/utils/cn.ts';
 import Button from '../Button.svelte';
 
 interface ButtonType {

@@ -1,9 +1,9 @@
 <script lang="ts">
 import type { LucideIcon } from '@lucide/svelte';
 import type { ClassValue } from 'svelte/elements';
+import type { Permission } from '#lib/permissions.ts';
+import { cn } from '#lib/utils/cn.ts';
 import { page } from '$app/state';
-import type { Permission } from '$lib/permissions';
-import { cn } from '$lib/utils/cn';
 
 export interface Item {
   label: string;

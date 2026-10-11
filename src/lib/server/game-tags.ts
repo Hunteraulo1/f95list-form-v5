@@ -1,6 +1,6 @@
 import type { EntityManager } from '@mikro-orm/mariadb';
-import { orm } from '$lib/server/db';
-import { F95_TAG_ID_BY_NAME } from '$lib/server/db/f95-tag-ids';
+import { F95_TAG_ID_BY_NAME } from '#lib/server/db/f95-tag-ids.ts';
+import { orm } from '#lib/server/db/index.ts';
 
 export interface GameTagRow {
   id: number;

@@ -1,4 +1,4 @@
-import type { ThemePreference } from '$lib/profile';
+import type { ThemePreference } from '#lib/profile.ts';
 
 export type Theme = 'light' | 'dark';
 

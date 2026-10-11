@@ -1,5 +1,5 @@
-import { orm, User } from '$lib/server/db';
-import { slugBase, slugify, withSuffix } from '$lib/slug';
+import { orm, User } from '#lib/server/db/index.ts';
+import { slugBase, slugify, withSuffix } from '#lib/slug.ts';
 
 //? Un autre compte (que `exceptUserId`) porte-t-il déjà ce slug ?
 export const isSlugTaken = async (slug: string, exceptUserId?: string) =>

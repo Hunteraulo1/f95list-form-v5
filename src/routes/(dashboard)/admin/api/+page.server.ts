@@ -4,9 +4,9 @@ import {
   MAX_API_DAILY_QUOTA,
   parseQuota,
   usedToday,
-} from '$lib/server/api-keys';
-import { ApiKey, orm } from '$lib/server/db';
-import { requirePermission } from '$lib/server/permissions';
+} from '#lib/server/api-keys.ts';
+import { ApiKey, orm } from '#lib/server/db/index.ts';
+import { requirePermission } from '#lib/server/permissions.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {

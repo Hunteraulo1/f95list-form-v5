@@ -1,9 +1,9 @@
 <script lang="ts">
 import { Menu, Moon, Sun, X } from '@lucide/svelte';
-import bannerDark from '$lib/assets/banner-dark.webp';
-import bannerLight from '$lib/assets/banner-light.png';
-import { getTheme, toggleTheme } from '$lib/stores/theme.svelte';
-import { cn } from '$lib/utils/cn';
+import bannerDark from '#lib/assets/banner-dark.webp';
+import bannerLight from '#lib/assets/banner-light.png';
+import { getTheme, toggleTheme } from '#lib/stores/theme.svelte.ts';
+import { cn } from '#lib/utils/cn.ts';
 
 interface Props {
   isHome?: boolean;

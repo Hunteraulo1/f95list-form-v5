@@ -2,7 +2,7 @@
 import { Dialog } from 'bits-ui';
 import type { ClassValue } from 'clsx';
 import type { Snippet } from 'svelte';
-import { cn } from '$lib/utils/cn';
+import { cn } from '#lib/utils/cn.ts';
 
 interface Props {
   open?: boolean;

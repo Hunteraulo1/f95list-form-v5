@@ -1,11 +1,11 @@
 import { error, redirect } from '@sveltejs/kit';
-import { parseMarkdownDocument } from '$lib/markdown/content';
+import { parseMarkdownDocument } from '#lib/markdown/content.ts';
 import {
   findProfileBySlug,
   findProfileUser,
   loadProfileTranslations,
   parseTranslationsQuery,
-} from '$lib/server/profile';
+} from '#lib/server/profile.ts';
 import type { PageServerLoad } from './$types';
 
 //? Profil public d'un compte, en lecture seule. On n'expose que ce qu'un profil montre : jamais

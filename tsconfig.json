@@ -1,21 +1,15 @@
 {
-  "extends": "./.svelte-kit/tsconfig.json",
+  "extends": "$app/tsconfig",
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    "allowJs": true,
-    "checkJs": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "moduleResolution": "bundler",
-    "types": ["node"]
-  }
-  // Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
-  // except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
-  //
-  // To make changes to top-level options such as include and exclude, we recommend extending
-  // the generated config; see https://svelte.dev/docs/kit/configuration#typescript
+    "types": ["$app/types", "node"],
+    //? `#lib` est déjà résolu par les `imports` de package.json. Ce doublon ne sert qu'à
+    //? `svelte-check --tsgo`, qui sans lui ne voit pas les types exportés par un composant `.svelte`.
+    "paths": {
+      "#lib/*": ["./src/lib/*"]
+    }
+  },
+  "include": ["src", "test", "*"],
+  "exclude": ["src/service-worker"]
 }

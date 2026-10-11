@@ -7,5 +7,6 @@
   },
 
   "biome.enabled": true,
-  "biome.requireConfiguration": true
+  "biome.requireConfiguration": true,
+  "js/ts.experimental.useTsgo": true
 }

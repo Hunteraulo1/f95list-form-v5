@@ -3,8 +3,8 @@ import { Check, ChevronDown, Minus } from '@lucide/svelte';
 import {
   type GamesFilterGroupState,
   gamesFilterGroupSummary,
-} from '$lib/games/games-filter';
-import { cn } from '$lib/utils/cn.js';
+} from '#lib/games/games-filter.ts';
+import { cn } from '#lib/utils/cn.ts';
 
 interface Props {
   group: GamesFilterGroupState;

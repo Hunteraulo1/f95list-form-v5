@@ -1,8 +1,8 @@
 <script lang="ts">
 import { Funnel, X } from '@lucide/svelte';
 import { untrack } from 'svelte';
-import GamesFilterGroup from '$lib/components/ui/games/GamesFilterGroup.svelte';
-import Input from '$lib/components/ui/Input.svelte';
+import GamesFilterGroup from '#lib/components/ui/games/GamesFilterGroup.svelte';
+import Input from '#lib/components/ui/Input.svelte';
 import {
   createGamesFilterGroups,
   type GamesFilterGroupState,
@@ -10,8 +10,8 @@ import {
   gameMatchesQuery,
   hasActiveGamesFilters,
   toggleGamesFilterValue,
-} from '$lib/games/games-filter';
-import { cn } from '$lib/utils/cn.js';
+} from '#lib/games/games-filter.ts';
+import { cn } from '#lib/utils/cn.ts';
 import type { PageData } from './$types';
 
 interface Props {

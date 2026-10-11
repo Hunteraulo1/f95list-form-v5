@@ -1,14 +1,2 @@
-import * as v from 'valibot';
-import { env } from '$env/dynamic/private';
-
-import { envSchema } from './schema';
-
-const result = v.safeParse(envSchema, env);
-
-if (!result.success) {
-  console.error('❌ Invalid environment variables', result.issues);
-
-  throw new Error('Invalid environment variables');
-}
-
-export const envConfig = result.output;
+//? Déclarées et validées dans `src/env.ts`.
+export * as envConfig from '$app/env/private';

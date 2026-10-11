@@ -1,4 +1,4 @@
-import { orm } from '$lib/server/db';
+import { orm } from '#lib/server/db/index.ts';
 
 //? Ces traductions n'ont pas de version propre à suivre : rien à mettre à jour.
 const UNTRACKED_TYPES = ['integrated', 'no_translation'] as const;

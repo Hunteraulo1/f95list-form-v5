@@ -1,11 +1,11 @@
 <script lang="ts">
 import { ArrowDownAZ, ArrowUpAZ, LogIn, UserRound } from '@lucide/svelte';
+import Button from '#lib/components/ui/Button.svelte';
+import Menu from '#lib/components/ui/Menu.svelte';
+import Modal from '#lib/components/ui/Modal.svelte';
+import { cn } from '#lib/utils/cn.ts';
+import { submitForm } from '#lib/utils/form.ts';
 import { enhance } from '$app/forms';
-import Button from '$lib/components/ui/Button.svelte';
-import Menu from '$lib/components/ui/Menu.svelte';
-import Modal from '$lib/components/ui/Modal.svelte';
-import { cn } from '$lib/utils/cn';
-import { submitForm } from '$lib/utils/form';
 import type { ActionData, PageData } from './$types';
 
 interface Props {

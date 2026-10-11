@@ -7,8 +7,8 @@ import {
   Users,
 } from '@lucide/svelte';
 import type { Snippet } from 'svelte';
-import type { Item } from '$lib/components/ui/dashboard/Sidebar.svelte';
-import Sidebar from '$lib/components/ui/dashboard/Sidebar.svelte';
+import type { Item } from '#lib/components/ui/dashboard/Sidebar.svelte';
+import Sidebar from '#lib/components/ui/dashboard/Sidebar.svelte';
 
 interface Props {
   children: Snippet;

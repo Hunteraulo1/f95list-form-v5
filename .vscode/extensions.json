@@ -2,6 +2,7 @@
   "recommendations": [
     "biomejs.biome",
     "svelte.svelte-vscode",
-    "bradlc.vscode-tailwindcss"
+    "bradlc.vscode-tailwindcss",
+    "TypeScriptTeam.native-preview"
   ]
 }

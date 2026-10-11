@@ -1,7 +1,7 @@
-import { VIEW_ACTIVE_ONLY } from '$lib/server/config';
-import { GameTranslationTranslator, orm, User } from '$lib/server/db';
-import { isTranslationOutdated } from '$lib/server/my-translations';
-import { editionStatusName } from '$lib/utils/entriesConvert';
+import { VIEW_ACTIVE_ONLY } from '#lib/server/config.ts';
+import { GameTranslationTranslator, orm, User } from '#lib/server/db/index.ts';
+import { isTranslationOutdated } from '#lib/server/my-translations.ts';
+import { editionStatusName } from '#lib/utils/entriesConvert.ts';
 
 const PAGE_SIZE = 20;
 const SEARCH_MAX_LENGTH = 100;

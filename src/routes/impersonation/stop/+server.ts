@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
-import { Impersonation, orm } from '$lib/server/db';
-import { logger } from '$lib/server/logger';
+import { Impersonation, orm } from '#lib/server/db/index.ts';
+import { logger } from '#lib/server/logger.ts';
 import type { RequestHandler } from './$types';
 
 //? Revient à son propre compte. Volontairement sans aucune vérification de permission : le compte

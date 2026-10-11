@@ -1,17 +1,22 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 import {
   enforcePermissionDependencies,
   PERMISSION_KEYS,
   type Permission,
   SUPER_ROLE,
-} from '$lib/permissions';
-import { DEV_USER_ID, IMPERSONATION_TTL_MS } from '$lib/server/config';
-import { Impersonation, orm, RolePermission, User } from '$lib/server/db';
+} from '#lib/permissions.ts';
+import { DEV_USER_ID, IMPERSONATION_TTL_MS } from '#lib/server/config.ts';
+import {
+  Impersonation,
+  orm,
+  RolePermission,
+  User,
+} from '#lib/server/db/index.ts';
 import {
   checkCanImpersonate,
   loadRoleTargets,
   roleActor,
-} from '$lib/server/role-guard';
+} from '#lib/server/role-guard.ts';
 import { logger } from '../logger';
 
 //? Données exposées au client : volontairement sans zitadelId.

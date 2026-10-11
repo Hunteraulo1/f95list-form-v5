@@ -1,9 +1,9 @@
 <script lang="ts">
+import Button from '#lib/components/ui/Button.svelte';
+import { type ThemePreference, USER_NAME_MAX_LENGTH } from '#lib/profile.ts';
+import { applyThemePreference } from '#lib/stores/theme.svelte.ts';
 import { enhance } from '$app/forms';
 import { page } from '$app/state';
-import Button from '$lib/components/ui/Button.svelte';
-import { type ThemePreference, USER_NAME_MAX_LENGTH } from '$lib/profile';
-import { applyThemePreference } from '$lib/stores/theme.svelte';
 import type { ActionData, PageData } from './$types';
 
 interface Props {

@@ -1,12 +1,12 @@
 import { error, fail } from '@sveltejs/kit';
-import { parseImageUrl } from '$lib/image-hosts';
-import { parseMarkdownDocument } from '$lib/markdown/content';
-import { DESCRIPTION_MAX_LENGTH } from '$lib/profile';
-import { orm, User } from '$lib/server/db';
+import { parseImageUrl } from '#lib/image-hosts.ts';
+import { parseMarkdownDocument } from '#lib/markdown/content.ts';
+import { DESCRIPTION_MAX_LENGTH } from '#lib/profile.ts';
+import { orm, User } from '#lib/server/db/index.ts';
 import {
   loadProfileTranslations,
   parseTranslationsQuery,
-} from '$lib/server/profile';
+} from '#lib/server/profile.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, url }) => {

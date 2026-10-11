@@ -1,7 +1,7 @@
 <script lang="ts">
+import type { ErrorMessages } from '#lib/components/ui/ErrorPage.svelte';
+import ErrorPage from '#lib/components/ui/ErrorPage.svelte';
 import { page } from '$app/state';
-import type { ErrorMessages } from '$lib/components/ui/ErrorPage.svelte';
-import ErrorPage from '$lib/components/ui/ErrorPage.svelte';
 
 const MESSAGES: ErrorMessages = {
   403: "Ce jeu n'est plus disponible !",

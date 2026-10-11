@@ -1,15 +1,15 @@
 <script lang="ts">
-import { enhance } from '$app/forms';
-import Button from '$lib/components/ui/Button.svelte';
-import Modal from '$lib/components/ui/Modal.svelte';
+import Button from '#lib/components/ui/Button.svelte';
+import Modal from '#lib/components/ui/Modal.svelte';
 import {
   applyDependenciesToChecks,
   getDependentPermissions,
   getPermissionParent,
   PERMISSIONS,
   type Permission,
-} from '$lib/permissions';
-import { cn } from '$lib/utils/cn';
+} from '#lib/permissions.ts';
+import { cn } from '#lib/utils/cn.ts';
+import { enhance } from '$app/forms';
 import type { ActionData, PageData } from './$types';
 
 interface Props {

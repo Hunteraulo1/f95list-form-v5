@@ -5,21 +5,21 @@ import {
   TRANSLATION_QUALITIES,
   TRANSLATION_TYPES,
   threadBase,
-} from '$lib/games/game-form';
-import { GameTags, OriginWebsite, orm } from '$lib/server/db';
+} from '#lib/games/game-form.ts';
+import { GameTags, OriginWebsite, orm } from '#lib/server/db/index.ts';
 import {
   canAddTranslation,
   canCreateGame,
   canEditGame,
   canManageAutoCheck,
-} from '$lib/server/game-access';
-import { createGame, isStaff, parseGameForm } from '$lib/server/game-create';
-import { translateGameDescriptionInBackground } from '$lib/server/game-description-fr';
+} from '#lib/server/game-access.ts';
+import { createGame, isStaff, parseGameForm } from '#lib/server/game-create.ts';
+import { translateGameDescriptionInBackground } from '#lib/server/game-description-fr.ts';
 import {
   editionStatusName,
   translationQualityName,
   translationTypeName,
-} from '$lib/utils/entriesConvert';
+} from '#lib/utils/entriesConvert.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {

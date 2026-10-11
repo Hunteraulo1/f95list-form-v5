@@ -1,7 +1,7 @@
 <script lang="ts">
-import Button from '$lib/components/ui/Button.svelte';
-import ColorBadge from '$lib/components/ui/games/ColorBadge.svelte';
-import ReportGameModal from '$lib/components/ui/games/ReportGameModal.svelte';
+import Button from '#lib/components/ui/Button.svelte';
+import ColorBadge from '#lib/components/ui/games/ColorBadge.svelte';
+import ReportGameModal from '#lib/components/ui/games/ReportGameModal.svelte';
 import type { PageData } from './$types.js';
 
 interface Props {

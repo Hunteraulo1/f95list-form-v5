@@ -2,9 +2,9 @@ import {
   enforcePermissionDependencies,
   PERMISSION_KEYS,
   SUPER_ROLE,
-} from '$lib/permissions';
-import { orm, Role, RolePermission } from '$lib/server/db';
-import type { SessionUser } from '$lib/server/hooks/auth';
+} from '#lib/permissions.ts';
+import { orm, Role, RolePermission } from '#lib/server/db/index.ts';
+import type { SessionUser } from '#lib/server/hooks/auth.ts';
 
 //? Garde-fous de délégation (comme en v4) : un gestionnaire de rôles ne peut pas s'octroyer plus
 //? de pouvoir qu'il n'en a, sinon « gérer les rôles » revient à être admin.

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Hash, Volume2 } from '@lucide/svelte';
-import { cn } from '$lib/utils/cn';
+import { cn } from '#lib/utils/cn.ts';
 import MockupShell from './MockupShell.svelte';
 
 const channels = [

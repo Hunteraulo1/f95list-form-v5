@@ -1,8 +1,8 @@
 import { error, json } from '@sveltejs/kit';
-import { threadBase, threadLink } from '$lib/games/game-form';
-import { Game, OriginWebsite, orm } from '$lib/server/db';
-import { canCreateGame } from '$lib/server/game-access';
-import { translationTypeName } from '$lib/utils/entriesConvert';
+import { threadBase, threadLink } from '#lib/games/game-form.ts';
+import { Game, OriginWebsite, orm } from '#lib/server/db/index.ts';
+import { canCreateGame } from '#lib/server/game-access.ts';
+import { translationTypeName } from '#lib/utils/entriesConvert.ts';
 import type { RequestHandler } from './$types';
 
 //? Le thread est-il déjà dans la base ? Sert à l'étape « Thread » de l'assistant : signale le conflit

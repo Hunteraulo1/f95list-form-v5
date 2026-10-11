@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Pause, Play } from '@lucide/svelte';
-import HomeBox from '$lib/components/ui/home/HomeBox.svelte';
-import MockupFlip from '$lib/components/ui/home/mockups/MockupFlip.svelte';
+import HomeBox from '#lib/components/ui/home/HomeBox.svelte';
+import MockupFlip from '#lib/components/ui/home/mockups/MockupFlip.svelte';
 
 let activeSlide = $state(0);
 let toogleSlide = $state(true);

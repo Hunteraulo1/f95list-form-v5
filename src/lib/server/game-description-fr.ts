@@ -1,6 +1,6 @@
-import { Game, orm } from '$lib/server/db';
-import { logger } from '$lib/server/logger';
-import { translateToFrench } from '$lib/server/translate';
+import { Game, orm } from '#lib/server/db/index.ts';
+import { logger } from '#lib/server/logger.ts';
+import { translateToFrench } from '#lib/server/translate.ts';
 
 //? Traduit `description` en arrière-plan et met à jour `game.descriptionFr` une fois terminé, sans
 //? bloquer la création du jeu (LibreTranslate peut prendre plusieurs secondes). Comme en v4 : ne

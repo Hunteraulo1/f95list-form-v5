@@ -5,20 +5,20 @@ import {
   MAX_ROLE_PRIORITY,
   permissionGroups,
   SUPER_ROLE,
-} from '$lib/permissions';
+} from '#lib/permissions.ts';
 import {
   MAX_API_DAILY_QUOTA,
   MAX_API_KEY_LIMIT,
   parseQuota,
-} from '$lib/server/api-keys';
-import { orm, Role, RolePermission, User } from '$lib/server/db';
-import { requirePermission } from '$lib/server/permissions';
+} from '#lib/server/api-keys.ts';
+import { orm, Role, RolePermission, User } from '#lib/server/db/index.ts';
+import { requirePermission } from '#lib/server/permissions.ts';
 import {
   canGrant,
   checkCanManageRole,
   effectivePermissions,
   roleActor,
-} from '$lib/server/role-guard';
+} from '#lib/server/role-guard.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 const LABEL_MAX_LENGTH = 64;

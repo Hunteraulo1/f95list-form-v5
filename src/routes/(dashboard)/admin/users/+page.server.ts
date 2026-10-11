@@ -1,10 +1,10 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { error, fail, redirect } from '@sveltejs/kit';
-import { parseImageUrl } from '$lib/image-hosts';
-import { DISCORD_ID_PATTERN, USER_NAME_MAX_LENGTH } from '$lib/profile';
-import { Impersonation, orm, Role, User } from '$lib/server/db';
-import { logger } from '$lib/server/logger';
-import { requirePermission } from '$lib/server/permissions';
+import { parseImageUrl } from '#lib/image-hosts.ts';
+import { DISCORD_ID_PATTERN, USER_NAME_MAX_LENGTH } from '#lib/profile.ts';
+import { Impersonation, orm, Role, User } from '#lib/server/db/index.ts';
+import { logger } from '#lib/server/logger.ts';
+import { requirePermission } from '#lib/server/permissions.ts';
 import {
   checkCanAssignRole,
   checkCanImpersonate,
@@ -12,8 +12,8 @@ import {
   loadRoleTargets,
   type RoleCheck,
   roleActor,
-} from '$lib/server/role-guard';
-import { checkNameSlug } from '$lib/server/slug';
+} from '#lib/server/role-guard.ts';
+import { checkNameSlug } from '#lib/server/slug.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 const PAGE_SIZE = 20;

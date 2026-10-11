@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { ClassValue } from 'clsx';
-import type { GameTranslation } from '$lib/server/db';
-import { cn } from '$lib/utils/cn';
+import type { GameTranslation } from '#lib/server/db/index.ts';
+import { cn } from '#lib/utils/cn.ts';
 
 interface Props {
   item: GameTranslation['quality'] | GameTranslation['type'];
