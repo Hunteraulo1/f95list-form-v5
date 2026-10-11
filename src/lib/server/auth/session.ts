@@ -6,6 +6,10 @@ import type {
   ZitadelTokens,
 } from '#lib/server/auth/zitadel.ts';
 import { randomToken } from '#lib/server/auth/zitadel.ts';
+import {
+  assignZitadelRole,
+  syncRoleFromZitadel,
+} from '#lib/server/auth/zitadel-roles.ts';
 import { orm, Role, Session, User } from '#lib/server/db/index.ts';
 import { logger } from '#lib/server/logger.ts';
 import { allocateSlug } from '#lib/server/slug.ts';
@@ -32,7 +36,11 @@ const cookieOptions = (url: URL) => ({
 //? `zitadelId` n'est qu'une valeur d'attente) ; sinon un nouveau compte.
 export const findOrCreateUser = async (profile: ZitadelProfile) => {
   const linked = await orm.em.findOne(User, { zitadelId: profile.sub });
-  if (linked) return linked;
+  if (linked) {
+    await syncRoleFromZitadel(linked.id, profile.sub, { force: true });
+
+    return linked;
+  }
 
   if (profile.email && profile.emailVerified) {
     //? Un compte fantôme n'a pas d'e-mail : il ne peut pas être pris par ce chemin.
@@ -44,6 +52,10 @@ export const findOrCreateUser = async (profile: ZitadelProfile) => {
 
     if (sameEmail.length === 1) {
       const [user] = sameEmail;
+      //? Son rôle actuel est repris dans Zitadel avant de le lier : si Zitadel refuse, le compte
+      //? reste non lié et la reprise sera retentée à la prochaine connexion.
+      await orm.em.populate(user, ['role']);
+      await assignZitadelRole(profile.sub, user.role.name);
       user.zitadelId = profile.sub;
       await orm.em.flush();
       logger.info({ userId: user.id }, 'compte existant lié à Zitadel');
@@ -53,6 +65,7 @@ export const findOrCreateUser = async (profile: ZitadelProfile) => {
   }
 
   const role = await orm.em.findOneOrFail(Role, { name: DEFAULT_ROLE });
+  await assignZitadelRole(profile.sub, role.name);
 
   //? Le nom affiché vient de Zitadel (sans le domaine d'un identifiant en forme d'e-mail). S'il
   //? est déjà pris, le lien de profil attribué (`nom-2`…) sert de nom.

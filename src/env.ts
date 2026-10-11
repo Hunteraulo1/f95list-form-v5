@@ -14,6 +14,12 @@ export const variables = defineEnvVars({
 
   ZITADEL_CLIENT_SECRET: { schema: v.optional(v.string()) },
 
+  //? Projet Zitadel qui porte les rôles communs à tous les services, et jeton du compte de service
+  //? autorisé à les attribuer (voir `auth/zitadel-roles.ts`).
+  ZITADEL_PROJECT_ID: { schema: v.optional(v.string()) },
+
+  ZITADEL_SERVICE_TOKEN: { schema: v.optional(v.string()) },
+
   SCRAPER_URL: { schema: v.optional(v.string()) },
 
   SCRAPER_AUTH_TOKEN: { schema: v.optional(v.string()) },

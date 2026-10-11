@@ -2,6 +2,10 @@ import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { parseImageUrl } from '#lib/image-hosts.ts';
 import { DISCORD_ID_PATTERN, USER_NAME_MAX_LENGTH } from '#lib/profile.ts';
+import {
+  assignZitadelRole,
+  isLinkedToZitadel,
+} from '#lib/server/auth/zitadel-roles.ts';
 import { Impersonation, orm, Role, User } from '#lib/server/db/index.ts';
 import { logger } from '#lib/server/logger.ts';
 import { requirePermission } from '#lib/server/permissions.ts';
@@ -288,6 +292,25 @@ export const actions: Actions = {
 
       const assign = checkCanAssignRole(actor, target);
       if (!assign.allowed) return fail(403, { id, message: assign.message });
+
+      //? Le rôle est commun à tous les services : il change d'abord chez Zitadel, puis ici. Un
+      //? compte pas encore lié garde son rôle local, repris dans Zitadel à sa première connexion.
+      if (isLinkedToZitadel(user.zitadelId)) {
+        try {
+          await assignZitadelRole(user.zitadelId as string, target.name);
+        } catch (cause) {
+          logger.warn(
+            { err: cause, userId: user.id },
+            'attribution du rôle Zitadel échouée',
+          );
+
+          return fail(502, {
+            id,
+            message:
+              "Zitadel n'a pas pu enregistrer le nouveau rôle : rien n'a été modifié, réessayez.",
+          });
+        }
+      }
 
       user.role = orm.em.getReference(Role, target.id);
     }

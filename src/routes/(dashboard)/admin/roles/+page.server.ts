@@ -11,7 +11,12 @@ import {
   MAX_API_KEY_LIMIT,
   parseQuota,
 } from '#lib/server/api-keys.ts';
+import {
+  removeProjectRole,
+  upsertProjectRole,
+} from '#lib/server/auth/zitadel-roles.ts';
 import { orm, Role, RolePermission, User } from '#lib/server/db/index.ts';
+import { logger } from '#lib/server/logger.ts';
 import { requirePermission } from '#lib/server/permissions.ts';
 import {
   canGrant,
@@ -162,6 +167,18 @@ export const actions: Actions = {
       });
     }
 
+    //? Les rôles sont communs à tous les services : il est d'abord déclaré dans le projet Zitadel.
+    try {
+      await upsertProjectRole(name, label);
+    } catch (cause) {
+      logger.warn({ err: cause, role: name }, 'rôle Zitadel non enregistré');
+
+      return fail(502, {
+        message:
+          "Zitadel n'a pas pu enregistrer le rôle : rien n'a été modifié, réessayez.",
+      });
+    }
+
     //? Un rôle créé n'a aucune permission et la force la plus basse : on lui donne ensuite ce qu'il faut.
     orm.em.create(Role, {
       name,
@@ -237,6 +254,22 @@ export const actions: Actions = {
         return fail(400, {
           message: `La description ne peut pas dépasser ${DESCRIPTION_MAX_LENGTH} caractères.`,
         });
+      }
+
+      if (label !== role.label) {
+        try {
+          await upsertProjectRole(role.name, label);
+        } catch (cause) {
+          logger.warn(
+            { err: cause, role: role.name },
+            'rôle Zitadel non enregistré',
+          );
+
+          return fail(502, {
+            message:
+              "Zitadel n'a pas pu enregistrer le rôle : rien n'a été modifié, réessayez.",
+          });
+        }
       }
 
       role.label = label;
@@ -335,6 +368,20 @@ export const actions: Actions = {
     if ((await orm.em.count(User, { role: role.id })) > 0) {
       return fail(409, {
         message: 'Ce rôle est encore attribué à des utilisateurs.',
+      });
+    }
+
+    try {
+      await removeProjectRole(role.name);
+    } catch (cause) {
+      logger.warn(
+        { err: cause, role: role.name },
+        'rôle Zitadel non enregistré',
+      );
+
+      return fail(502, {
+        message:
+          "Zitadel n'a pas pu enregistrer le rôle : rien n'a été modifié, réessayez.",
       });
     }
 

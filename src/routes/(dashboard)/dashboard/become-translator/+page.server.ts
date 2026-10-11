@@ -1,4 +1,8 @@
 import { error, fail } from '@sveltejs/kit';
+import {
+  assignZitadelRole,
+  isLinkedToZitadel,
+} from '#lib/server/auth/zitadel-roles.ts';
 import { orm, Role, User } from '#lib/server/db/index.ts';
 import { logger } from '#lib/server/logger.ts';
 import {
@@ -73,6 +77,34 @@ export const actions: Actions = {
         error:
           'Ton rôle a changé entre-temps ou ton compte est introuvable : recharge la page.',
       });
+    }
+
+    //? Le rôle est commun à tous les services : il est aussi attribué chez Zitadel. Si Zitadel
+    //? refuse, on revient en arrière plutôt que de laisser deux rôles différents.
+    const account = await orm.em.findOne(User, { id: locals.user.id });
+    if (account && isLinkedToZitadel(account.zitadelId)) {
+      try {
+        await assignZitadelRole(account.zitadelId as string, role.name);
+      } catch (cause) {
+        logger.warn(
+          { err: cause, userId: account.id },
+          'rôle Zitadel non attribué',
+        );
+        await orm.em.nativeUpdate(
+          User,
+          { id: account.id, role: role.id },
+          {
+            role: locals.user.role.id,
+            translatorRulesAcceptedAt: null,
+            translatorRulesVersion: null,
+          },
+        );
+
+        return fail(502, {
+          error:
+            "Zitadel n'a pas pu enregistrer ton nouveau rôle : réessaie dans un instant.",
+        });
+      }
     }
 
     logger.info(

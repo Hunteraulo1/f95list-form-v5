@@ -8,6 +8,7 @@ import {
 } from '#lib/permissions.ts';
 import { findSession } from '#lib/server/auth/session.ts';
 import { zitadelConfig } from '#lib/server/auth/zitadel.ts';
+import { syncRoleFromZitadel } from '#lib/server/auth/zitadel-roles.ts';
 import { DEV_USER_ID, IMPERSONATION_TTL_MS } from '#lib/server/config.ts';
 import {
   Impersonation,
@@ -135,8 +136,13 @@ const resolveRealUser = async (cookies: Cookies) => {
   }
 
   const session = await findSession(cookies);
+  if (!session) return null;
 
-  return session ? loadUser(session.user.id) : null;
+  //? Le rôle est commun à tous les services : il est relu chez Zitadel de temps en temps.
+  const account = await orm.em.findOne(User, { id: session.user.id });
+  if (account) await syncRoleFromZitadel(account.id, account.zitadelId);
+
+  return loadUser(session.user.id);
 };
 
 export const handleAuth: Handle = async ({ event, resolve }) => {
