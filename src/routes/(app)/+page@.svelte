@@ -3,6 +3,7 @@ import homeBgDark from '#lib/assets/motif-dark.png';
 import homeBgLight from '#lib/assets/motif-light.png';
 import Header from '#lib/components/Header.svelte';
 import Container from '#lib/components/ui/Container.svelte';
+import HomeBoxExtension from '#lib/components/ui/home/HomeBoxExtension.svelte';
 import HomeBoxMockup from '#lib/components/ui/home/HomeBoxMockups.svelte';
 import HomeList from '#lib/components/ui/home/HomeGameList.svelte';
 import HomeHero from '#lib/components/ui/home/HomeHero.svelte';
@@ -45,4 +46,12 @@ const { data }: Props = $props();
   />
 
   <HomeBoxMockup />
+
+  <div class="mt-8">
+    <HomeBoxExtension
+      games={data.extensionGames}
+      downloads={data.extensionDownloads}
+      browser={data.extensionBrowser}
+    />
+  </div>
 </Container>

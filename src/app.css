@@ -25,11 +25,20 @@
   --color-error: var(--error);
   --color-error-content: var(--error-content);
 
+  /* Couleurs de l'extension de navigateur, pour sa maquette sur l'accueil. */
+  --color-ext-background: var(--ext-background);
+  --color-ext-foreground: var(--ext-foreground);
+  --color-ext-card: var(--ext-card);
+  --color-ext-border: var(--ext-border);
+  --color-ext-secondary: var(--ext-secondary);
+  --color-ext-secondary-foreground: var(--ext-secondary-foreground);
+
   --radius-selector: var(--radius-selector-value);
   --radius-field: var(--radius-field-value);
   --radius-box: var(--radius-box-value);
 
   --animate-float-sheet: floatSheet 8s ease-in-out infinite;
+  --animate-float-sheet-reverse: floatSheetReverse 8s ease-in-out infinite;
 
   @keyframes floatSheet {
     0%,
@@ -40,10 +49,27 @@
       transform: rotateX(12deg) rotateY(-8deg) rotateZ(2deg) translateY(-8px);
     }
   }
+
+  @keyframes floatSheetReverse {
+    0%,
+    100% {
+      transform: rotateX(14deg) rotateY(16deg) rotateZ(-3deg) translateY(0);
+    }
+    50% {
+      transform: rotateX(12deg) rotateY(12deg) rotateZ(-2deg) translateY(8px);
+    }
+  }
 }
 
 :root {
   color-scheme: light;
+
+  --ext-background: hsl(0 0% 87%);
+  --ext-foreground: hsl(222.2 84% 4.9%);
+  --ext-card: hsl(0 0% 95%);
+  --ext-border: hsl(214.3 31.8% 81.4%);
+  --ext-secondary: hsl(210 20% 80%);
+  --ext-secondary-foreground: hsl(222.2 47.4% 11.2%);
 
   --base-100: oklch(100% 0 0);
   --base-200: oklch(98% 0 0);
@@ -79,6 +105,13 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
+  --ext-background: hsl(222.2 84% 7%);
+  --ext-foreground: hsl(210 40% 98%);
+  --ext-card: hsl(222.2 47.4% 11.2%);
+  --ext-border: hsl(217.2 32.6% 17.5%);
+  --ext-secondary: hsl(217.2 32.6% 17.5%);
+  --ext-secondary-foreground: hsl(210 40% 98%);
+
   --base-100: oklch(25.33% 0.016 252.42);
   --base-200: oklch(23.26% 0.014 253.1);
   --base-300: oklch(21.15% 0.012 254.09);
@@ -113,6 +146,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
+
+    --ext-background: hsl(222.2 84% 7%);
+    --ext-foreground: hsl(210 40% 98%);
+    --ext-card: hsl(222.2 47.4% 11.2%);
+    --ext-border: hsl(217.2 32.6% 17.5%);
+    --ext-secondary: hsl(217.2 32.6% 17.5%);
+    --ext-secondary-foreground: hsl(210 40% 98%);
 
     --base-100: oklch(25.33% 0.016 252.42);
     --base-200: oklch(23.26% 0.014 253.1);

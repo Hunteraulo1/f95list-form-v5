@@ -1,6 +1,9 @@
 import { randomInt } from 'node:crypto';
+import { detectExtensionBrowserTarget } from '#lib/extension-browser.ts';
 import { VIEW_ACTIVE_ONLY } from '#lib/server/config.ts';
 import { GameTranslation, orm } from '#lib/server/db/index.ts';
+import { getExtensionDownloadUrls } from '#lib/server/extension-downloads.ts';
+import { isTranslationOutdated } from '#lib/server/my-translations.ts';
 
 interface LatestTranslationRow {
   id: string;
@@ -22,7 +25,51 @@ const countTranslators = async () => {
   return Number(row.count);
 };
 
-export const load = async () => {
+interface ExtensionGameRow {
+  id: number;
+  name: string;
+  image: string;
+  type: string;
+  version: string;
+  editionVersion: string;
+}
+
+//? Quelques jeux F95zone traduits, tirés au hasard, pour la maquette de l'extension : c'est sur ce
+//? site qu'elle s'affiche, avec la version de la traduction et si elle est à jour.
+const listExtensionMockupGames = async (limit: number) => {
+  const rows = await orm.em.getConnection().execute<ExtensionGameRow[]>(
+    `select g.id, g.name, coalesce(g.image_internal, g.image_external) as image,
+            t.type, t.version, e.version as editionVersion
+     from game_translation t
+     join game_edition e on e.id = t.game_edition_id
+     join game g on g.id = e.game_id
+     join \`origin-website\` o on o.id = g.website
+     where o.name = 'F95zone' and t.type <> 'no_translation'
+       and coalesce(g.image_internal, g.image_external) is not null
+       ${VIEW_ACTIVE_ONLY ? 'and t.active = 1 and e.active = 1 and g.active = 1' : ''}
+     order by rand()
+     limit ${limit * 4}`,
+  );
+
+  //? Un jeu peut sortir plusieurs fois (une ligne par traduction) : une seule est gardée.
+  const byGame = new Map(rows.map((row) => [row.id, row]));
+
+  return [...byGame.values()].slice(0, limit).map((row) => ({
+    id: String(row.id),
+    name: row.name,
+    image: row.image,
+    tversion:
+      row.type === 'integrated' ? 'Intégrée' : row.version.trim() || 'n/a',
+    upToDate: !isTranslationOutdated({
+      type: row.type,
+      version: row.version,
+      editionVersion: row.editionVersion,
+      followed: true,
+    }),
+  }));
+};
+
+export const load = async ({ request }: { request: Request }) => {
   const random = randomInt(1000000);
 
   const rows = await orm.em
@@ -53,6 +100,12 @@ export const load = async () => {
   });
   return {
     games,
+    extensionGames: await listExtensionMockupGames(5),
+    extensionDownloads: await getExtensionDownloadUrls(),
+    //? D'après l'en-tête du navigateur ; la page le redétecte une fois affichée.
+    extensionBrowser: detectExtensionBrowserTarget(
+      request.headers.get('user-agent'),
+    ),
     stats: [
       {
         title: 'traducteur',

@@ -8,10 +8,14 @@ interface ButtonType {
   label: string;
   href: string;
   external?: boolean;
+  //? Appelé au clic, en plus de suivre le lien.
+  onclick?: () => void;
 }
 
 interface Props {
   children?: Snippet;
+  //? Complément affiché sous les boutons (par exemple une marche à suivre).
+  details?: Snippet;
   title: string;
   description: string;
   buttons: ButtonType[];
@@ -19,8 +23,15 @@ interface Props {
   masterClasses?: ClassValue;
 }
 
-const { children, title, description, buttons, classes, masterClasses }: Props =
-  $props();
+const {
+  children,
+  details,
+  title,
+  description,
+  buttons,
+  classes,
+  masterClasses,
+}: Props = $props();
 </script>
 
 <div
@@ -33,12 +44,13 @@ const { children, title, description, buttons, classes, masterClasses }: Props =
     <h4 class="text-4xl font-bold">{title}</h4>
     <p class="text-xl">{description}</p>
     <div class="flex gap-2">
-      {#each buttons as { href, label }, index}
-        <a {href}>
+      {#each buttons as { href, label, onclick }, index}
+        <a {href} {onclick}>
           <Button {label} inline={index > 0} />
         </a>
       {/each}
     </div>
+    {@render details?.()}
   </div>
   <div class={cn('h-full w-full', classes)}>
     {@render children?.()}
