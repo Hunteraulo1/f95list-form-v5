@@ -1,0 +1,12 @@
+# Zitadel local : une seule adresse (http://localhost:8080) pour l'API et l'écran de connexion.
+:8080 {
+	# Écran de connexion (conteneur `zitadel-login`, sur le réseau de `zitadel`).
+	handle /ui/v2/login* {
+		reverse_proxy zitadel:3001
+	}
+
+	# Tout le reste : l'API, la console, OIDC, le retour des fournisseurs d'identité.
+	handle {
+		reverse_proxy h2c://zitadel:8080
+	}
+}

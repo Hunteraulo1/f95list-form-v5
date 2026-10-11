@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import type { Cookies } from '@sveltejs/kit';
 import { USER_NAME_MAX_LENGTH } from '#lib/profile.ts';
+import { syncDiscordFromZitadel } from '#lib/server/auth/discord.ts';
 import type {
   ZitadelProfile,
   ZitadelTokens,
@@ -97,6 +98,10 @@ export const createSession = async (
   userId: string,
   tokens: ZitadelTokens,
 ) => {
+  //? Connecté par Discord ou non, l'identifiant Discord suit le compte lié chez Zitadel.
+  const account = await orm.em.findOne(User, { id: userId });
+  if (account) await syncDiscordFromZitadel(account);
+
   const token = randomToken();
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
 

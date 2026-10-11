@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "vite dev",
     "dev:up": "docker compose -f ./docker/dev/compose.yml up -d mariadb-dev",
-    "dev:auth": "docker compose -f ./docker/dev/compose.yml up -d zitadel-login",
+    "dev:auth": "docker compose -f ./docker/dev/compose.yml up -d zitadel-proxy",
     "dev:down": "docker compose -f ./docker/dev/compose.yml down",
     "build": "vite build",
     "preview": "vite preview",
@@ -37,6 +37,7 @@
     "@sveltejs/vite-plugin-svelte": "7.3.1",
     "@tailwindcss/vite": "4.3.3",
     "@types/node": "26.6.5",
+    "@types/qrcode": "1.5.6",
     "@types/ws": "8.18.2",
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/browser": "5.0.3",
@@ -72,6 +73,7 @@
     "marked": "18.1.0",
     "mysql2": "3.24.5",
     "pino": "10.4.0",
+    "qrcode": "1.5.4",
     "svelte-codemirror-editor": "2.1.0",
     "ws": "8.22.0"
   },

@@ -26,6 +26,23 @@ services:
   # --- Zitadel local (authentification) : `bun run dev:auth`
   # Console : http://localhost:8080/ui/console — compte admin par défaut
   # zitadel-admin@zitadel.localhost / Password1! (dev uniquement).
+  # Tout passe par `zitadel-proxy` sur le port 8080 : l'API et l'écran de connexion doivent partager
+  # la même adresse (retour des fournisseurs d'identité comme Discord sur /idps/callback).
+  zitadel-proxy:
+    image: caddy:2-alpine
+    container_name: f95list-form-v5-zitadel-proxy
+    restart: unless-stopped
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+
+    depends_on:
+      zitadel-login:
+        condition: service_started
+
   zitadel:
     image: ghcr.io/zitadel/zitadel:v4.19.4
     container_name: f95list-form-v5-zitadel
@@ -33,11 +50,6 @@ services:
     user: "0"
     # Clé de chiffrement de dev (32 caractères) : ne jamais la reprendre en production.
     command: start-from-init --masterkey "MasterkeyNeedsToHave32Characters" --tlsMode disabled
-
-    ports:
-      - "8080:8080"
-      # Écran de connexion (conteneur `zitadel-login`, qui partage ce réseau). 3000 est pris par le scraper.
-      - "3001:3001"
 
     environment:
       ZITADEL_EXTERNALDOMAIN: localhost
@@ -55,9 +67,9 @@ services:
       ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_PAT_EXPIRATIONDATE: "2099-01-01T00:00:00Z"
 
       ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_REQUIRED: true
-      ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_BASEURI: http://localhost:3001/ui/v2/login/
-      ZITADEL_OIDC_DEFAULTLOGINURLV2: http://localhost:3001/ui/v2/login/login?authRequest=
-      ZITADEL_OIDC_DEFAULTLOGOUTURLV2: http://localhost:3001/ui/v2/login/logout?post_logout_redirect=
+      ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_BASEURI: http://localhost:8080/ui/v2/login/
+      ZITADEL_OIDC_DEFAULTLOGINURLV2: http://localhost:8080/ui/v2/login/login?authRequest=
+      ZITADEL_OIDC_DEFAULTLOGOUTURLV2: http://localhost:8080/ui/v2/login/logout?post_logout_redirect=
 
     healthcheck:
       test: ["CMD", "/app/zitadel", "ready"]

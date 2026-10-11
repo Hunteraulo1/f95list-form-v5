@@ -1,4 +1,9 @@
-import { zitadelConfig } from '#lib/server/auth/zitadel.ts';
+import {
+  isLinkedToZitadel,
+  serviceConfig,
+  ZitadelApiError,
+  zitadelApi,
+} from '#lib/server/auth/zitadel-service.ts';
 import { orm, Role, User } from '#lib/server/db/index.ts';
 import { envConfig } from '#lib/server/env/index.ts';
 import { logger } from '#lib/server/logger.ts';
@@ -18,55 +23,20 @@ interface RolesConfig {
 }
 
 export const rolesConfig = (): RolesConfig | null => {
-  const domain = zitadelConfig()?.domain;
+  const service = serviceConfig();
   const projectId = envConfig.ZITADEL_PROJECT_ID?.trim();
-  const token = envConfig.ZITADEL_SERVICE_TOKEN?.trim();
 
-  return domain && projectId && token ? { domain, projectId, token } : null;
+  return service && projectId ? { ...service, projectId } : null;
 };
 
-//? Un compte est lié à Zitadel quand son `zitadelId` est un identifiant Zitadel (numérique) : ceux
-//? repris de la v4 portent un UUID d'attente jusqu'à leur première connexion.
-export const isLinkedToZitadel = (zitadelId: string | null | undefined) =>
-  /^\d+$/.test(zitadelId ?? '');
+export { isLinkedToZitadel };
 
-class ZitadelApiError extends Error {
-  constructor(
-    readonly status: number,
-    message: string,
-  ) {
-    super(message);
-  }
-}
-
-const api = async <T>(
+const api = <T>(
   config: RolesConfig,
   method: string,
   path: string,
   body?: unknown,
-): Promise<T> => {
-  const response = await fetch(`${config.domain}/management/v1${path}`, {
-    method,
-    headers: {
-      Authorization: `Bearer ${config.token}`,
-      'Content-Type': 'application/json',
-    },
-    body: body === undefined ? undefined : JSON.stringify(body),
-    signal: AbortSignal.timeout(15_000),
-  });
-  const data = (await response.json().catch(() => ({}))) as T & {
-    message?: string;
-  };
-
-  if (!response.ok) {
-    throw new ZitadelApiError(
-      response.status,
-      data.message ?? `Zitadel a répondu ${response.status}.`,
-    );
-  }
-
-  return data;
-};
+) => zitadelApi<T>(config, method, `/management/v1${path}`, body);
 
 //? Zitadel répond par une erreur quand une écriture ne change rien : ce n'en est pas une pour nous.
 const ignoreUnchanged = (cause: unknown) => {

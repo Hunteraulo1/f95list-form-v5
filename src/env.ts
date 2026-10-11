@@ -20,6 +20,10 @@ export const variables = defineEnvVars({
 
   ZITADEL_SERVICE_TOKEN: { schema: v.optional(v.string()) },
 
+  //? Fournisseur d'identité « Discord » déclaré dans Zitadel : l'identifiant Discord des comptes
+  //? vient alors de ce lien (voir `auth/discord.ts`). Vide : il se saisit à la main, comme avant.
+  ZITADEL_DISCORD_IDP_ID: { schema: v.optional(v.string()) },
+
   SCRAPER_URL: { schema: v.optional(v.string()) },
 
   SCRAPER_AUTH_TOKEN: { schema: v.optional(v.string()) },

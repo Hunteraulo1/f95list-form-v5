@@ -34,9 +34,13 @@ const nav = $derived<Nav[]>([
     title: 'Mises à jour',
     href: '/updates',
   },
-  page.data.user
-    ? { title: 'Tableau de bord', href: '/dashboard' }
-    : { title: 'Se connecter', href: '/auth/login', reload: true },
+  ...(page.data.user
+    ? [{ title: 'Tableau de bord', href: '/dashboard' }]
+    : [
+        { title: 'Se connecter', href: '/auth/login', reload: true },
+        //? L'inscription se fait ici, pas sur l'écran de Zitadel (voir `/register`).
+        { title: 'Créer un compte', href: '/register' },
+      ]),
 ]);
 
 let isOpen = $state(false);
