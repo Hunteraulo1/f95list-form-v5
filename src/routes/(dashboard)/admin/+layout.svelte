@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Settings,
   Tags,
+  UserShield,
   Users,
 } from '@lucide/svelte';
 import type { Snippet } from 'svelte';
@@ -36,7 +37,7 @@ const items: Item[] = [
   },
   {
     label: 'Rôles',
-    icon: Users,
+    icon: UserShield,
     href: '/admin/roles',
     permission: 'manage.roles',
   },
