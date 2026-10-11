@@ -6,6 +6,7 @@ import EditTranslationModal, {
   type EditTranslationValues,
 } from '#lib/components/ui/games/EditTranslationModal.svelte';
 import ReportGameModal from '#lib/components/ui/games/ReportGameModal.svelte';
+import { enhance } from '$app/forms';
 import { goto } from '$app/navigation';
 import type { PageData } from './$types.js';
 
@@ -17,6 +18,14 @@ const { data }: Props = $props();
 
 let reportOpen = $state(false);
 let editOpen = $state(false);
+
+interface RefreshSummary {
+  editions: number;
+  tagsAdded: number;
+  tagsRemoved: number;
+}
+let refreshing = $state(false);
+let refreshMessage = $state<{ error: boolean; text: string } | null>(null);
 //? La traduction en cours de modification (sa fenêtre n'est montée que le temps d'être ouverte).
 let editedTranslation = $state<{
   id: string;
@@ -85,7 +94,43 @@ const getHostname = (link: string) => {
 
   <section class="flex w-full gap-4 rounded-xl bg-base-100 p-4">
     {#if data.access.editGame}
-      <Button label="Actualiser les données" />
+      {#if data.access.refreshGame}
+        <form
+          method="POST"
+          action="?/refresh"
+          use:enhance={() => {
+            refreshing = true;
+            refreshMessage = null;
+
+            return async ({ result, update }) => {
+              await update({ reset: false });
+              refreshing = false;
+
+              if (result.type === 'success' && result.data?.refreshed) {
+                const { editions, tagsAdded, tagsRemoved } = result.data
+                  .refreshed as RefreshSummary;
+                refreshMessage = {
+                  error: false,
+                  text: `Données actualisées depuis F95zone : ${editions} édition(s) mise(s) à jour, ${tagsAdded} tag(s) ajouté(s), ${tagsRemoved} retiré(s).`,
+                };
+              } else if (result.type === 'failure') {
+                refreshMessage = {
+                  error: true,
+                  text: String(
+                    result.data?.refreshError ?? "L'actualisation a échoué.",
+                  ),
+                };
+              }
+            };
+          }}
+        >
+          <Button
+            label={refreshing ? 'Actualisation…' : 'Actualiser les données'}
+            type="submit"
+            disabled={refreshing}
+          />
+        </form>
+      {/if}
       <Button label="Modifier le jeu" onclick={() => (editOpen = true)} />
     {/if}
     <Button
@@ -95,6 +140,16 @@ const getHostname = (link: string) => {
       onclick={() => (reportOpen = true)}
     />
   </section>
+
+  {#if refreshMessage}
+    <p
+      class="rounded-xl bg-base-100 p-4 text-sm font-bold"
+      class:text-error={refreshMessage.error}
+      role={refreshMessage.error ? 'alert' : 'status'}
+    >
+      {refreshMessage.text}
+    </p>
+  {/if}
 
   <section class="flex w-full flex-col gap-4 rounded-xl bg-base-100 p-4">
     <div class="flex items-center justify-between gap-2">
@@ -159,7 +214,7 @@ const getHostname = (link: string) => {
                 </span>
               </div>
 
-              <div class="flex flex-wrap gap-2 md:justify-end items-center">
+              <div class="flex flex-wrap items-center gap-2 md:justify-end">
                 {#if translation.file?.internalLink}
                   {@render downloadLink(
                     translation.file.internalLink,
@@ -176,7 +231,7 @@ const getHostname = (link: string) => {
                 {/if}
                 {#if !translation.file?.internalLink &&
                   !translation.file?.externalLink}
-                  <span class="text-sm text-base-content/70 font-bold px-4"
+                  <span class="px-4 text-sm font-bold text-base-content/70"
                     >Aucun fichier</span
                   >
                 {/if}

@@ -23,6 +23,7 @@ import {
 import { isStaff } from '#lib/server/game-create.ts';
 import { translateGameDescriptionInBackground } from '#lib/server/game-description-fr.ts';
 import { parseGameEditForm, updateGame } from '#lib/server/game-edit.ts';
+import { canRefreshGame, refreshGameData } from '#lib/server/game-refresh.ts';
 import {
   isHiddenCredit,
   parseTranslationEditForm,
@@ -106,6 +107,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         'gameEditions.gameTranslations.gameTranslationTranslators.user',
         'gameEditions.gameTranslations.gameTranslationFiles',
         'gameGameTags.gameTag',
+        'origin',
       ],
       orderBy: {
         gameEditions: { name: 'asc', gameTranslations: { version: 'asc' } },
@@ -133,6 +135,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     //? d'édition refuseront de toute façon, voir game-access.ts).
     access: {
       editGame,
+      //? Actualiser depuis F95zone : même droit que modifier le jeu, pour un jeu qui a un thread F95zone.
+      refreshGame: editGame && canRefreshGame(game),
       addTranslation: canAddTranslation(locals.user),
     },
     edit: editGame
@@ -269,6 +273,43 @@ export const actions: Actions = {
     }
 
     return { edited: true };
+  },
+
+  refresh: async ({ locals, params }) => {
+    if (!locals.user) error(401, 'Non connecté');
+    if (!canEditGame(locals.user)) error(403, 'Accès refusé');
+
+    const game = await orm.em.findOne(
+      Game,
+      { id: parseInt(params.id, 10) },
+      { populate: ['origin'] },
+    );
+    if (!game) error(404, 'Not found');
+    if (!canRefreshGame(game)) {
+      return fail(400, {
+        refreshError: 'Seul un jeu F95zone avec un thread peut être actualisé.',
+      });
+    }
+
+    const result = await refreshGameData(game.id, locals.user);
+    if (!result.ok) {
+      return fail(result.reason === 'not_found' ? 404 : 502, {
+        refreshError:
+          result.reason === 'not_found'
+            ? "Le thread n'existe plus chez F95zone (supprimé, privé ou déplacé) : rien n'a été modifié."
+            : result.reason === 'not_configured'
+              ? "Le service d'actualisation n'est pas configuré sur ce serveur."
+              : "Le service d'actualisation est indisponible pour le moment : réessayez plus tard.",
+      });
+    }
+
+    return {
+      refreshed: {
+        editions: result.editions,
+        tagsAdded: result.tagsAdded,
+        tagsRemoved: result.tagsRemoved,
+      },
+    };
   },
 
   editTranslation: async ({ locals, params, request }) => {
