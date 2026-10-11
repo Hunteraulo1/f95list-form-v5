@@ -3,7 +3,7 @@ import { parseImageUrl } from '#lib/image-hosts.ts';
 //? Règles du formulaire « Ajouter un jeu », partagées entre la page (champs affichés selon le type)
 //? et le serveur (validation). Elles reprennent les conventions des données existantes : une
 //? traduction « pas de traduction » a une version vide et la qualité « non fonctionnelle », une
-//? traduction intégrée a la version « Intégrée » et aucun traducteur.
+//? traduction intégrée a la version « Intégrée » et le plus souvent aucun traducteur.
 export const GAME_NAME_MAX_LENGTH = 255;
 export const EDITION_NAME_MAX_LENGTH = 255;
 export const VERSION_MAX_LENGTH = 36;
@@ -66,8 +66,9 @@ export interface TranslationShape {
   link: 'required' | 'optional' | 'none';
   //? Qualité imposée (sinon au choix).
   fixedQuality: TranslationQuality | null;
-  //? Traducteurs demandés (une traduction intégrée ou absente n'en a pas).
-  translators: boolean;
+  //? Traducteurs : au moins un, facultatifs (une traduction intégrée n'en a que si le traducteur
+  //? travaille avec le développeur du jeu), ou sans objet (pas de traduction).
+  translators: 'required' | 'optional' | 'none';
 }
 
 export const translationShape = (type: TranslationType): TranslationShape => {
@@ -78,7 +79,7 @@ export const translationShape = (type: TranslationType): TranslationShape => {
         fixedVersion: '',
         link: 'none',
         fixedQuality: NO_TRANSLATION_QUALITY,
-        translators: false,
+        translators: 'none',
       };
     case 'integrated':
       return {
@@ -86,7 +87,7 @@ export const translationShape = (type: TranslationType): TranslationShape => {
         fixedVersion: INTEGRATED_VERSION,
         link: 'optional',
         fixedQuality: null,
-        translators: false,
+        translators: 'optional',
       };
     default:
       return {
@@ -94,7 +95,7 @@ export const translationShape = (type: TranslationType): TranslationShape => {
         fixedVersion: '',
         link: 'required',
         fixedQuality: null,
-        translators: true,
+        translators: 'required',
       };
   }
 };
@@ -176,7 +177,9 @@ export const computeFieldState = (v: FieldStateInput) => {
     errors.translationLink = true;
   }
 
-  if (shape.translators && v.translatorCount === 0) errors.translators = true;
+  if (shape.translators === 'required' && v.translatorCount === 0) {
+    errors.translators = true;
+  }
 
   if (!v.description.trim()) warns.description = true;
 

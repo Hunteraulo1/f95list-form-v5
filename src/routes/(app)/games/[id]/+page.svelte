@@ -2,6 +2,9 @@
 import Button from '#lib/components/ui/Button.svelte';
 import ColorBadge from '#lib/components/ui/games/ColorBadge.svelte';
 import EditGameModal from '#lib/components/ui/games/EditGameModal.svelte';
+import EditTranslationModal, {
+  type EditTranslationValues,
+} from '#lib/components/ui/games/EditTranslationModal.svelte';
 import ReportGameModal from '#lib/components/ui/games/ReportGameModal.svelte';
 import type { PageData } from './$types.js';
 
@@ -13,6 +16,13 @@ const { data }: Props = $props();
 
 let reportOpen = $state(false);
 let editOpen = $state(false);
+//? La traduction en cours de modification (sa fenêtre n'est montée que le temps d'être ouverte).
+let editedTranslation = $state<{
+  id: string;
+  label: string;
+  editionVersion: string;
+  values: EditTranslationValues;
+} | null>(null);
 
 const reportTranslations = $derived(
   data.game.gameEditions.flatMap((edition) =>
@@ -164,8 +174,19 @@ const getHostname = (link: string) => {
                     >Aucun fichier</span
                   >
                 {/if}
-                {#if translation.canEdit}
-                  <Button label="Modifier" inline />
+                {#if translation.edit}
+                  {@const values = translation.edit}
+                  <Button
+                    label="Modifier"
+                    inline
+                    onclick={() =>
+                      (editedTranslation = {
+                        id: translation.id,
+                        label: `${edition.name} — ${translation.version || translation.typeLabel}`,
+                        editionVersion: edition.version,
+                        values,
+                      })}
+                  />
                 {/if}
               </div>
             </div>
@@ -191,6 +212,20 @@ const getHostname = (link: string) => {
     hasInternalImage={data.edit.hasInternalImage}
     canManageAutoCheck={data.edit.canManageAutoCheck}
     onclose={() => (editOpen = false)}
+  />
+{/if}
+
+{#if editedTranslation && data.translationForm}
+  <EditTranslationModal
+    translationId={editedTranslation.id}
+    label={editedTranslation.label}
+    editionVersion={editedTranslation.editionVersion}
+    values={editedTranslation.values}
+    types={data.translationForm.types}
+    qualities={data.translationForm.qualities}
+    staff={data.translationForm.staff}
+    self={data.translationForm.self}
+    onclose={() => (editedTranslation = null)}
   />
 {/if}
 

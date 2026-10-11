@@ -1,3 +1,4 @@
+import type { EntityManager } from '@mikro-orm/mariadb';
 import {
   DESCRIPTION_MAX_LENGTH,
   EDITION_NAME_MAX_LENGTH,
@@ -235,55 +236,28 @@ export const parseGameFields = async (
   };
 };
 
-//? Lit et valide le formulaire. Chaque champ fautif reçoit son message ; rien n'est écrit en base.
-export const parseGameForm = async (
+export interface TranslationFields {
+  type: TranslationType | undefined;
+  quality: TranslationQuality | undefined;
+  version: string;
+  link: string | null;
+  translators: PersonRef[];
+  proofreaders: PersonRef[];
+}
+
+//? Champs propres à une traduction, communs à la création d'un jeu et à la modification d'une
+//? traduction. `fixedType` : type imposé, sans lire le formulaire. `keptTranslators` : traducteurs
+//? déjà crédités que le formulaire ne liste pas mais qui restent (crédits anonymes).
+export const parseTranslationFields = async (
   data: FormData,
   viewer: SessionUser,
-): Promise<ParsedGameForm> => {
-  const errors: FieldErrors = {};
+  errors: FieldErrors,
+  options: { fixedType?: TranslationType; keptTranslators?: number } = {},
+): Promise<TranslationFields> => {
   const staff = isStaff(viewer);
 
-  const {
-    name,
-    origin,
-    link,
-    threadId,
-    image,
-    description,
-    descriptionFr,
-    tagIds,
-  } = await parseGameFields(data, errors);
-
-  //? L'auto-check ne concerne que F95zone. Sans le droit de le choisir, le jeu suit son site
-  //? d'origine (activé pour F95zone) et la traduction n'est pas suivie.
-  const autoCheckAllowed = origin?.name === 'F95zone';
-  const chooseAutoCheck = canManageAutoCheck(viewer);
-  const autoCheck =
-    autoCheckAllowed &&
-    (chooseAutoCheck ? data.get('autoCheck') === 'on' : true);
-  const editionAutoCheck =
-    chooseAutoCheck && autoCheck && data.get('editionAutoCheck') === 'on';
-
-  // --- l'édition
-  const editionName = optionalText(
-    data,
-    'editionName',
-    EDITION_NAME_MAX_LENGTH,
-    "Le nom de l'édition",
-    errors,
-  );
-  const editionVersion = text(data, 'editionVersion');
-  if (!editionVersion) errors.editionVersion = 'La version du jeu est requise.';
-  else if (editionVersion.length > VERSION_MAX_LENGTH) {
-    errors.editionVersion = `La version ne peut pas dépasser ${VERSION_MAX_LENGTH} caractères.`;
-  }
-  const status = oneOf(EDITION_STATUSES, text(data, 'status'));
-  if (!status) errors.status = 'Choisissez le statut du jeu.';
-
-  // --- la traduction : sans le droit d'en ajouter, le jeu reçoit « pas de traduction »
-  const type = canAddTranslation(viewer)
-    ? oneOf(TRANSLATION_TYPES, text(data, 'type'))
-    : 'no_translation';
+  const type =
+    options.fixedType ?? oneOf(TRANSLATION_TYPES, text(data, 'type'));
   if (!type) errors.type = 'Choisissez le type de traduction.';
 
   const shape = translationShape(type ?? 'no_translation');
@@ -325,9 +299,13 @@ export const parseGameForm = async (
   const translators: PersonRef[] = [];
   const proofreaders: PersonRef[] = [];
 
-  if (shape.translators) {
-    //? Soi-même est toujours traducteur, sauf pour le staff qui peut y renoncer.
-    if (!staff || data.get('selfTranslator') === 'on') {
+  if (shape.translators !== 'none') {
+    //? Traduction ordinaire : soi-même est toujours traducteur, sauf pour le staff qui peut y
+    //? renoncer. Traducteurs facultatifs (intégrée) : seulement si on se désigne.
+    const selfChecked = data.get('selfTranslator') === 'on';
+    if (
+      shape.translators === 'required' ? !staff || selfChecked : selfChecked
+    ) {
       translators.push({ kind: 'user', id: viewer.id });
     }
 
@@ -374,7 +352,11 @@ export const parseGameForm = async (
       }
     }
 
-    if (translators.length === 0 && !errors.translators) {
+    if (
+      shape.translators === 'required' &&
+      translators.length + (options.keptTranslators ?? 0) === 0 &&
+      !errors.translators
+    ) {
       errors.translators = 'Il faut au moins un traducteur.';
     }
 
@@ -384,6 +366,72 @@ export const parseGameForm = async (
         'Une personne ne peut pas être à la fois traducteur et relecteur.';
     }
   }
+
+  return {
+    type,
+    quality,
+    version: translationVersion,
+    link: translationLink,
+    translators: dedupe(translators),
+    proofreaders: dedupe(proofreaders),
+  };
+};
+
+//? Lit et valide le formulaire. Chaque champ fautif reçoit son message ; rien n'est écrit en base.
+export const parseGameForm = async (
+  data: FormData,
+  viewer: SessionUser,
+): Promise<ParsedGameForm> => {
+  const errors: FieldErrors = {};
+
+  const {
+    name,
+    origin,
+    link,
+    threadId,
+    image,
+    description,
+    descriptionFr,
+    tagIds,
+  } = await parseGameFields(data, errors);
+
+  //? L'auto-check ne concerne que F95zone. Sans le droit de le choisir, le jeu suit son site
+  //? d'origine (activé pour F95zone) et la traduction n'est pas suivie.
+  const autoCheckAllowed = origin?.name === 'F95zone';
+  const chooseAutoCheck = canManageAutoCheck(viewer);
+  const autoCheck =
+    autoCheckAllowed &&
+    (chooseAutoCheck ? data.get('autoCheck') === 'on' : true);
+  const editionAutoCheck =
+    chooseAutoCheck && autoCheck && data.get('editionAutoCheck') === 'on';
+
+  // --- l'édition
+  const editionName = optionalText(
+    data,
+    'editionName',
+    EDITION_NAME_MAX_LENGTH,
+    "Le nom de l'édition",
+    errors,
+  );
+  const editionVersion = text(data, 'editionVersion');
+  if (!editionVersion) errors.editionVersion = 'La version du jeu est requise.';
+  else if (editionVersion.length > VERSION_MAX_LENGTH) {
+    errors.editionVersion = `La version ne peut pas dépasser ${VERSION_MAX_LENGTH} caractères.`;
+  }
+  const status = oneOf(EDITION_STATUSES, text(data, 'status'));
+  if (!status) errors.status = 'Choisissez le statut du jeu.';
+
+  // --- la traduction : sans le droit d'en ajouter, le jeu reçoit « pas de traduction »
+  const {
+    type,
+    quality,
+    version: translationVersion,
+    link: translationLink,
+    translators,
+    proofreaders,
+  } = await parseTranslationFields(data, viewer, errors, {
+    fixedType: canAddTranslation(viewer) ? undefined : 'no_translation',
+  });
 
   if (
     Object.keys(errors).length > 0 ||
@@ -420,8 +468,8 @@ export const parseGameForm = async (
         quality,
         version: translationVersion,
         link: translationLink,
-        translators: dedupe(translators),
-        proofreaders: dedupe(proofreaders),
+        translators,
+        proofreaders,
       },
     },
   };
@@ -433,6 +481,30 @@ const refKey = (ref: PersonRef) =>
 const dedupe = (refs: PersonRef[]) => [
   ...new Map(refs.map((ref) => [refKey(ref), ref])).values(),
 ];
+
+//? Donne le compte d'une personne désignée dans un formulaire. Un nom inconnu devient un compte
+//? fantôme ; si son slug existe déjà, c'est ce compte. `needed` : faux quand personne n'est désigné,
+//? pour ne pas chercher le rôle pour rien.
+export const personResolver = async (em: EntityManager, needed: boolean) => {
+  const translatorRole = needed
+    ? await em.findOne(Role, { name: 'translator' })
+    : null;
+
+  return async (ref: PersonRef) => {
+    if (ref.kind === 'user') return em.getReference(User, ref.id);
+
+    const existing = await em.findOne(User, { slug: slugify(ref.name) });
+    if (existing) return existing;
+
+    if (!translatorRole) throw new Error('Rôle « translator » introuvable.');
+
+    return em.create(User, {
+      name: ref.name,
+      slug: await allocateSlug(ref.name),
+      role: translatorRole,
+    });
+  };
+};
 
 //? Crée le jeu, ses tags, sa première édition, sa traduction, son fichier et ses traducteurs d'un
 //? seul tenant : tout ou rien. Retourne l'identifiant du jeu.
@@ -486,26 +558,10 @@ export const createGame = async (input: CreateGameInput, viewer: SessionUser) =>
       internalLink: null,
     });
 
-    const translatorRole =
-      t.translators.length + t.proofreaders.length > 0
-        ? await em.findOne(Role, { name: 'translator' })
-        : null;
-
-    //? Un nom inconnu devient un compte fantôme ; si son slug existe déjà, c'est ce compte.
-    const resolve = async (ref: PersonRef) => {
-      if (ref.kind === 'user') return em.getReference(User, ref.id);
-
-      const existing = await em.findOne(User, { slug: slugify(ref.name) });
-      if (existing) return existing;
-
-      if (!translatorRole) throw new Error('Rôle « translator » introuvable.');
-
-      return em.create(User, {
-        name: ref.name,
-        slug: await allocateSlug(ref.name),
-        role: translatorRole,
-      });
-    };
+    const resolve = await personResolver(
+      em,
+      t.translators.length + t.proofreaders.length > 0,
+    );
 
     for (const [refs, type] of [
       [t.translators, 'translator'],

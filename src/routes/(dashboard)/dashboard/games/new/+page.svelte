@@ -104,7 +104,11 @@ const gameLink = $derived(
       ? ''
       : game.link.trim(),
 );
-const translatorCount = $derived((selfTranslator ? 1 : 0) + translators.length);
+//? Soi-même est imposé comme traducteur aux non-staff, sauf quand les traducteurs sont facultatifs.
+const selfLocked = $derived(!data.staff && shape.translators === 'required');
+const translatorCount = $derived(
+  (selfTranslator || selfLocked ? 1 : 0) + translators.length,
+);
 const fieldState = $derived(
   computeFieldState({
     hasThread,
@@ -171,6 +175,9 @@ const changeOrigin = () => {
 
 //? Le type de traduction fige certains champs, comme en v4.
 const changeType = () => {
+  //? Une traduction intégrée n'a de traducteur que s'il travaille avec le développeur : par
+  //? défaut personne, pas même soi.
+  selfTranslator = translationShape(game.type).translators === 'required';
   if (game.type === 'no_translation') {
     game.translationVersion = '';
     game.translationLink = '';
@@ -798,24 +805,27 @@ const goToFirstError = async () => {
         <GameField
           label="Traducteur"
           id="translators"
-          hidden={hiddenOutside(STEP.translation) || !shape.translators}
-          help={data.staff
-            ? "Vous pouvez ne pas être le traducteur et désigner d'autres personnes."
-            : "Le compte qui crée la traduction en est le traducteur. Vous pouvez ajouter d'autres traducteurs."}
+          hidden={hiddenOutside(STEP.translation) ||
+            shape.translators === 'none'}
+          help={shape.translators === 'optional'
+            ? 'Facultatif pour une traduction intégrée : seulement si le traducteur travaille avec le développeur du jeu.'
+            : data.staff
+              ? "Vous pouvez ne pas être le traducteur et désigner d'autres personnes."
+              : "Le compte qui crée la traduction en est le traducteur. Vous pouvez ajouter d'autres traducteurs."}
         >
           <div class="flex w-full flex-col gap-2">
             <input
               type="hidden"
               name="selfTranslator"
-              value={selfTranslator || !data.staff ? 'on' : ''}
+              value={selfTranslator || selfLocked ? 'on' : ''}
             >
-            {#if selfTranslator || !data.staff}
+            {#if selfTranslator || selfLocked}
               <span
                 class="flex w-fit items-center gap-1 rounded-lg bg-primary px-2 py-0.5 text-xs font-bold text-neutral-content"
               >
                 {data.self.name}
                 (vous)
-                {#if data.staff}
+                {#if !selfLocked}
                   <button
                     type="button"
                     class="cursor-pointer"
@@ -852,7 +862,8 @@ const goToFirstError = async () => {
         <GameField
           label="Relecteur"
           id="proofreaders"
-          hidden={hiddenOutside(STEP.translation) || !shape.translators}
+          hidden={hiddenOutside(STEP.translation) ||
+            shape.translators === 'none'}
         >
           <div class="w-full">
             <UserPicker

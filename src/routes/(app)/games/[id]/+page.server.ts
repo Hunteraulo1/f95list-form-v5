@@ -1,15 +1,33 @@
+import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { error, fail } from '@sveltejs/kit';
-import { threadBase } from '#lib/games/game-form.ts';
+import {
+  TRANSLATION_QUALITIES,
+  TRANSLATION_TYPES,
+  threadBase,
+  userRef,
+} from '#lib/games/game-form.ts';
 import { VIEW_ACTIVE_ONLY } from '#lib/server/config.ts';
-import { Game, GameTags, OriginWebsite, orm } from '#lib/server/db/index.ts';
+import {
+  Game,
+  GameTags,
+  GameTranslation,
+  OriginWebsite,
+  orm,
+} from '#lib/server/db/index.ts';
 import {
   canAddTranslation,
   canEditGame,
   canEditTranslation,
   canManageAutoCheck,
 } from '#lib/server/game-access.ts';
+import { isStaff } from '#lib/server/game-create.ts';
 import { translateGameDescriptionInBackground } from '#lib/server/game-description-fr.ts';
 import { parseGameEditForm, updateGame } from '#lib/server/game-edit.ts';
+import {
+  isHiddenCredit,
+  parseTranslationEditForm,
+  updateTranslation,
+} from '#lib/server/translation-edit.ts';
 import {
   translationQualityName,
   translationTypeName,
@@ -34,6 +52,47 @@ const publicTranslators = (
   return items.some(({ anonymous }) => anonymous)
     ? [...named, { id: null, name: 'Anonyme', slug: null }]
     : named;
+};
+
+const owners = (translation: GameTranslation) =>
+  translation.gameTranslationTranslators.getItems().map(({ user, type }) => ({
+    userId: user.id,
+    type: type ?? null,
+  }));
+
+type Credit = GameTranslation['gameTranslationTranslators'][number];
+
+//? De quoi remplir la fenêtre « Modifier la traduction ». Les crédits anonymes des autres n'y sont
+//? pas nommés (seulement comptés) ; soi-même est traité à part, comme à la création.
+const translationEditValues = (
+  translation: GameTranslation,
+  viewerId: string,
+) => {
+  const credits = translation.gameTranslationTranslators.getItems();
+  const visible = credits.filter((credit) => !isHiddenCredit(credit, viewerId));
+  const picked = (keep: (credit: Credit) => boolean) =>
+    visible
+      .filter((credit) => keep(credit) && credit.user.id !== viewerId)
+      .map(({ user }) => ({ ref: userRef(user.id), label: user.name }));
+  const isProofreader = ({ type }: Credit) => type === 'proofreader';
+  const self = credits.find(({ user }) => user.id === viewerId);
+
+  return {
+    type: translation.type,
+    quality: translation.quality,
+    version: translation.version,
+    link:
+      translation.gameTranslationFiles.getItems().find(({ active }) => active)
+        ?.externalLink ?? null,
+    translators: picked((credit) => !isProofreader(credit)),
+    proofreaders: picked(isProofreader),
+    selfRole: self
+      ? isProofreader(self)
+        ? ('proofreader' as const)
+        : ('translator' as const)
+      : null,
+    hiddenCredits: credits.length - visible.length,
+  };
 };
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -66,6 +125,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         orm.em.find(GameTags, {}, { orderBy: { name: 'asc' } }),
       ])
     : [[], []];
+
+  const viewer = locals.user;
 
   return {
     //? Ce que la personne connectée peut faire ici : sert à masquer les boutons (les actions
@@ -101,6 +162,21 @@ export const load: PageServerLoad = async ({ params, locals }) => {
           })),
           tags: allTags.map((tag) => ({ id: tag.id, name: tag.name })),
           canManageAutoCheck: canManageAutoCheck(locals.user),
+        }
+      : null,
+    //? Pour la fenêtre « Modifier la traduction » (voir `edit` sur chaque traduction modifiable).
+    translationForm: viewer
+      ? {
+          types: TRANSLATION_TYPES.map((value) => ({
+            value,
+            label: translationTypeName(value),
+          })),
+          qualities: TRANSLATION_QUALITIES.map((value) => ({
+            value,
+            label: translationQualityName(value),
+          })),
+          staff: isStaff(viewer),
+          self: { id: viewer.id, name: viewer.name },
         }
       : null,
     game: {
@@ -143,15 +219,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
               qualityLabel: translationQualityName(translation.quality),
               type: translation.type,
               typeLabel: translationTypeName(translation.type),
-              canEdit: canEditTranslation(
-                locals.user,
-                translation.gameTranslationTranslators
-                  .getItems()
-                  .map(({ user, type }) => ({
-                    userId: user.id,
-                    type: type ?? null,
-                  })),
-              ),
+              //? Valeurs à modifier, pour qui en a le droit seulement (sinon `null`).
+              edit:
+                viewer && canEditTranslation(viewer, owners(translation))
+                  ? translationEditValues(translation, viewer.id)
+                  : null,
               active: translation.active,
               // createdAt: translation.createdAt,
               // updatedAt: translation.updatedAt,
@@ -194,6 +266,49 @@ export const actions: Actions = {
     //? arrière-plan.
     if (!parsed.input.descriptionFr) {
       translateGameDescriptionInBackground(game.id, parsed.input.description);
+    }
+
+    return { edited: true };
+  },
+
+  editTranslation: async ({ locals, params, request }) => {
+    if (!locals.user) error(401, 'Non connecté');
+
+    const data = await request.formData();
+    //? La traduction doit être celle d'une édition de ce jeu.
+    const translation = await orm.em.findOne(
+      GameTranslation,
+      {
+        id: String(data.get('translationId') ?? ''),
+        gameEdition: { game: parseInt(params.id, 10) },
+      },
+      { populate: ['gameTranslationTranslators'] },
+    );
+    if (!translation) error(404, 'Not found');
+    if (!canEditTranslation(locals.user, owners(translation))) {
+      error(403, 'Accès refusé');
+    }
+
+    const parsed = await parseTranslationEditForm(
+      data,
+      locals.user,
+      translation,
+    );
+    if (!parsed.ok) return fail(400, { errors: parsed.errors });
+
+    try {
+      await updateTranslation(translation.id, parsed.input, locals.user);
+    } catch (cause) {
+      //? Course : un compte fantôme du même nom vient d'être créé par quelqu'un d'autre.
+      if (cause instanceof UniqueConstraintViolationException) {
+        return fail(409, {
+          errors: {
+            form: "Un élément vient d'être créé en même temps par quelqu'un d'autre : réessayez.",
+          },
+        });
+      }
+
+      throw cause;
     }
 
     return { edited: true };

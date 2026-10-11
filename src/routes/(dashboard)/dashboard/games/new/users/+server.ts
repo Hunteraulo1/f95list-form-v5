@@ -1,6 +1,7 @@
 import { error, json } from '@sveltejs/kit';
 import { orm, User } from '#lib/server/db/index.ts';
-import { canCreateGame } from '#lib/server/game-access.ts';
+import { canAddTranslation, canCreateGame } from '#lib/server/game-access.ts';
+import { isStaff } from '#lib/server/game-create.ts';
 import type { RequestHandler } from './$types';
 
 const SEARCH_MAX_LENGTH = 64;
@@ -8,11 +9,18 @@ const LIMIT = 8;
 
 const escapeLike = (value: string) => value.replace(/[\\%_]/g, '\\$&');
 
-//? Recherche de comptes pour désigner un traducteur ou un relecteur (formulaire d'ajout de jeu).
+//? Recherche de comptes pour désigner un traducteur ou un relecteur (ajout de jeu, modification
+//? d'une traduction).
 //? Ne renvoie que ce qu'un profil public montre : jamais d'e-mail.
 export const GET: RequestHandler = async ({ locals, url }) => {
   if (!locals.user) error(401, 'Non connecté');
-  if (!canCreateGame(locals.user)) error(403, 'Accès refusé');
+  if (
+    !canCreateGame(locals.user) &&
+    !canAddTranslation(locals.user) &&
+    !isStaff(locals.user)
+  ) {
+    error(403, 'Accès refusé');
+  }
 
   const term = (url.searchParams.get('q') ?? '')
     .trim()
