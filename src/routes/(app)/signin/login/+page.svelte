@@ -45,6 +45,12 @@ const submit = () => {
       window.location.assign(callback);
       return;
     }
+    //? Zitadel a émis un défi pour une clé (second facteur ou clé d'accès) : au navigateur de jouer.
+    if (result.type === 'success' && result.data?.key) {
+      await useKey(result.data.key as KeyOptions);
+      submitting = false;
+      return;
+    }
 
     await update({ reset: false });
     submitting = false;
@@ -153,23 +159,7 @@ const useKey = async (options: KeyOptions) => {
       {/if}
 
       {#if data.secondFactors.key}
-        <form
-          method="POST"
-          action={actionUrl('keyStart')}
-          use:enhance={() => {
-            const done = submit();
-
-            return async (event) => {
-              if (event.result.type === 'success' && event.result.data?.key) {
-                await useKey(event.result.data.key as KeyOptions);
-                submitting = false;
-                return;
-              }
-
-              await done(event);
-            };
-          }}
-        >
+        <form method="POST" action={actionUrl('keyStart')} use:enhance={submit}>
           <Button
             label={data.secondFactors.totp
               ? 'Utiliser plutôt une clé de sécurité'
@@ -178,17 +168,6 @@ const useKey = async (options: KeyOptions) => {
             inline={data.secondFactors.totp}
             disabled={submitting}
           />
-        </form>
-
-        <!-- Envoyé par `useKey` une fois que la clé a répondu. -->
-        <form
-          id="key-verify-form"
-          method="POST"
-          action={actionUrl('keyVerify')}
-          hidden
-          use:enhance={submit}
-        >
-          <input type="hidden" name="assertion" value={assertion}>
         </form>
       {/if}
 
@@ -257,6 +236,21 @@ const useKey = async (options: KeyOptions) => {
           disabled={submitting}
         />
       </div>
+
+      {#if keyError}
+        <p class="text-sm font-bold text-error" role="alert">{keyError}</p>
+      {/if}
+
+      <!-- Même formulaire, autre action : seul le pseudo est lu, le mot de passe n'est pas exigé. -->
+      <button
+        type="submit"
+        formaction={actionUrl('passkeyStart')}
+        formnovalidate
+        class="cursor-pointer text-center text-sm underline disabled:opacity-50"
+        disabled={submitting}
+      >
+        Se connecter sans mot de passe, avec une clé d'accès
+      </button>
     </form>
 
     {#if data.discord}
@@ -278,4 +272,15 @@ const useKey = async (options: KeyOptions) => {
       <a href="/register" class="underline">Créer un compte</a>
     </p>
   {/if}
+
+  <!-- Envoyé par `useKey` une fois que la clé a répondu. -->
+  <form
+    id="key-verify-form"
+    method="POST"
+    action={actionUrl('keyVerify')}
+    hidden
+    use:enhance={submit}
+  >
+    <input type="hidden" name="assertion" value={assertion}>
+  </form>
 </div>

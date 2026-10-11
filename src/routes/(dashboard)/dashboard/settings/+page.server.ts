@@ -22,14 +22,19 @@ import {
   type PasswordPolicy,
   readAccount,
   readIdpLink,
+  readPasskeys,
   readPasswordPolicy,
   readSecurity,
   removeIdpLink,
+  removePasskey,
   removeSecurityKey,
   removeTotp,
+  type SecurityKey,
+  startPasskey,
   startSecurityKey,
   startTotp,
   updatePseudo,
+  verifyPasskey,
   verifySecurityKey,
   verifyTotp,
 } from '#lib/server/auth/zitadel-account.ts';
@@ -66,6 +71,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     emailVerified: boolean;
     passwordPolicy: PasswordPolicy;
     security: AccountSecurity;
+    passkeys: SecurityKey[];
     //? Un compte créé par Discord n'a pas de mot de passe à changer.
     hasPassword: boolean;
   } | null = null;
@@ -75,12 +81,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 
   if (user && zitadel) {
     try {
-      const [remote, passwordPolicy, security, password] = await Promise.all([
-        readAccount(zitadel.config, zitadel.zitadelId),
-        readPasswordPolicy(zitadel.config),
-        readSecurity(zitadel.config, zitadel.zitadelId),
-        hasPassword(zitadel.config, zitadel.zitadelId),
-      ]);
+      const [remote, passwordPolicy, security, password, passkeys] =
+        await Promise.all([
+          readAccount(zitadel.config, zitadel.zitadelId),
+          readPasswordPolicy(zitadel.config),
+          readSecurity(zitadel.config, zitadel.zitadelId),
+          hasPassword(zitadel.config, zitadel.zitadelId),
+          readPasskeys(zitadel.config, zitadel.zitadelId),
+        ]);
 
       //? La copie locale ne suit que les adresses vérifiées (voir l'action `email`).
       if (remote.email && remote.emailVerified && remote.email !== user.email) {
@@ -93,6 +101,7 @@ export const load: PageServerLoad = async ({ locals }) => {
         emailVerified: remote.emailVerified,
         passwordPolicy,
         security,
+        passkeys,
         hasPassword: password,
       };
 
@@ -125,9 +134,33 @@ type Section =
   | 'password'
   | 'totp'
   | 'keys'
+  | 'passkeys'
   | 'preferences';
 
 const KEY_NAME_MAX_LENGTH = 64;
+
+//? Les deux sortes de clés qu'on enregistre depuis les paramètres. Une clé de sécurité est un second
+//? facteur, demandé après le mot de passe ; une clé d'accès (passkey) vérifie elle-même son
+//? utilisateur et permet de se connecter sans mot de passe.
+const KEY_KINDS = {
+  key: {
+    section: 'keys' as const,
+    defaultName: 'Clé de sécurité',
+    start: startSecurityKey,
+    verify: verifySecurityKey,
+    remove: removeSecurityKey,
+  },
+  passkey: {
+    section: 'passkeys' as const,
+    defaultName: "Clé d'accès",
+    start: startPasskey,
+    verify: verifyPasskey,
+    remove: removePasskey,
+  },
+};
+
+const keyKindOf = (form: FormData) =>
+  KEY_KINDS[form.get('kind') === 'passkey' ? 'passkey' : 'key'];
 
 //? Chacun ne modifie que ses propres paramètres : le compte est toujours celui de la session.
 const loadOwnUser = async (locals: App.Locals, section: Section) => {
@@ -456,19 +489,25 @@ export const actions: Actions = {
       return { removed: 'totp' as const };
     }),
 
-  keyStart: ({ locals, url }) =>
-    withZitadel(locals, 'keys', async ({ config, zitadelId }) => ({
+  //? Clés de sécurité (second facteur) et clés d'accès (connexion sans mot de passe) suivent le même
+  //? parcours ; le champ `kind` dit laquelle (voir `keyKindOf`).
+  keyStart: async ({ locals, request, url }) => {
+    const kind = keyKindOf(await request.formData());
+
+    return withZitadel(locals, kind.section, async ({ config, zitadelId }) => ({
       //? La clé servira sur l'écran de connexion, tenu par le panel : c'est son domaine qu'elle retient.
-      key: await startSecurityKey(config, zitadelId, url.hostname),
-    })),
+      key: await kind.start(config, zitadelId, url.hostname),
+    }));
+  },
 
   keyVerify: async ({ locals, request }) => {
     const form = await request.formData();
+    const kind = keyKindOf(form);
     const keyId = String(form.get('id') ?? '');
     const name =
       String(form.get('name') ?? '')
         .trim()
-        .slice(0, KEY_NAME_MAX_LENGTH) || 'Clé de sécurité';
+        .slice(0, KEY_NAME_MAX_LENGTH) || kind.defaultName;
 
     let credential: unknown;
     try {
@@ -478,31 +517,41 @@ export const actions: Actions = {
     }
     if (!/^\d+$/.test(keyId) || !credential || typeof credential !== 'object') {
       return fail(400, {
-        section: 'keys' as const,
-        message: 'La réponse de la clé de sécurité est illisible : réessaie.',
+        section: kind.section,
+        message: 'La réponse de la clé est illisible : réessaie.',
       });
     }
 
-    return withZitadel(locals, 'keys', async ({ config, zitadelId }, user) => {
-      await verifySecurityKey(config, zitadelId, keyId, credential, name);
-      logger.info({ userId: user.id }, 'clé de sécurité ajoutée');
+    return withZitadel(
+      locals,
+      kind.section,
+      async ({ config, zitadelId }, user) => {
+        await kind.verify(config, zitadelId, keyId, credential, name);
+        logger.info({ userId: user.id, kind: kind.section }, 'clé ajoutée');
 
-      return { saved: 'keys' as const };
-    });
+        return { saved: kind.section };
+      },
+    );
   },
 
   keyRemove: async ({ locals, request }) => {
-    const keyId = String((await request.formData()).get('id') ?? '');
+    const form = await request.formData();
+    const kind = keyKindOf(form);
+    const keyId = String(form.get('id') ?? '');
     if (!/^\d+$/.test(keyId)) {
-      return fail(400, { section: 'keys' as const, message: 'Clé inconnue.' });
+      return fail(400, { section: kind.section, message: 'Clé inconnue.' });
     }
 
-    return withZitadel(locals, 'keys', async ({ config, zitadelId }, user) => {
-      await removeSecurityKey(config, zitadelId, keyId);
-      logger.info({ userId: user.id }, 'clé de sécurité retirée');
+    return withZitadel(
+      locals,
+      kind.section,
+      async ({ config, zitadelId }, user) => {
+        await kind.remove(config, zitadelId, keyId);
+        logger.info({ userId: user.id, kind: kind.section }, 'clé retirée');
 
-      return { removed: 'keys' as const };
-    });
+        return { removed: kind.section };
+      },
+    );
   },
 
   preferences: async ({ locals, request }) => {

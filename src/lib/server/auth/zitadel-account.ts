@@ -266,6 +266,60 @@ export const removeSecurityKey = (
   keyId: string,
 ) => zitadelApi(config, 'DELETE', `/v2/users/${zitadelId}/u2f/${keyId}`);
 
+// --- clés d'accès (passkeys) : connexion sans mot de passe
+//? Une clé d'accès vérifie elle-même son utilisateur (code PIN ou biométrie) : elle remplace à elle
+//? seule le mot de passe et le second facteur. Zitadel la range à part des clés de second facteur.
+
+export const readPasskeys = async (
+  config: ServiceConfig,
+  zitadelId: string,
+): Promise<SecurityKey[]> => {
+  const { result } = await zitadelApi<{
+    result?: { id: string; state?: string; name?: string }[];
+  }>(config, 'POST', `/v2/users/${zitadelId}/passkeys/_search`, {});
+
+  return (result ?? [])
+    .filter(({ state }) => state === 'AUTH_FACTOR_STATE_READY')
+    .map(({ id, name }) => ({ id, name: name || "Clé d'accès" }));
+};
+
+//? Commence l'enregistrement d'une clé d'accès : les options à passer à
+//? `navigator.credentials.create`. `domain` est celui de l'écran de connexion.
+export const startPasskey = async (
+  config: ServiceConfig,
+  zitadelId: string,
+  domain: string,
+) => {
+  const body = await zitadelApi<{
+    passkeyId: string;
+    publicKeyCredentialCreationOptions: { publicKey: Record<string, unknown> };
+  }>(config, 'POST', `/v2/users/${zitadelId}/passkeys`, { domain });
+
+  return {
+    id: body.passkeyId,
+    options: body.publicKeyCredentialCreationOptions.publicKey,
+  };
+};
+
+export const verifyPasskey = (
+  config: ServiceConfig,
+  zitadelId: string,
+  passkeyId: string,
+  credential: unknown,
+  name: string,
+) =>
+  zitadelApi(config, 'POST', `/v2/users/${zitadelId}/passkeys/${passkeyId}`, {
+    publicKeyCredential: credential,
+    passkeyName: name,
+  });
+
+export const removePasskey = (
+  config: ServiceConfig,
+  zitadelId: string,
+  passkeyId: string,
+) =>
+  zitadelApi(config, 'DELETE', `/v2/users/${zitadelId}/passkeys/${passkeyId}`);
+
 // --- compte Discord lié
 //? Discord est un fournisseur d'identité déclaré dans Zitadel (`ZITADEL_DISCORD_IDP_ID`) : on s'y
 //? connecte depuis l'écran de Zitadel, et l'identifiant Discord du compte vient de ce lien plutôt

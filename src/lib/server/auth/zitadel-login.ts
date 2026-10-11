@@ -211,6 +211,59 @@ export const startPasswordSession = async (
   }
 };
 
+//? Commence une connexion par clé d'accès (sans mot de passe) : une session qui ne connaît encore
+//? que le compte, et le défi à faire signer par sa clé (options de `navigator.credentials.get`).
+//? Nul si l'identifiant est inconnu ou si le compte n'a aucune clé d'accès. La session ne vaut rien
+//? tant que la clé n'a pas répondu (voir `checkKey` et `sessionState`).
+export const startPasskeySession = async (
+  config: ServiceConfig,
+  login: string,
+  domain: string,
+) => {
+  const userId = await findUserId(config, login);
+  if (!userId) return null;
+
+  try {
+    const body = await zitadelApi<{
+      sessionId: string;
+      sessionToken: string;
+      challenges?: {
+        webAuthN?: {
+          publicKeyCredentialRequestOptions?: {
+            publicKey: Record<string, unknown>;
+          };
+        };
+      };
+    }>(config, 'POST', '/v2/sessions', {
+      checks: { user: { userId } },
+      challenges: {
+        webAuthN: {
+          domain,
+          //? La clé doit vérifier son utilisateur (PIN, biométrie) : c'est ce qui la distingue
+          //? d'une clé de second facteur et lui permet de remplacer le mot de passe.
+          userVerificationRequirement: 'USER_VERIFICATION_REQUIREMENT_REQUIRED',
+        },
+      },
+      lifetime: SESSION_LIFETIME,
+    });
+    const options =
+      body.challenges?.webAuthN?.publicKeyCredentialRequestOptions?.publicKey;
+    if (!options) return null;
+
+    return { session: sessionFromCreate(body), options };
+  } catch (cause) {
+    //? Un compte sans clé d'accès fait échouer le défi chez Zitadel, qui répond alors par une
+    //? erreur interne (« WebAuthN begin login failed ») : ce n'est pas une panne.
+    if (
+      cause instanceof ZitadelApiError &&
+      (cause.status < 500 || /begin login failed/i.test(cause.message))
+    ) {
+      return null;
+    }
+    throw cause;
+  }
+};
+
 //? Ouvre une session pour un compte qui vient de s'identifier chez un fournisseur (Discord).
 export const startIdpSession = async (
   config: ServiceConfig,
@@ -356,7 +409,7 @@ const inspectSession = async (
         password?: { verifiedAt?: string };
         intent?: { verifiedAt?: string };
         totp?: { verifiedAt?: string };
-        webAuthN?: { verifiedAt?: string };
+        webAuthN?: { verifiedAt?: string; userVerified?: boolean };
       };
     };
   }>(
@@ -376,6 +429,10 @@ const inspectSession = async (
     secondFactor: Boolean(
       factors?.totp?.verifiedAt || factors?.webAuthN?.verifiedAt,
     ),
+    //? Clé qui a vérifié elle-même son utilisateur : une clé d'accès.
+    passkey: Boolean(
+      factors?.webAuthN?.verifiedAt && factors.webAuthN.userVerified === true,
+    ),
   };
 };
 
@@ -388,7 +445,7 @@ export type SessionState =
 //? Dit si une session suffit à connecter son compte. C'est le verrou de tout l'écran de connexion :
 //? rien n'est validé auprès de Zitadel sans passer par ici. Un compte connecté par mot de passe
 //? doit avoir présenté son second facteur s'il en a un ; un compte connecté par Discord s'en remet
-//? à Discord.
+//? à Discord ; une clé d'accès (qui vérifie son utilisateur) suffit à elle seule.
 export const sessionState = async (
   config: ServiceConfig,
   session: ZitadelSession,
@@ -405,7 +462,7 @@ export const sessionState = async (
 
   const { userId } = inspected;
   if (!userId || inspected.expired) return { state: 'invalid' };
-  if (inspected.idp) return { state: 'complete', userId };
+  if (inspected.idp || inspected.passkey) return { state: 'complete', userId };
   if (!inspected.password) return { state: 'invalid' };
   if (inspected.secondFactor) return { state: 'complete', userId };
 

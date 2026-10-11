@@ -27,6 +27,7 @@ type Section =
   | 'password'
   | 'totp'
   | 'keys'
+  | 'passkeys'
   | 'preferences';
 
 const settings = $derived(data.settings);
@@ -82,6 +83,10 @@ const themes: { value: ThemePreference; label: string }[] = [
 let totpSetup = $state<{ secret: string; qr: string } | null>(null);
 let keyName = $state('');
 let keyModalOpen = $state(false);
+//? Ce qu'on est en train d'ajouter : une clé de sécurité (second facteur) ou une clé d'accès
+//? (connexion sans mot de passe). Les deux suivent le même parcours.
+let keyKind = $state<'key' | 'passkey'>('key');
+const keySection = $derived(keyKind === 'passkey' ? 'passkeys' : 'keys');
 let keyError = $state<string | null>(null);
 let pendingKey = $state<{ id: string; credential: string } | null>(null);
 
@@ -619,100 +624,48 @@ const removedOf = (section: Section) =>
         {/if}
       </div>
 
-      <div class="flex flex-col gap-3 rounded-xl bg-base-200 p-4">
-        <div class="text-sm">
-          <h3 class="font-bold">Clés de sécurité</h3>
-          <p class="opacity-70">
-            Clé USB ou NFC (YubiKey…), ou le lecteur d'empreinte de l'appareil.
-          </p>
-        </div>
+      {@render keyBox({
+        kind: 'key',
+        section: 'keys',
+        title: 'Clés de sécurité',
+        text: "Demandée après le mot de passe : clé USB ou NFC (YubiKey…), ou le lecteur d'empreinte de l'appareil.",
+        keys: account.security.keys,
+        added: 'Clé de sécurité ajoutée.',
+        removed: 'Clé de sécurité retirée.',
+      })}
 
-        {#if account.security.keys.length > 0}
-          <ul class="flex flex-col gap-2" aria-label="Clés de sécurité">
-            {#each account.security.keys as key (key.id)}
-              <li
-                class="flex items-center justify-between gap-2 rounded-xl bg-base-100 px-4 py-2 text-sm"
-              >
-                <span class="truncate font-bold">{key.name}</span>
-                <form
-                  method="POST"
-                  action="?/keyRemove"
-                  use:enhance={({ cancel }) => {
-                    if (!confirm(`Retirer la clé « ${key.name} » ?`)) {
-                      cancel();
-                      return;
-                    }
+      {@render keyBox({
+        kind: 'passkey',
+        section: 'passkeys',
+        title: "Clés d'accès (connexion sans mot de passe)",
+        text: "Remplace le mot de passe et le second facteur : la clé te demande son code PIN ou ton empreinte. Sur l'écran de connexion, saisis ton pseudo puis choisis « avec une clé d'accès ».",
+        keys: account.passkeys,
+        added: "Clé d'accès ajoutée.",
+        removed: "Clé d'accès retirée.",
+      })}
 
-                    submitting = 'keys';
-                    return async ({ update }) => {
-                      await update({ reset: false });
-                      submitting = null;
-                    };
-                  }}
-                >
-                  <input type="hidden" name="id" value={key.id}>
-                  <Button
-                    label="Retirer"
-                    type="submit"
-                    size="tiny"
-                    inline
-                    disabled={impersonating || submitting !== null}
-                  />
-                </form>
-              </li>
-            {/each}
-          </ul>
-        {/if}
-
-        <div class="flex justify-end">
-          <Button
-            label={submitting === 'keys'
-              ? 'En attente de la clé…'
-              : 'Ajouter une clé'}
-            disabled={impersonating || submitting !== null}
-            onclick={() => {
-              keyName = '';
-              keyModalOpen = true;
-            }}
-          />
-        </div>
-
-        <!-- Envoyé par `registerKey` une fois que la clé a répondu. -->
-        <form
-          id="key-verify-form"
-          method="POST"
-          action="?/keyVerify"
-          hidden
-          use:enhance={() =>
-            async ({ result, update }) => {
-              await update({ reset: false });
-              pendingKey = null;
-              if (result.type === 'success') keyName = '';
-            }}
+      <!-- Envoyé par `registerKey` une fois que la clé a répondu. -->
+      <form
+        id="key-verify-form"
+        method="POST"
+        action="?/keyVerify"
+        hidden
+        use:enhance={() =>
+          async ({ result, update }) => {
+            await update({ reset: false });
+            pendingKey = null;
+            if (result.type === 'success') keyName = '';
+          }}
+      >
+        <input type="hidden" name="kind" value={keyKind}>
+        <input type="hidden" name="id" value={pendingKey?.id ?? ''}>
+        <input type="hidden" name="name" value={keyName}>
+        <input
+          type="hidden"
+          name="credential"
+          value={pendingKey?.credential ?? ''}
         >
-          <input type="hidden" name="id" value={pendingKey?.id ?? ''}>
-          <input type="hidden" name="name" value={keyName}>
-          <input
-            type="hidden"
-            name="credential"
-            value={pendingKey?.credential ?? ''}
-          >
-        </form>
-
-        {#if keyError || errorOf('keys')}
-          <p class="text-sm font-bold text-error" role="alert">
-            {keyError ?? errorOf('keys')}
-          </p>
-        {:else if savedOf('keys')}
-          <p class="text-sm font-bold text-success" role="status">
-            Clé de sécurité ajoutée.
-          </p>
-        {:else if removedOf('keys')}
-          <p class="text-sm font-bold text-success" role="status">
-            Clé de sécurité retirée.
-          </p>
-        {/if}
-      </div>
+      </form>
     </section>
   {/if}
 
@@ -799,7 +752,9 @@ const removedOf = (section: Section) =>
 <Modal
   bind:open={keyModalOpen}
   size="small"
-  title="Ajouter une clé de sécurité"
+  title={keyKind === 'passkey'
+    ? "Ajouter une clé d'accès"
+    : 'Ajouter une clé de sécurité'}
   description="Donne-lui un nom pour la reconnaître, puis suis les instructions du navigateur."
 >
   <form
@@ -808,7 +763,7 @@ const removedOf = (section: Section) =>
     action="?/keyStart"
     use:enhance={() => {
       keyModalOpen = false;
-      submitting = 'keys';
+      submitting = keySection;
       keyError = null;
 
       return async ({ result, update }) => {
@@ -823,6 +778,7 @@ const removedOf = (section: Section) =>
       };
     }}
   >
+    <input type="hidden" name="kind" value={keyKind}>
     <label class="flex flex-col gap-1 p-1 text-sm font-bold">
       Nom de la clé
       <!-- Champ libre : ces attributs demandent aux gestionnaires de mots de passe de ne pas y
@@ -848,3 +804,82 @@ const removedOf = (section: Section) =>
     <Button label="Continuer" onclick={() => submitForm('key-start-form')} />
   {/snippet}
 </Modal>
+
+{#snippet keyBox(box: {
+  kind: 'key' | 'passkey';
+  section: 'keys' | 'passkeys';
+  title: string;
+  text: string;
+  keys: { id: string; name: string }[];
+  added: string;
+  removed: string;
+})}
+  <div class="flex flex-col gap-3 rounded-xl bg-base-200 p-4">
+    <div class="text-sm">
+      <h3 class="font-bold">{box.title}</h3>
+      <p class="opacity-70">{box.text}</p>
+    </div>
+
+    {#if box.keys.length > 0}
+      <ul class="flex flex-col gap-2" aria-label={box.title}>
+        {#each box.keys as key (key.id)}
+          <li
+            class="flex items-center justify-between gap-2 rounded-xl bg-base-100 px-4 py-2 text-sm"
+          >
+            <span class="truncate font-bold">{key.name}</span>
+            <form
+              method="POST"
+              action="?/keyRemove"
+              use:enhance={({ cancel }) => {
+                if (!confirm(`Retirer la clé « ${key.name} » ?`)) {
+                  cancel();
+                  return;
+                }
+
+                submitting = box.section;
+                return async ({ update }) => {
+                  await update({ reset: false });
+                  submitting = null;
+                };
+              }}
+            >
+              <input type="hidden" name="kind" value={box.kind}>
+              <input type="hidden" name="id" value={key.id}>
+              <Button
+                label="Retirer"
+                type="submit"
+                size="tiny"
+                inline
+                disabled={impersonating || submitting !== null}
+              />
+            </form>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+
+    <div class="flex justify-end">
+      <Button
+        label={submitting === box.section
+          ? 'En attente de la clé…'
+          : 'Ajouter une clé'}
+        disabled={impersonating || submitting !== null}
+        onclick={() => {
+          keyName = '';
+          keyKind = box.kind;
+          keyModalOpen = true;
+        }}
+      />
+    </div>
+
+    {#if (keyError && keyKind === box.kind) || errorOf(box.section)}
+      <p class="text-sm font-bold text-error" role="alert">
+        {(keyKind === box.kind ? keyError : null) ?? errorOf(box.section)}
+      </p>
+    {:else if savedOf(box.section)}
+      <p class="text-sm font-bold text-success" role="status">{box.added}</p>
+    {:else if removedOf(box.section)}
+      <p class="text-sm font-bold text-success" role="status">{box.removed}</p>
+    {/if}
+  </div>
+{/snippet}

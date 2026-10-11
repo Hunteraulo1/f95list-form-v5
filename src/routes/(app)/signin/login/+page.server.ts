@@ -12,6 +12,7 @@ import {
   type SecondFactors,
   sessionState,
   startKeyCheck,
+  startPasskeySession,
   startPasswordSession,
   writePendingSession,
   writeSsoSession,
@@ -150,6 +151,32 @@ export const actions: Actions = {
     logger.info({ zitadelId: check.userId }, 'connexion par mot de passe');
 
     return finish(event, config, check.session);
+  },
+
+  //? Connexion sans mot de passe : la clé d'accès du compte suffit (voir `sessionState`).
+  passkeyStart: async ({ cookies, request, url }) => {
+    const config = requireConfig();
+    const login = String((await request.formData()).get('login') ?? '').trim();
+    if (!login) {
+      return fail(400, {
+        login,
+        message: "Saisis d'abord ton pseudo ou ton e-mail.",
+      });
+    }
+
+    const started = await startPasskeySession(config, login, url.hostname);
+    if (!started) {
+      //? Même réponse pour un compte inconnu : rien ne dit qui est inscrit.
+      return fail(400, {
+        login,
+        message: "Aucune clé d'accès n'est enregistrée pour cet identifiant.",
+      });
+    }
+
+    //? La session ne vaut rien tant que la clé n'a pas répondu (action `keyVerify`).
+    writePendingSession(cookies, url, started.session);
+
+    return { key: started.options };
   },
 
   totp: async (event) => {
