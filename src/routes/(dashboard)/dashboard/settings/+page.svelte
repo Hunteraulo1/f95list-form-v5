@@ -313,7 +313,7 @@ const removedOf = (section: Section) =>
             <a
               href="/auth/discord/link"
               data-sveltekit-reload
-              data-sveltekit-preload-data="off"
+              data-sveltekit-preload-data="false"
             >
               <Button label="Lier mon compte Discord" />
             </a>

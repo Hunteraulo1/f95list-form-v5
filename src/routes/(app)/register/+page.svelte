@@ -48,7 +48,7 @@ const error = $derived(form && 'message' in form ? form : null);
       <a
         href="/auth/login"
         data-sveltekit-reload
-        data-sveltekit-preload-data="off"
+        data-sveltekit-preload-data="false"
       >
         <Button label="Se connecter" />
       </a>
@@ -137,7 +137,7 @@ const error = $derived(form && 'message' in form ? form : null);
           href="/auth/login"
           class="text-sm underline"
           data-sveltekit-reload
-          data-sveltekit-preload-data="off"
+          data-sveltekit-preload-data="false"
         >
           J'ai déjà un compte
         </a>

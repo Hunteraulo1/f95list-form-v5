@@ -35,7 +35,7 @@ const classicStyle: ClassValue = 'bg-primary dark:bg-neutral-content';
 
 <button
   class={cn(
-    'shadow-mini inline-flex cursor-pointer items-center justify-center rounded-xl border-2 border-transparent text-sm font-bold text-neutral-content transition-all hover:bg-primary hover:text-neutral-content dark:text-primary',
+    'shadow-mini inline-flex cursor-pointer items-center justify-center rounded-xl border-2 border-transparent text-sm font-bold text-neutral-content transition-all hover:bg-primary hover:text-neutral-content dark:text-primary text-nowrap',
     inline ? inlineStyle : classicStyle,
     size === 'tiny' && 'h-5 min-h-5 px-2 text-[.75rem]',
     size === 'small' && 'h-6 min-h-6 px-3',

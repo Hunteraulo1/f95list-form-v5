@@ -130,7 +130,7 @@ const submit = () => {
           href="/auth/login"
           class="text-sm underline"
           data-sveltekit-reload
-          data-sveltekit-preload-data="off"
+          data-sveltekit-preload-data="false"
         >
           Retour à la connexion
         </a>

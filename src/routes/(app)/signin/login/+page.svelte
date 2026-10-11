@@ -266,7 +266,7 @@ const useKey = async (options: KeyOptions) => {
         )}"
         class="flex justify-center rounded-xl bg-base-100 p-4 text-sm font-bold hover:bg-base-300"
         data-sveltekit-reload
-        data-sveltekit-preload-data="off"
+        data-sveltekit-preload-data="false"
       >
         Se connecter avec Discord
       </a>

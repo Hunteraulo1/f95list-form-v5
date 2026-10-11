@@ -39,7 +39,7 @@ const visibleItems = $derived(
       <a
         href={item.href}
         data-sveltekit-reload={item.reload ? '' : undefined}
-        data-sveltekit-preload-data={item.reload ? 'off' : undefined}
+        data-sveltekit-preload-data={item.reload ? 'false' : undefined}
         class={cn(
           'flex items-center gap-2 rounded-lg p-2 hover:bg-base-100',
           item.class,
