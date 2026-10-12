@@ -299,6 +299,9 @@ export const RoleSchema = defineEntity({
     apiDailyQuota: p.integer().unsigned().default(1000),
     //? Couleur du badge du rôle et du pseudo de ses membres (voir `$lib/role-style`).
     badgeStyle: p.string().length(32).default('default'),
+    //? Le rôle fait partie de l'équipe : ses membres figurent dans « L'équipe » sur l'accueil.
+    //? Indépendant des permissions (un modérateur est de l'équipe sans accéder à l'administration).
+    isStaff: p.boolean().default(false),
     ...timestamps(),
   },
 });

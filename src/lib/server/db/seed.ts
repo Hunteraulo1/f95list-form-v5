@@ -73,6 +73,7 @@ export const main = async () => {
       ...role,
       isSystem: true,
       badgeStyle: DEFAULT_ROLE_STYLES[role.name] ?? 'default',
+      isStaff: ['moderator', 'admin', 'superadmin'].includes(role.name),
     }),
   );
 

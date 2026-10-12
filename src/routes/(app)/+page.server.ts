@@ -1,6 +1,5 @@
 import { randomInt } from 'node:crypto';
 import { detectExtensionBrowserTarget } from '#lib/extension-browser.ts';
-import { SUPER_ROLE } from '#lib/permissions.ts';
 import { VIEW_ACTIVE_ONLY } from '#lib/server/config.ts';
 import { GameTranslation, orm } from '#lib/server/db/index.ts';
 import { getExtensionDownloadUrls } from '#lib/server/extension-downloads.ts';
@@ -78,20 +77,15 @@ interface StaffRow {
   roleStyle: string;
 }
 
-//? L'équipe : les comptes réels dont le rôle donne accès à l'administration (et le super admin, qui
-//? a tous les droits sans qu'ils soient listés). Du rôle le plus fort au plus faible.
+//? L'équipe : les comptes réels dont le rôle est marqué « staff » (réglé sur /admin/roles). Du rôle
+//? le plus fort au plus faible.
 const listStaff = () =>
   orm.em.getConnection().execute<StaffRow[]>(
     `select u.name, u.slug, u.avatar, r.label as roleLabel, r.badge_style as roleStyle
      from user u
      join role r on r.id = u.role_id
-     where u.zitadel_id is not null
-       and (r.name = ? or exists (
-         select 1 from role_permission rp
-         where rp.role_id = r.id and rp.permission = 'admin.access'
-       ))
+     where u.zitadel_id is not null and r.is_staff = 1
      order by r.priority desc, u.name asc`,
-    [SUPER_ROLE],
   );
 
 export const load = async ({ request }: { request: Request }) => {

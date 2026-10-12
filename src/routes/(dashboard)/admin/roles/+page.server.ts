@@ -118,6 +118,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         apiKeyLimit: role.apiKeyLimit,
         apiDailyQuota: role.apiDailyQuota,
         badgeStyle: toRoleStyle(role.badgeStyle),
+        isStaff: role.isStaff,
         permissions,
         canManage: check.allowed,
         blockedReason: check.allowed ? null : check.message,
@@ -205,6 +206,7 @@ export const actions: Actions = {
       isSystem: false,
       priority: 0,
       badgeStyle,
+      isStaff: data.get('isStaff') === 'on',
     });
     await orm.em.flush();
 
@@ -265,6 +267,12 @@ export const actions: Actions = {
       if (!badgeStyle) return fail(400, { message: STYLE_ERROR });
 
       role.badgeStyle = badgeStyle;
+    }
+
+    //? Une case décochée n'est pas envoyée : `staffField` dit que la case était dans le formulaire.
+    //? Le super admin est toujours de l'équipe.
+    if (!isSuperRole && data.has('staffField')) {
+      role.isStaff = data.get('isStaff') === 'on';
     }
 
     //? Libellé et description : rôles personnalisés uniquement.

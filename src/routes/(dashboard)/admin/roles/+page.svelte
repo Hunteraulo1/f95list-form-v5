@@ -164,6 +164,13 @@ const plural = (count: number, word: string) =>
             </h4>
             <p class="font-mono text-sm opacity-70">{role.name}</p>
             <div class="flex gap-1">
+              {#if role.isStaff}
+                <span
+                  class="rounded-lg bg-success/20 px-2 py-0.5 text-xs font-bold"
+                >
+                  Staff
+                </span>
+              {/if}
               {#if role.isSystem}
                 <span
                   class="rounded-lg bg-info/20 px-2 py-0.5 text-xs font-bold"
@@ -255,10 +262,33 @@ const plural = (count: number, word: string) =>
               <RoleBadge label={role.label} {style} />
             </span>
           </div>
+
           <p class="text-xs opacity-60">
             Couleur du badge du rôle et du pseudo de ses membres, sur l'accueil,
             les profils et l'administration.
           </p>
+
+          <label
+            class={cn(
+              'flex w-fit items-start gap-2 text-sm',
+              role.isSuper || !role.canManage ? 'opacity-70' : 'cursor-pointer',
+            )}
+          >
+            <input type="hidden" name="staffField" value="1">
+            <input
+              type="checkbox"
+              name="isStaff"
+              class="mt-1"
+              checked={role.isStaff}
+              disabled={role.isSuper || !role.canManage}
+            >
+            <span class="flex flex-col">
+              <span class="font-bold">Staff</span>
+              <span class="opacity-70">
+                Ses membres figurent dans « L'équipe » sur l'accueil.
+              </span>
+            </span>
+          </label>
 
           <fieldset class="flex flex-wrap gap-4" disabled={!quotasEditable}>
             <label class="flex flex-col gap-1 text-sm font-bold">
@@ -431,6 +461,12 @@ const plural = (count: number, word: string) =>
         <RoleBadge label="Rôle" style={createStyle} />
       </span>
     </div>
+    <label
+      class="flex w-fit cursor-pointer items-center gap-2 text-sm font-bold"
+    >
+      <input type="checkbox" name="isStaff">
+      Staff (ses membres figurent dans « L'équipe » sur l'accueil)
+    </label>
     <div class="flex justify-end gap-2">
       <Button label="Annuler" inline onclick={() => (createOpen = false)} />
       <Button label="Créer" type="submit" />
