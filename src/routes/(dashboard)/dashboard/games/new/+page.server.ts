@@ -16,6 +16,10 @@ import {
 import { createGame, isStaff, parseGameForm } from '#lib/server/game-create.ts';
 import { translateGameDescriptionInBackground } from '#lib/server/game-description-fr.ts';
 import {
+  createSubmission,
+  lockGameFormToThread,
+} from '#lib/server/game-submission.ts';
+import {
   editionStatusName,
   translationQualityName,
   translationTypeName,
@@ -71,8 +75,24 @@ export const actions: Actions = {
     if (!locals.user) error(401, 'Non connecté');
     if (!canCreateGame(locals.user)) error(403, 'Accès refusé');
 
-    const parsed = await parseGameForm(await request.formData(), locals.user);
+    const data = await request.formData();
+
+    //? Sans le droit de modifier les jeux : un jeu dont toutes les infos viennent du thread F95zone
+    //? est créé tout de suite, les autres passent par une soumission (voir game-submission.ts).
+    const needsReview =
+      !canEditGame(locals.user) && !(await lockGameFormToThread(data));
+
+    const parsed = await parseGameForm(data, locals.user);
     if (!parsed.ok) return fail(400, { errors: parsed.errors });
+
+    if (needsReview) {
+      const submitted = await createSubmission(parsed.input, locals.user);
+      if (!submitted.ok) {
+        return fail(409, { errors: { form: submitted.message } });
+      }
+
+      redirect(303, '/dashboard/submissions?notice=submitted');
+    }
 
     let gameId: number;
     try {

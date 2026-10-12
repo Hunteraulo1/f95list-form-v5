@@ -452,6 +452,52 @@ export const SessionSchema = defineEntity({
 export class Session extends SessionSchema.class {}
 SessionSchema.setClass(Session);
 
+//? Jeu proposé par quelqu'un qui n'a pas le droit de modifier les jeux, sur un site que le scraper ne
+//? couvre pas (tout sauf F95zone) : rien n'est créé tant qu'une personne qui a ce droit ne l'a pas
+//? accepté. Voir `$lib/server/game-submission`.
+export const GameSubmissionSchema = defineEntity({
+  name: 'GameSubmission',
+  tableName: 'game_submission',
+  properties: {
+    id: uuidPk(),
+    user: () =>
+      p
+        .manyToOne(User)
+        .fieldName('user_id')
+        .columnType('char(36)')
+        .foreignKeyName('game_submission_user_id_user_id_fkey')
+        .deleteRule('cascade')
+        .updateRule('restrict'),
+    reviewedBy: () =>
+      p
+        .manyToOne(User)
+        .fieldName('reviewed_by_id')
+        .columnType('char(36)')
+        .foreignKeyName('game_submission_reviewed_by_id_user_id_fkey')
+        .deleteRule('set null')
+        .updateRule('restrict')
+        .nullable(),
+    status: p.enum(['pending', 'accepted', 'rejected'] as const),
+    //? Le formulaire d'ajout, déjà validé (`CreateGameInput`) : rejoué tel quel à l'acceptation.
+    data: p.json<unknown>(),
+    //? Le jeu créé à l'acceptation.
+    game: () =>
+      p
+        .manyToOne(Game)
+        .fieldName('game_id')
+        .foreignKeyName('game_submission_game_id_game_id_fkey')
+        .deleteRule('set null')
+        .updateRule('restrict')
+        .nullable(),
+    //? Mot de la personne qui a traité la soumission, montré à son auteur.
+    note: p.string().length(500).nullable(),
+    ...timestamps(),
+  },
+});
+
+export class GameSubmission extends GameSubmissionSchema.class {}
+GameSubmissionSchema.setClass(GameSubmission);
+
 //? Lien utile affiché sur l'accueil de l'administration (/admin), réglable sur /admin/settings :
 //? un raccourci vers un outil de l'équipe (Zitadel, tableau de suivi…).
 export const AdminLinkSchema = defineEntity({

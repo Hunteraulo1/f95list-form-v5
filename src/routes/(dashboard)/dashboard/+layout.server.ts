@@ -1,4 +1,5 @@
 import { GameTranslationTranslator, orm, Role } from '#lib/server/db/index.ts';
+import { submissionCounts } from '#lib/server/game-submission.ts';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
@@ -13,6 +14,10 @@ export const load: LayoutServerLoad = async ({ locals }) => {
     : null;
 
   return {
+    //? Soumissions de jeux : les siennes, et celles à traiter pour qui peut modifier les jeux.
+    submissions: locals.user
+      ? await submissionCounts(locals.user)
+      : { visible: false, pending: 0 },
     canBecomeTranslator:
       !!locals.user &&
       !!translatorRole &&

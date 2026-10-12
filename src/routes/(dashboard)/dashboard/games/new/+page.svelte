@@ -88,6 +88,8 @@ let checking = $state(false);
 let previewing = $state(false);
 //? Thread déjà pré-rempli (évite de rappeler le scraper en vain en navigant entre les étapes).
 let prefilledThreadId: string | null = $state(null);
+//? Le thread a-t-il donné toutes les infos du jeu ? `null` tant qu'il n'a pas été interrogé.
+let threadAuto = $state<boolean | null>(null);
 
 const origin = $derived(data.origins.find(({ id }) => id === game.originId));
 const hasThread = $derived(origin?.hasThread ?? false);
@@ -125,18 +127,14 @@ const fieldState = $derived(
     translatorCount,
   }),
 );
-//? Un jeu auto-scrapé (F95zone) garde ses infos à jour tout seul : sans le droit de modifier un
-//? jeu, l'étape « Infos jeu » n'a rien à y faire (voir `prefillFromThread`). Sauf si le
-//? pré-remplissage n'a pas suffi (scraper indisponible, tag inconnu…) : l'étape reste alors
-//? modifiable plutôt que de bloquer définitivement la création.
-const infosPrefilled = $derived(
-  !fieldState.errors.name &&
-    !fieldState.errors.image &&
-    !fieldState.errors.tags &&
-    !fieldState.errors.editionVersion,
-);
-const skipInfos = $derived(
-  autoCheckAvailable && !data.canEditGame && infosPrefilled,
+//? Sans le droit de modifier les jeux : quand le thread F95zone donne toutes les infos du jeu, elles
+//? sont imposées (l'étape « Infos jeu » est sautée, le serveur les réimpose) et le jeu est créé tout
+//? de suite. Sinon (autre site, scraper indisponible, thread incomplet) il faut saisir à la main, et
+//? le jeu part en soumission à valider.
+const lockedToThread = $derived(autoCheckAvailable && !data.canEditGame);
+const skipInfos = $derived(lockedToThread && threadAuto === true);
+const needsReview = $derived(
+  !data.canEditGame && (!autoCheckAvailable || threadAuto === false),
 );
 const blockFinalSubmit = $derived(fieldState.blocking || duplicate !== null);
 const blockNextStep = $derived(
@@ -223,6 +221,7 @@ const prefillFromThread = async () => {
     return;
 
   previewing = true;
+  threadAuto = null;
   try {
     const response = await fetch(
       `/dashboard/games/new/preview?threadId=${encodeURIComponent(threadId)}`,
@@ -230,18 +229,27 @@ const prefillFromThread = async () => {
     const result = await response.json();
     if (result.ok) {
       const { data } = result;
-      if (!game.name.trim()) game.name = data.name;
-      if (!game.image.trim() && data.image) game.image = data.image;
-      if (!game.description.trim() && data.description)
+      //? Infos imposées : elles remplacent ce qui venait d'un autre thread essayé avant.
+      const force = lockedToThread;
+      if (force || !game.name.trim()) game.name = data.name;
+      if ((force || !game.image.trim()) && data.image) game.image = data.image;
+      if (force) game.description = data.description ?? '';
+      else if (!game.description.trim() && data.description)
         game.description = data.description;
-      if (!game.editionVersion.trim() && data.version)
+      if ((force || !game.editionVersion.trim()) && data.version)
         game.editionVersion = data.version;
       if (data.status) game.status = data.status;
-      if (tags.length === 0 && data.tagIds?.length) tags = data.tagIds;
+      if ((force || tags.length === 0) && data.tagIds?.length)
+        tags = data.tagIds;
+      threadAuto = Boolean(data.complete);
+      prefilledThreadId = threadId;
+    } else {
+      threadAuto = false;
     }
-    prefilledThreadId = threadId;
   } catch {
-    //? Pré-remplissage de confort : la saisie manuelle reste possible sans lui.
+    //? Sans réponse du scraper, la saisie manuelle reste possible (et il sera réinterrogé au
+    //? prochain passage par cette étape).
+    threadAuto = false;
   } finally {
     previewing = false;
   }
@@ -941,6 +949,19 @@ const goToFirstError = async () => {
       {/if}
     </div>
 
+    {#if needsReview}
+      <p class="rounded-xl bg-info/20 p-3 text-sm" role="status">
+        {autoCheckAvailable
+          ? "Les infos de ce jeu n'ont pas pu être reprises entièrement du thread F95zone : complétez-les, puis le jeu sera vérifié par l'équipe avant d'être ajouté au site."
+          : "Les jeux qui ne viennent pas de F95zone sont vérifiés par l'équipe : ce jeu sera ajouté au site une fois votre soumission acceptée."}
+      </p>
+    {:else if skipInfos}
+      <p class="rounded-xl bg-info/20 p-3 text-sm" role="status">
+        Les infos du jeu (nom, image, description, tags, version, statut) sont
+        reprises du thread F95zone et ne se modifient pas ici.
+      </p>
+    {/if}
+
     <div
       class="flex w-full flex-row flex-wrap items-center justify-between gap-3 rounded-xl bg-base-200/40 px-3 py-4 sm:px-4"
     >
@@ -966,7 +987,11 @@ const goToFirstError = async () => {
         />
       {:else}
         <Button
-          label={submitting ? 'Création…' : 'Ajouter le jeu'}
+          label={submitting
+            ? 'Envoi…'
+            : needsReview
+              ? 'Soumettre le jeu'
+              : 'Ajouter le jeu'}
           type="submit"
           classes="w-full md:w-40"
           disabled={blockFinalSubmit || submitting}

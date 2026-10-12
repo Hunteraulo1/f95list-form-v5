@@ -2,6 +2,7 @@
 import {
   BrickWallShield,
   GraduationCap,
+  Inbox,
   KeyRound,
   Languages,
   LayoutDashboard,
@@ -38,6 +39,15 @@ const items = $derived<Item[]>([
     icon: Languages,
     href: '/dashboard/translates',
     hidden: !data.hasTranslations,
+  },
+  {
+    label:
+      data.submissions.pending > 0
+        ? `Soumissions (${data.submissions.pending})`
+        : 'Soumissions',
+    icon: Inbox,
+    href: '/dashboard/submissions',
+    hidden: !data.submissions.visible,
   },
   {
     label: 'Devenir traducteur',
