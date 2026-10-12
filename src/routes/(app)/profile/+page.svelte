@@ -40,7 +40,11 @@ const hosts = IMAGE_HOSTS.map((host) => new URL(host).hostname).join(', ');
 const titles: Record<ImageField, string> = {
   avatar: "Changer l'image",
   banner: 'Changer la bannière',
+  background: "Changer l'image de fond",
+  music: 'Changer la musique',
+  cursor: 'Changer le curseur',
 };
+const isMusic = $derived(imageField === 'music');
 
 const edit = (target: ProfileField) => {
   if (target === 'description') {
@@ -105,6 +109,7 @@ const descriptionError = $derived(
     avatar: user.avatar,
     banner: user.banner,
     description: user.description,
+    ...data.customization,
   }}
   descriptionDocument={data.descriptionDocument}
   translations={data.translations}
@@ -112,6 +117,7 @@ const descriptionError = $derived(
   basePath="/profile"
   publicPath="/profile/{user.slug}"
   editMode={editMode && !impersonating}
+  customize={data.customize}
   onedit={edit}
   {editingDescription}
 >
@@ -155,7 +161,9 @@ const descriptionError = $derived(
   open={imageField !== null}
   onclose={() => (imageField = null)}
   title={imageField ? titles[imageField] : ''}
-  description={`Lien d'une image hébergée sur : ${hosts}.`}
+  description={isMusic
+    ? "Lien d'une vidéo YouTube ou YouTube Music. Les visiteurs la lancent eux-mêmes : rien ne démarre tout seul."
+    : `Lien d'une image hébergée sur : ${hosts}.${imageField === 'background' ? ' Taille conseillée : 1500×900 px.' : imageField === 'cursor' ? ' Image carrée à fond transparent, affichée en 32×32 px à la place de la souris sur votre profil.' : ''}`}
 >
   {#if imageField}
     <form
@@ -170,13 +178,15 @@ const descriptionError = $derived(
         }}
     >
       <label class="flex flex-col gap-1 text-sm font-bold">
-        Adresse de l'image
+        {isMusic ? 'Lien de la musique' : "Adresse de l'image"}
         <input
           class="{fieldStyle} h-9"
           type="url"
           name={imageField}
           maxlength="2048"
-          placeholder="https://cdn.discordapp.com/…"
+          placeholder={isMusic
+            ? 'https://music.youtube.com/watch?v=…'
+            : 'https://cdn.discordapp.com/…'}
           bind:value={draft}
         >
       </label>
@@ -187,7 +197,11 @@ const descriptionError = $derived(
 
       <div class="flex justify-end gap-2">
         {#if user[imageField]}
-          <Button label="Retirer l'image" inline onclick={clear} />
+          <Button
+            label={isMusic ? 'Retirer la musique' : "Retirer l'image"}
+            inline
+            onclick={clear}
+          />
         {/if}
         <Button label="Annuler" inline onclick={() => (imageField = null)} />
         <Button label="Enregistrer" type="submit" />

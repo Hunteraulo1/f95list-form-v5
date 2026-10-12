@@ -5,6 +5,7 @@ import {
   findProfileUser,
   loadProfileTranslations,
   parseTranslationsQuery,
+  profileCustomization,
 } from '#lib/server/profile.ts';
 import type { PageServerLoad } from './$types';
 
@@ -33,6 +34,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
       avatar: user.avatar ?? null,
       banner: user.banner ?? null,
       description: user.description ?? null,
+      ...(await profileCustomization(user)),
     },
     descriptionDocument: parseMarkdownDocument(user.description ?? ''),
     query,

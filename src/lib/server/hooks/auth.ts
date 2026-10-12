@@ -33,6 +33,9 @@ export interface SessionUser {
   description: string | null;
   avatar: string | null;
   banner: string | null;
+  background: string | null;
+  music: string | null;
+  cursor: string | null;
   discord: string | null;
   theme: 'system' | 'light' | 'dark';
   discordNotification: boolean;
@@ -67,6 +70,9 @@ const loadUser = async (id: string): Promise<SessionUser | null> => {
     description: user.description ?? null,
     avatar: user.avatar ?? null,
     banner: user.banner ?? null,
+    background: user.background ?? null,
+    music: user.music ?? null,
+    cursor: user.cursor ?? null,
     discord: user.discord ?? null,
     theme: user.theme,
     discordNotification: user.discordNotification,

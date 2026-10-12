@@ -1,5 +1,13 @@
+import { parseImageUrl } from '#lib/image-hosts.ts';
+import { type Permission, SUPER_ROLE } from '#lib/permissions.ts';
+import { extractYoutubeVideoId } from '#lib/profile-music.ts';
 import { VIEW_ACTIVE_ONLY } from '#lib/server/config.ts';
-import { GameTranslationTranslator, orm, User } from '#lib/server/db/index.ts';
+import {
+  GameTranslationTranslator,
+  orm,
+  RolePermission,
+  User,
+} from '#lib/server/db/index.ts';
 import { isTranslationOutdated } from '#lib/server/my-translations.ts';
 import { editionStatusName } from '#lib/utils/entriesConvert.ts';
 
@@ -21,6 +29,56 @@ export const findProfileUser = async (name: string) => {
 
   return users.find(({ zitadelId }) => zitadelId !== null) ?? users[0] ?? null;
 };
+
+const CUSTOMIZE: Permission[] = [
+  'profile.background',
+  'profile.music',
+  'profile.cursor',
+];
+
+//? Image de fond et musique d'un profil, telles qu'elles s'affichent : seulement tant que le rôle du
+//? compte en a la permission. La retirer au rôle les masque, sans effacer ce qui était choisi.
+export const profileCustomization = async (user: User) => {
+  const granted =
+    user.role.name === SUPER_ROLE
+      ? CUSTOMIZE
+      : (
+          await orm.em.find(RolePermission, {
+            role: user.role.id,
+            permission: { $in: CUSTOMIZE },
+          })
+        ).map(({ permission }) => permission);
+
+  return shownCustomization(user, granted);
+};
+
+const shownImage = (value: string | null | undefined) => {
+  const image = parseImageUrl(value ?? '');
+
+  return image.ok ? image.url : null;
+};
+
+//? Même règle, pour un compte dont on connaît déjà les permissions (celui de la session).
+export const shownCustomization = (
+  user: {
+    background?: string | null;
+    music?: string | null;
+    cursor?: string | null;
+  },
+  permissions: readonly string[],
+) => ({
+  //? Une image reprise de l'ancien site peut venir d'un hébergeur que le navigateur bloque désormais
+  //? (voir `IMAGE_HOSTS`) : plutôt rien qu'une image cassée.
+  background: permissions.includes('profile.background')
+    ? shownImage(user.background)
+    : null,
+  musicVideoId: permissions.includes('profile.music')
+    ? extractYoutubeVideoId(user.music)
+    : null,
+  cursor: permissions.includes('profile.cursor')
+    ? shownImage(user.cursor)
+    : null,
+});
 
 const SORTS = ['name', 'version', 'tversion'] as const;
 export type ProfileSort = (typeof SORTS)[number];

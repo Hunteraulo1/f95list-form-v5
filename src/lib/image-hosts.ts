@@ -10,6 +10,13 @@ export const IMAGE_HOSTS = [
   'https://cdn.f95france.site',
   'https://cdn.jsdelivr.net',
   'https://cdn.discordapp.com',
+  //? Provisoire : fonds et curseurs de profil repris de la v4, en attendant leur passage sur le CDN
+  //? de F95 France.
+  'https://wallpaper.forfun.com',
+  'https://images.hdqwalls.com',
+  'https://images.steamusercontent.com',
+  'https://mir-s3-cdn-cf.behance.net',
+  'https://img.icons8.com',
 ] as const;
 
 export const IMAGE_HOSTS_LABEL = IMAGE_HOSTS.map(

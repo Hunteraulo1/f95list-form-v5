@@ -344,6 +344,11 @@ export const UserSchema = defineEntity({
     description: p.text().nullable(),
     avatar: p.string().length(2048).nullable(),
     banner: p.string().length(2048).nullable(),
+    //? Image de fond, musique (lien YouTube) et curseur du profil : utilisés seulement tant que le rôle
+    //? du compte en a la permission (« profile.background », « profile.music », « profile.cursor »).
+    background: p.string().length(2048).nullable(),
+    music: p.string().length(2048).nullable(),
+    cursor: p.string().length(2048).nullable(),
     discord: p.string().length(32).nullable(),
     theme: p.enum(['system', 'light', 'dark'] as const).default('system'),
     role: () =>

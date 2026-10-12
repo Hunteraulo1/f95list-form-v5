@@ -29,7 +29,7 @@ const {
 }: Props = $props();
 
 const inlineStyle: ClassValue =
-  'border-base-content text-base-content hover:border-transparent';
+  'border-base-content text-base-content! hover:border-transparent';
 const classicStyle: ClassValue = 'bg-primary dark:bg-neutral-content';
 </script>
 

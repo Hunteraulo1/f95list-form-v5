@@ -102,6 +102,24 @@ export const PERMISSIONS = {
       "Modifier une traduction dont on n'est pas le traducteur, en créer une attribuée à quelqu'un d'autre et créer des comptes fantômes de traducteurs. Sans cette permission, on ne gère que les siennes.",
     group: 'Contenu',
   },
+  'profile.background': {
+    label: 'Image de fond du profil',
+    description:
+      "Mettre une image de fond sur son profil. Sans cette permission, l'image déjà choisie n'est plus affichée.",
+    group: 'Profil',
+  },
+  'profile.music': {
+    label: 'Musique du profil',
+    description:
+      "Mettre une musique YouTube ou YouTube Music sur son profil, que les visiteurs peuvent écouter. Sans cette permission, la musique déjà choisie n'est plus proposée.",
+    group: 'Profil',
+  },
+  'profile.cursor': {
+    label: 'Curseur du profil',
+    description:
+      "Remplacer le curseur de la souris par une image sur son profil. Sans cette permission, le curseur déjà choisi n'est plus utilisé.",
+    group: 'Profil',
+  },
 } as const satisfies Record<string, PermissionDefinition>;
 
 export type Permission = keyof typeof PERMISSIONS;

@@ -1,6 +1,7 @@
 <script lang="ts">
 import { ArrowDownAZ, ArrowUpAZ, ImageOff, PenOff } from '@lucide/svelte';
 import type { Snippet } from 'svelte';
+import ProfileMusic from '#lib/components/profile/ProfileMusic.svelte';
 import Button from '#lib/components/ui/Button.svelte';
 import MarkdownContent from '#lib/components/ui/MarkdownContent.svelte';
 import RoleBadge from '#lib/components/ui/RoleBadge.svelte';
@@ -14,7 +15,13 @@ import type {
 import { cn } from '#lib/utils/cn.ts';
 import { goto } from '$app/navigation';
 
-export type ProfileField = 'avatar' | 'banner' | 'description';
+export type ProfileField =
+  | 'avatar'
+  | 'banner'
+  | 'description'
+  | 'background'
+  | 'music'
+  | 'cursor';
 
 interface Props {
   profile: {
@@ -24,6 +31,10 @@ interface Props {
     avatar: string | null;
     banner: string | null;
     description: string | null;
+    //? Déjà filtrés par permission (voir `profileCustomization`) : `null` = rien à afficher.
+    background: string | null;
+    musicVideoId: string | null;
+    cursor: string | null;
   };
   //? La description en arbre sûr (voir `parseMarkdownDocument`) : jamais de HTML brut.
   descriptionDocument: MarkdownBlock[];
@@ -34,6 +45,8 @@ interface Props {
   //? Adresse publique de ce profil, montrée quand on consulte le sien.
   publicPath?: string;
   editMode?: boolean;
+  //? Ce que le propriétaire peut régler en mode édition, selon ses permissions.
+  customize?: { background: boolean; music: boolean; cursor: boolean };
   onedit?: (field: ProfileField) => void;
   //? Quand `editingDescription` est vrai, l'éditeur prend la place du texte, dans le même bloc.
   editingDescription?: boolean;
@@ -48,6 +61,7 @@ const {
   basePath,
   publicPath,
   editMode = false,
+  customize = { background: false, music: false, cursor: false },
   onedit,
   editingDescription = false,
   descriptionEditor,
@@ -81,71 +95,76 @@ const sortHref = (key: ProfileSort) =>
 const roleLabel = (role: string | null) =>
   role === 'proofreader' ? 'Relecteur' : 'Traducteur';
 
+//? Curseur personnalisé : une image qui suit la souris sur le profil, à la place du curseur du
+//? navigateur (masqué). Elle n'apparaît qu'une fois la souris sur le profil.
+let cursorShown = $state(false);
+let cursorX = $state(0);
+let cursorY = $state(0);
+
+const trackCursor = (event: MouseEvent) => {
+  cursorX = event.clientX;
+  cursorY = event.clientY;
+  cursorShown = true;
+};
+
 const editButton =
   'absolute cursor-pointer bg-neutral/50 px-5 py-1 text-neutral-content';
 </script>
 
-<div class="flex flex-wrap gap-2 md:flex-nowrap">
-  <section class="flex w-80 max-w-full flex-col items-center p-4">
+{#if profile.cursor && cursorShown}
+  <img
+    src={profile.cursor}
+    alt=""
+    referrerpolicy="no-referrer"
+    class="pointer-events-none fixed z-50 size-8 -translate-1/2 object-contain"
+    style:left="{cursorX}px"
+    style:top="{cursorY}px"
+    aria-hidden="true"
+  >
+{/if}
+
+<section
+  aria-label="Profil de {profile.name}"
+  class={cn('relative', profile.cursor && 'cursor-none **:cursor-none!')}
+  onmousemove={profile.cursor ? trackCursor : undefined}
+  onmouseleave={profile.cursor ? () => (cursorShown = false) : undefined}
+>
+  {#if profile.background}
+    <!-- Image de fond : toute la page, fixe derrière le contenu (en-tête et pied compris), estompée
+         vers le bas. `-z-10` la place sous le contenu de `main`, qui isole l'empilement (+layout). -->
     <div
-      class="relative flex size-48 items-center justify-center overflow-hidden rounded-full bg-base-300 p-2"
+      class="pointer-events-none fixed inset-0 -z-10 mask-[linear-gradient(to_bottom,black_55%,transparent)]"
+      aria-hidden="true"
     >
-      {#if profile.avatar}
-        <img
-          src={profile.avatar}
-          alt="Profil de {profile.name}"
-          referrerpolicy="no-referrer"
-          class="size-full rounded-full object-cover"
-        >
-      {:else}
-        <ImageOff size="64" opacity=".2" />
-      {/if}
-
-      {#if editMode}
-        <button
-          type="button"
-          class="absolute h-full w-full cursor-pointer rounded-full bg-neutral/50 text-neutral-content opacity-0 hover:opacity-100 focus-visible:opacity-100"
-          onclick={() => onedit?.('avatar')}
-        >
-          Changer l'image
-        </button>
-      {/if}
+      <img
+        src={profile.background}
+        alt=""
+        referrerpolicy="no-referrer"
+        class="size-full object-cover object-top opacity-60"
+      >
     </div>
+  {/if}
 
-    <h2
+  <div class="relative flex flex-wrap gap-2 md:flex-nowrap">
+    <section
       class={cn(
-        'mt-4 max-w-full text-center font-bold wrap-break-word',
-        roleNameClass(profile.roleStyle),
+        'flex h-fit w-80 max-w-full flex-col items-center rounded-xl p-4',
+        //? Sur une image de fond, pseudo et rôle gardent un fond pour rester lisibles.
+        profile.background && 'bg-base-100/40 backdrop-blur-xs',
       )}
     >
-      {profile.name}
-    </h2>
-    <RoleBadge
-      label={profile.roleLabel}
-      style={profile.roleStyle}
-      class="mt-1"
-    />
-    {#if publicPath}
-      <a
-        href={publicPath}
-        class="mt-1 text-xs underline opacity-70 hover:opacity-100"
-      >
-        Lien public : {publicPath}
-      </a>
-    {/if}
-  </section>
-
-  <section class="flex min-h-80 w-full min-w-0 flex-col gap-4">
-    {#if profile.banner || editMode}
       <div
-        class="relative flex h-48 items-center justify-center overflow-hidden rounded-xl bg-base-300"
+        class={cn(
+          'relative flex size-48 items-center justify-center overflow-hidden rounded-full bg-base-300 p-2',
+          profile.background && 'bg-base-100/20',
+        )}
       >
-        {#if profile.banner}
+        {#if profile.avatar}
           <img
-            src={profile.banner}
-            alt="Bannière de profil de {profile.name}"
+            src={profile.avatar}
+            alt="Profil de {profile.name}"
             referrerpolicy="no-referrer"
-            class="size-full object-cover"
+            class="size-full rounded-full object-cover"
           >
         {:else}
           <ImageOff size="64" opacity=".2" />
@@ -154,163 +173,263 @@ const editButton =
         {#if editMode}
           <button
             type="button"
-            class="{editButton} right-0 bottom-0 rounded-tl-lg"
-            onclick={() => onedit?.('banner')}
+            class="absolute h-full w-full cursor-pointer rounded-full bg-neutral/50 text-neutral-content opacity-0 hover:opacity-100 focus-visible:opacity-100"
+            onclick={() => onedit?.('avatar')}
           >
-            Changer la bannière
+            Changer l'image
           </button>
         {/if}
       </div>
-    {/if}
 
-    {#if profile.description || editMode || editingDescription}
-      <div
-        class="relative flex min-h-48 flex-col justify-center overflow-hidden rounded-xl bg-base-300 p-6"
+      <h2
+        class={cn(
+          'mt-4 max-w-full text-center font-bold wrap-break-word',
+          roleNameClass(profile.roleStyle),
+        )}
       >
-        {#if editingDescription && descriptionEditor}
-          {@render descriptionEditor()}
-        {:else}
-          {#if profile.description}
-            <MarkdownContent
-              document={descriptionDocument}
-              class="w-full self-start"
+        {profile.name}
+      </h2>
+      <RoleBadge
+        label={profile.roleLabel}
+        style={profile.roleStyle}
+        class="mt-1"
+      />
+      {#if publicPath}
+        <a
+          href={publicPath}
+          class="mt-1 text-xs underline opacity-70 hover:opacity-100"
+        >
+          Lien public : {publicPath}
+        </a>
+      {/if}
+
+      {#if profile.musicVideoId}
+        <!-- Remonté quand la musique change : le lecteur repart de la nouvelle vidéo. -->
+        {#key profile.musicVideoId}
+          <div class="mt-4">
+            <ProfileMusic videoId={profile.musicVideoId} />
+          </div>
+        {/key}
+      {/if}
+
+      {#if editMode &&
+        (customize.background || customize.music || customize.cursor)}
+        <div class="mt-4 flex flex-col items-center gap-2">
+          {#if customize.background}
+            <Button
+              label="Changer l'image de fond"
+              inline
+              size="small"
+              onclick={() => onedit?.('background')}
             />
+          {/if}
+          {#if customize.music}
+            <Button
+              label="Changer la musique"
+              inline
+              size="small"
+              onclick={() => onedit?.('music')}
+            />
+          {/if}
+          {#if customize.cursor}
+            <Button
+              label="Changer le curseur"
+              inline
+              size="small"
+              onclick={() => onedit?.('cursor')}
+            />
+          {/if}
+        </div>
+      {/if}
+    </section>
+
+    <section class="flex min-h-80 w-full min-w-0 flex-col gap-4">
+      {#if profile.banner || editMode}
+        <div
+          class="relative flex h-48 items-center justify-center overflow-hidden rounded-xl bg-base-300"
+        >
+          {#if profile.banner}
+            <img
+              src={profile.banner}
+              alt="Bannière de profil de {profile.name}"
+              referrerpolicy="no-referrer"
+              class="size-full object-cover"
+            >
           {:else}
-            <PenOff class="mx-auto" size="64" opacity=".2" />
+            <ImageOff size="64" opacity=".2" />
           {/if}
 
           {#if editMode}
             <button
               type="button"
               class="{editButton} right-0 bottom-0 rounded-tl-lg"
-              onclick={() => onedit?.('description')}
+              onclick={() => onedit?.('banner')}
             >
-              Changer la description
+              Changer la bannière
             </button>
           {/if}
-        {/if}
-      </div>
-    {/if}
+        </div>
+      {/if}
 
-    {#if translations.total}
-      <div class="relative flex flex-col rounded-xl p-2">
-        <h3 class="py-4 text-center text-xl font-bold">
-          Traductions ({translations.total})
-        </h3>
-
-        {#if translations.hiddenAnonymous > 0}
-          <p class="pb-2 text-center text-sm opacity-70">
-            {translations.hiddenAnonymous}
-            traduction{translations.hiddenAnonymous > 1 ? 's' : ''}
-            anonyme{translations.hiddenAnonymous > 1 ? 's ne sont' : " n'est"}
-            pas listée{translations.hiddenAnonymous > 1 ? 's' : ''}
-            publiquement.
-          </p>
-        {/if}
-
-        <form
-          method="GET"
-          action={basePath}
-          class="my-4 flex justify-end gap-2"
+      {#if profile.description || editMode || editingDescription}
+        <div
+          class={cn(
+            'relative flex min-h-48 flex-col justify-center overflow-hidden rounded-xl bg-base-300 p-6',
+            //? Sur une image de fond, le bloc la laisse deviner sans gêner la lecture.
+            profile.background && 'bg-base-100/40 backdrop-blur-xs',
+          )}
         >
-          <input
-            class="shadow-mini h-9 w-64 rounded-xl border-2 border-transparent bg-neutral-content px-4 text-sm font-bold text-primary transition-all outline-none hover:border-primary focus:border-primary"
-            type="search"
-            name="q"
-            value={query.q}
-            maxlength="100"
-            placeholder="Rechercher un nom..."
-          >
-          <input type="hidden" name="sort" value={query.sort}>
-          <input type="hidden" name="dir" value={query.dir}>
-          <Button label="Filtrer" type="submit" />
-        </form>
+          {#if editingDescription && descriptionEditor}
+            {@render descriptionEditor()}
+          {:else}
+            {#if profile.description}
+              <MarkdownContent
+                document={descriptionDocument}
+                class="w-full self-start"
+              />
+            {:else}
+              <PenOff class="mx-auto" size="64" opacity=".2" />
+            {/if}
 
-        {#if translations.items.length === 0}
-          <p class="py-8 text-center text-sm opacity-60">
-            {query.q
-              ? 'Aucune traduction ne correspond.'
-              : 'Aucune traduction.'}
-          </p>
-        {:else}
-          <table class="w-full table-fixed border-spacing-2">
-            <thead>
-              <tr>
-                {#each columns as { label, key }}
-                  <th scope="col" class="select-none">
-                    {#if key}
-                      <a
-                        href={sortHref(key)}
-                        class="flex items-center justify-center gap-2"
-                      >
-                        {label}
-                        {#if query.sort === key}
-                          {#if query.dir === 'asc'}
-                            <ArrowDownAZ size="16" />
-                          {:else}
-                            <ArrowUpAZ size="16" />
+            {#if editMode}
+              <button
+                type="button"
+                class="{editButton} right-0 bottom-0 rounded-tl-lg"
+                onclick={() => onedit?.('description')}
+              >
+                Changer la description
+              </button>
+            {/if}
+          {/if}
+        </div>
+      {/if}
+
+      {#if translations.total}
+        <div class="relative flex flex-col rounded-xl p-2">
+          <h3 class="py-4 text-center text-xl font-bold">
+            Traductions ({translations.total})
+          </h3>
+
+          {#if translations.hiddenAnonymous > 0}
+            <p class="pb-2 text-center text-sm opacity-70">
+              {translations.hiddenAnonymous}
+              traduction{translations.hiddenAnonymous > 1 ? 's' : ''}
+              anonyme{translations.hiddenAnonymous > 1 ? 's ne sont' : " n'est"}
+              pas listée{translations.hiddenAnonymous > 1 ? 's' : ''}
+              publiquement.
+            </p>
+          {/if}
+
+          <form
+            method="GET"
+            action={basePath}
+            class="my-4 flex justify-end gap-2"
+          >
+            <input
+              class="shadow-mini h-9 w-64 rounded-xl border-2 border-transparent bg-neutral-content px-4 text-sm font-bold text-primary transition-all outline-none hover:border-primary focus:border-primary"
+              type="search"
+              name="q"
+              value={query.q}
+              maxlength="100"
+              placeholder="Rechercher un nom..."
+            >
+            <input type="hidden" name="sort" value={query.sort}>
+            <input type="hidden" name="dir" value={query.dir}>
+            <Button label="Filtrer" type="submit" />
+          </form>
+
+          {#if translations.items.length === 0}
+            <p class="py-8 text-center text-sm opacity-60">
+              {query.q
+                ? 'Aucune traduction ne correspond.'
+                : 'Aucune traduction.'}
+            </p>
+          {:else}
+            <table class="w-full table-fixed border-spacing-2">
+              <thead>
+                <tr>
+                  {#each columns as { label, key }}
+                    <th scope="col" class="select-none">
+                      {#if key}
+                        <a
+                          href={sortHref(key)}
+                          class="flex items-center justify-center gap-2"
+                        >
+                          {label}
+                          {#if query.sort === key}
+                            {#if query.dir === 'asc'}
+                              <ArrowDownAZ size="16" />
+                            {:else}
+                              <ArrowUpAZ size="16" />
+                            {/if}
                           {/if}
-                        {/if}
-                      </a>
-                    {:else}
-                      {label}
-                    {/if}
-                  </th>
-                {/each}
-              </tr>
-            </thead>
-            <tbody>
-              {#each translations.items as item (item.translationId)}
-                <tr
-                  class="relative border-collapse odd:bg-base-100 even:bg-base-300"
-                >
-                  <td class="px-4 py-2">
-                    <span class="flex flex-col">
-                      <span class="truncate font-bold">{item.name}</span>
-                      <span class="truncate text-xs opacity-70">
-                        jeu {item.gameStatus.toLowerCase()}
-                      </span>
-                    </span>
-                  </td>
-                  <td class="px-4 py-2 text-center">{item.version}</td>
-                  <td
-                    class="px-4 py-2 text-center {item.outdated
-                      ? 'text-yellow-500'
-                      : ''}"
-                  >
-                    {item.tversion}
-                  </td>
-                  <td class="px-4 py-2 text-center">{roleLabel(item.role)}</td>
-                  <td class="flex justify-center gap-2 px-4 py-3">
-                    <Button
-                      label="Accéder"
-                      size="tiny"
-                      onclick={() => goto(`/games/${item.gameId}`)}
-                    />
-                  </td>
+                        </a>
+                      {:else}
+                        {label}
+                      {/if}
+                    </th>
+                  {/each}
                 </tr>
-              {/each}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {#each translations.items as item (item.translationId)}
+                  <tr
+                    class="relative border-collapse odd:bg-base-100 even:bg-base-300"
+                  >
+                    <td class="px-4 py-2">
+                      <span class="flex flex-col">
+                        <span class="truncate font-bold">{item.name}</span>
+                        <span class="truncate text-xs opacity-70">
+                          jeu {item.gameStatus.toLowerCase()}
+                        </span>
+                      </span>
+                    </td>
+                    <td class="px-4 py-2 text-center">{item.version}</td>
+                    <td
+                      class="px-4 py-2 text-center {item.outdated
+                        ? 'text-yellow-500'
+                        : ''}"
+                    >
+                      {item.tversion}
+                    </td>
+                    <td class="px-4 py-2 text-center">
+                      {roleLabel(item.role)}
+                    </td>
+                    <td class="flex justify-center gap-2 px-4 py-3">
+                      <Button
+                        label="Accéder"
+                        size="tiny"
+                        onclick={() => goto(`/games/${item.gameId}`)}
+                      />
+                    </td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
 
-          <nav
-            class="flex items-center justify-center gap-4 pt-4 text-sm"
-            aria-label="Pagination"
-          >
-            {#if translations.page > 1}
-              <a href={href({ page: translations.page - 1 })} class="underline"
-                >← Précédent</a
-              >
-            {/if}
-            <span>Page {translations.page} / {translations.totalPages}</span>
-            {#if translations.page < translations.totalPages}
-              <a href={href({ page: translations.page + 1 })} class="underline"
-                >Suivant →</a
-              >
-            {/if}
-          </nav>
-        {/if}
-      </div>
-    {/if}
-  </section>
-</div>
+            <nav
+              class="flex items-center justify-center gap-4 pt-4 text-sm"
+              aria-label="Pagination"
+            >
+              {#if translations.page > 1}
+                <a
+                  href={href({ page: translations.page - 1 })}
+                  class="underline"
+                  >← Précédent</a
+                >
+              {/if}
+              <span>Page {translations.page} / {translations.totalPages}</span>
+              {#if translations.page < translations.totalPages}
+                <a
+                  href={href({ page: translations.page + 1 })}
+                  class="underline"
+                  >Suivant →</a
+                >
+              {/if}
+            </nav>
+          {/if}
+        </div>
+      {/if}
+    </section>
+  </div>
+</section>

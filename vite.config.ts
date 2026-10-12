@@ -4,6 +4,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, type Plugin } from 'vite';
 import { IMAGE_HOSTS } from './src/lib/image-hosts.ts';
+import { YOUTUBE_EMBED_ORIGIN } from './src/lib/profile-music.ts';
 import { handleUpgrade } from './src/lib/server/ws/socket.ts';
 
 const webSocketServer: Plugin = {
@@ -38,6 +39,8 @@ export default defineConfig(({ command }) => {
             'style-src': ['self', 'https://fonts.googleapis.com'],
             'img-src': ['self', 'data:', ...IMAGE_HOSTS],
             'font-src': ['self', 'https://fonts.gstatic.com'],
+            //? Musique des profils : le lecteur YouTube embarqué (voir src/lib/profile-music.ts).
+            'frame-src': [YOUTUBE_EMBED_ORIGIN],
             'connect-src': ['self', 'https://insight.f95france.site'],
             'object-src': ['none'],
             'base-uri': ['self'],

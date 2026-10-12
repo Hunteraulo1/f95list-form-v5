@@ -34,7 +34,8 @@ const confirmUrl = $derived(
 </svelte:head>
 
 <QueryProvider>
-  <main class="h-full min-h-screen bg-base-200 pb-16 font-[Fustat]">
+  <!-- `isolate` : un fond de page en z négatif (profil) reste au-dessus du fond de `main`. -->
+  <main class="isolate h-full min-h-screen bg-base-200 pb-16 font-[Fustat]">
     {#if gated}
       <!-- Sans JavaScript, la fenêtre ne s'ouvre pas : le même bouton, en haut de la page. -->
       <noscript>
