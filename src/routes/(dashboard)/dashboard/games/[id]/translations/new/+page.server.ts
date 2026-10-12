@@ -61,6 +61,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
         !edition.name && editions.length === 1
           ? 'Édition de base'
           : (edition.name ?? `Non nommé (${edition.version})`),
+      //? Une traduction ajoutée à une édition désactivée reste masquée avec elle.
+      active: edition.active,
       version: edition.version,
       status: editionStatusName(edition.status),
       //? Ce que l'édition a déjà : pour ne pas ajouter une traduction qui existe.

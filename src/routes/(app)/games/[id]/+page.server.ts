@@ -1,6 +1,7 @@
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { error, fail } from '@sveltejs/kit';
 import {
+  EDITION_STATUSES,
   TRANSLATION_QUALITIES,
   TRANSLATION_TYPES,
   threadBase,
@@ -9,27 +10,36 @@ import {
 import { VIEW_ACTIVE_ONLY } from '#lib/server/config.ts';
 import {
   Game,
+  GameEdition,
   GameTags,
   GameTranslation,
   OriginWebsite,
   orm,
 } from '#lib/server/db/index.ts';
 import {
+  parseEditionEditForm,
+  updateEdition,
+} from '#lib/server/edition-edit.ts';
+import {
   canAddTranslation,
   canEditGame,
   canEditTranslation,
   canManageAutoCheck,
+  canSetActive,
 } from '#lib/server/game-access.ts';
 import { isStaff } from '#lib/server/game-create.ts';
 import { translateGameDescriptionInBackground } from '#lib/server/game-description-fr.ts';
 import { parseGameEditForm, updateGame } from '#lib/server/game-edit.ts';
 import { canRefreshGame, refreshGameData } from '#lib/server/game-refresh.ts';
+import { logger } from '#lib/server/logger.ts';
+import { editionAutoCheckAvailable } from '#lib/server/translation-create.ts';
 import {
   isHiddenCredit,
   parseTranslationEditForm,
   updateTranslation,
 } from '#lib/server/translation-edit.ts';
 import {
+  editionStatusName,
   translationQualityName,
   translationTypeName,
 } from '#lib/utils/entriesConvert.ts';
@@ -96,6 +106,20 @@ const translationEditValues = (
   };
 };
 
+//? `updated_at` est gardé tel quel : il date la dernière mise à jour du contenu (page « Mises à jour »,
+//? accueil), et réactiver une traduction ne doit pas la faire remonter en tête.
+const writeActive = (
+  table: 'game' | 'game_edition' | 'game_translation',
+  id: string | number,
+  active: boolean,
+) =>
+  orm.em
+    .getConnection()
+    .execute(
+      `update ${table} set active = ?, updated_at = updated_at where id = ?`,
+      [active, id],
+    );
+
 export const load: PageServerLoad = async ({ params, locals }) => {
   const id = parseInt(params.id, 10);
 
@@ -117,9 +141,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   );
 
   if (!game) error(404, 'Not found');
-  if (VIEW_ACTIVE_ONLY && !game.active) error(403, 'Forbidden');
-
   const editGame = canEditGame(locals.user);
+  //? Un contenu désactivé n'est plus visible que de ceux qui peuvent le réactiver.
+  const setActive = canSetActive(locals.user);
+  if (VIEW_ACTIVE_ONLY && !game.active && !setActive) error(403, 'Forbidden');
   //? De quoi remplir la fenêtre « Modifier le jeu » : chargé seulement pour qui peut s'en servir.
   const [origins, allTags] = editGame
     ? await Promise.all([
@@ -138,6 +163,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       //? Actualiser depuis F95zone : même droit que modifier le jeu, pour un jeu qui a un thread F95zone.
       refreshGame: editGame && canRefreshGame(game),
       addTranslation: canAddTranslation(locals.user),
+      setActive,
     },
     edit: editGame
       ? {
@@ -168,6 +194,17 @@ export const load: PageServerLoad = async ({ params, locals }) => {
           canManageAutoCheck: canManageAutoCheck(locals.user),
         }
       : null,
+    //? Pour la fenêtre « Modifier l'édition » (voir `edit` sur chaque édition).
+    editionForm:
+      editGame && viewer
+        ? {
+            statuses: EDITION_STATUSES.map((value) => ({
+              value,
+              label: editionStatusName(value),
+            })),
+            canManageAutoCheck: editionAutoCheckAvailable(game, viewer),
+          }
+        : null,
     //? Pour la fenêtre « Modifier la traduction » (voir `edit` sur chaque traduction modifiable).
     translationForm: viewer
       ? {
@@ -199,7 +236,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         .map(({ gameTag }) => ({ id: gameTag.id, name: gameTag.name })),
       gameEditions: game.gameEditions
         .getItems()
-        .filter((edition) => !VIEW_ACTIVE_ONLY || edition.active)
+        .filter((edition) => !VIEW_ACTIVE_ONLY || edition.active || setActive)
         .map((edition) => ({
           id: edition.id,
           name:
@@ -208,6 +245,15 @@ export const load: PageServerLoad = async ({ params, locals }) => {
               : (edition.name ?? `Non nommé (${edition.version})`),
           version: edition.version,
           status: edition.status,
+          //? Valeurs à modifier, pour qui peut modifier le jeu seulement (sinon `null`).
+          edit: editGame
+            ? {
+                name: edition.name ?? null,
+                version: edition.version,
+                status: edition.status,
+                autoCheck: edition.autoCheck,
+              }
+            : null,
           // autoCheck: edition.autoCheck,
           // lastAutoCheck: edition.lastAutoCheck,
           active: edition.active,
@@ -215,7 +261,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
           // updatedAt: edition.updatedAt,
           gameTranslations: edition.gameTranslations
             .getItems()
-            .filter((translation) => !VIEW_ACTIVE_ONLY || translation.active)
+            .filter(
+              (translation) =>
+                !VIEW_ACTIVE_ONLY || translation.active || setActive,
+            )
             .map((translation) => ({
               id: translation.id,
               version: translation.version,
@@ -250,6 +299,49 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 };
 
 export const actions: Actions = {
+  //? Active ou désactive le jeu, une de ses éditions ou une de ses traductions. Désactiver masque
+  //? du site sans rien supprimer ; ce qui dépend d'un contenu désactivé est masqué avec lui.
+  setActive: async ({ locals, params, request }) => {
+    if (!locals.user) error(401, 'Non connecté');
+    if (!canSetActive(locals.user)) error(403, 'Accès refusé');
+
+    const data = await request.formData();
+    const kind = String(data.get('kind') ?? '');
+    const id = String(data.get('id') ?? '');
+    const active = data.get('active') === 'true';
+    const gameId = parseInt(params.id, 10);
+
+    if (kind === 'translation') {
+      //? La traduction doit être celle d'une édition de ce jeu.
+      const translation = await orm.em.findOne(GameTranslation, {
+        id,
+        gameEdition: { game: gameId },
+      });
+      if (!translation) error(404, 'Not found');
+
+      await writeActive('game_translation', translation.id, active);
+    } else if (kind === 'edition') {
+      const edition = await orm.em.findOne(GameEdition, { id, game: gameId });
+      if (!edition) error(404, 'Not found');
+
+      await writeActive('game_edition', edition.id, active);
+    } else if (kind === 'game') {
+      const game = await orm.em.findOne(Game, { id: gameId });
+      if (!game) error(404, 'Not found');
+
+      await writeActive('game', game.id, active);
+    } else {
+      error(400, 'Bad request');
+    }
+
+    logger.info(
+      { gameId, kind, id, active, userId: locals.user.id },
+      active ? 'contenu activé' : 'contenu désactivé',
+    );
+
+    return { activeChanged: true };
+  },
+
   edit: async ({ locals, params, request }) => {
     if (!locals.user) error(401, 'Non connecté');
     if (!canEditGame(locals.user)) error(403, 'Accès refusé');
@@ -310,6 +402,30 @@ export const actions: Actions = {
         tagsRemoved: result.tagsRemoved,
       },
     };
+  },
+
+  editEdition: async ({ locals, params, request }) => {
+    if (!locals.user) error(401, 'Non connecté');
+    if (!canEditGame(locals.user)) error(403, 'Accès refusé');
+
+    const data = await request.formData();
+    const game = await orm.em.findOne(
+      Game,
+      { id: parseInt(params.id, 10) },
+      { populate: ['origin', 'gameEditions'] },
+    );
+    //? L'édition doit être celle de ce jeu.
+    const edition = game?.gameEditions
+      .getItems()
+      .find(({ id }) => id === String(data.get('editionId') ?? ''));
+    if (!game || !edition) error(404, 'Not found');
+
+    const parsed = parseEditionEditForm(data, locals.user, game, edition);
+    if (!parsed.ok) return fail(400, { errors: parsed.errors });
+
+    await updateEdition(edition.id, parsed.input, locals.user);
+
+    return { edited: true };
   },
 
   editTranslation: async ({ locals, params, request }) => {

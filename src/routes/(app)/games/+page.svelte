@@ -53,9 +53,14 @@ const resetFilters = () => {
   <div
     class="flex w-full flex-col gap-4 overflow-hidden rounded-xl bg-base-100 p-4 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
   >
-    {#each filteredGames as { id, image, name } (id)}
+    {#each filteredGames as { id, image, name, active } (id)}
       <a href={`/games/${id}`}>
-        <div class="relative h-60 overflow-hidden rounded-lg bg-base-200">
+        <div
+          class={cn(
+            'relative h-60 overflow-hidden rounded-lg bg-base-200',
+            !active && 'opacity-60',
+          )}
+        >
           <img
             src={image}
             loading="lazy"
@@ -67,6 +72,13 @@ const resetFilters = () => {
           >
             {name}
           </div>
+          {#if !active}
+            <span
+              class="absolute right-2 bottom-2 rounded-lg bg-warning px-2 py-0.5 text-xs font-bold text-black"
+            >
+              Désactivé
+            </span>
+          {/if}
         </div>
       </a>
     {:else}

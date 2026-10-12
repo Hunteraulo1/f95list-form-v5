@@ -55,6 +55,14 @@ const sortHref = (key: SortKey) =>
     page: 1,
   });
 
+const DISABLED_REASONS = {
+  game: "Le jeu a été désactivé par l'administration : il n'apparaît plus sur le site, ses traductions non plus.",
+  edition:
+    "L'édition a été désactivée par l'administration : ses traductions n'apparaissent plus sur le site.",
+  translation:
+    "Cette traduction a été désactivée par l'administration : elle n'apparaît plus sur le site.",
+} as const;
+
 const error = $derived(form && 'message' in form ? form.message : null);
 
 const roleLabel = (role: string | null | undefined) =>
@@ -176,7 +184,28 @@ const roleLabel = (role: string | null | undefined) =>
           >
             <td class="px-4 py-2">
               <span class="flex flex-col">
-                <span class="truncate font-bold">{item.name}</span>
+                <span class="flex min-w-0 items-center gap-2">
+                  <span
+                    class={cn(
+                      'truncate font-bold',
+                      item.disabled && 'opacity-60',
+                    )}
+                  >
+                    {item.name}
+                  </span>
+                  {#if item.disabled}
+                    <span
+                      class="shrink-0 cursor-help rounded-lg bg-warning px-2 py-0.5 text-xs font-bold text-black"
+                      title={DISABLED_REASONS[item.disabled]}
+                    >
+                      {item.disabled === 'game'
+                        ? 'Jeu désactivé'
+                        : item.disabled === 'edition'
+                          ? 'Édition désactivée'
+                          : 'Désactivée'}
+                    </span>
+                  {/if}
+                </span>
                 <span class="truncate text-xs opacity-70">
                   {item.typeLabel}
                   · {item.qualityLabel} · jeu {item.editionStatus.toLowerCase()}
@@ -191,6 +220,10 @@ const roleLabel = (role: string | null | undefined) =>
                 <Button
                   label="Accéder"
                   size="tiny"
+                  disabled={!item.gameOpen}
+                  title={item.gameOpen
+                    ? undefined
+                    : "La fiche d'un jeu désactivé n'est plus accessible."}
                   onclick={() => goto(`/games/${item.gameId}`)}
                 />
 

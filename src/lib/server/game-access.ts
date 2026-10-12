@@ -17,6 +17,12 @@ export const canEditGame = (viewer: Viewer) => has(viewer, 'game.edit');
 export const canManageAutoCheck = (viewer: Viewer) =>
   has(viewer, 'game.auto_check');
 
+//? Activer ou désactiver un jeu, une édition ou une traduction : une action d'administration, que ni
+//? le droit de modifier les jeux ni le fait d'être l'auteur d'une traduction ne donnent. Seuls ceux
+//? qui l'ont voient encore le contenu désactivé.
+export const canSetActive = (viewer: Viewer) =>
+  has(viewer, 'content.activation');
+
 export const canAddTranslation = (viewer: Viewer) =>
   has(viewer, 'translation.add');
 

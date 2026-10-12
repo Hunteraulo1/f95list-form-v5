@@ -283,7 +283,10 @@ const goToFirstError = async () => {
         >
           <option value="" disabled>Choisir une édition…</option>
           {#each data.editions as item (item.id)}
-            <option value={item.id}>{item.name} — {item.version}</option>
+            <option value={item.id}>
+              {item.name}
+              — {item.version}{item.active ? '' : ' (désactivée)'}
+            </option>
           {/each}
           <option value={data.newEdition}>Nouvelle édition…</option>
         </select>

@@ -1,5 +1,6 @@
 import { error, fail } from '@sveltejs/kit';
 import { GameTranslationTranslator, orm } from '#lib/server/db/index.ts';
+import { canSetActive } from '#lib/server/game-access.ts';
 import { isTranslationOutdated } from '#lib/server/my-translations.ts';
 import {
   editionStatusName,
@@ -54,10 +55,21 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     { populate: ['gameTranslation.gameEdition.game'] },
   );
 
+  //? Sans le droit de voir le contenu désactivé, la fiche d'un jeu désactivé est fermée.
+  const seesInactive = canSetActive(locals.user);
+
   const items = rows.map((row) => {
     const translation = row.gameTranslation;
     const edition = translation.gameEdition;
     const game = edition.game;
+    //? Masquée du site par l'administration : elle-même, ou avec son édition ou son jeu.
+    const disabled = !game.active
+      ? ('game' as const)
+      : !edition.active
+        ? ('edition' as const)
+        : !translation.active
+          ? ('translation' as const)
+          : null;
 
     return {
       translationId: translation.id,
@@ -71,12 +83,17 @@ export const load: PageServerLoad = async ({ locals, url }) => {
       role: row.type,
       followed: row.alert,
       anonymous: row.anonymous,
-      outdated: isTranslationOutdated({
-        type: translation.type,
-        version: translation.version,
-        editionVersion: edition.version,
-        followed: row.alert,
-      }),
+      disabled,
+      gameOpen: game.active || seesInactive,
+      //? Rien à rattraper sur une traduction que le site ne montre plus.
+      outdated:
+        disabled === null &&
+        isTranslationOutdated({
+          type: translation.type,
+          version: translation.version,
+          editionVersion: edition.version,
+          followed: row.alert,
+        }),
     };
   });
 

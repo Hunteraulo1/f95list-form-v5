@@ -1,11 +1,15 @@
 <script lang="ts">
 import Button from '#lib/components/ui/Button.svelte';
 import ColorBadge from '#lib/components/ui/games/ColorBadge.svelte';
+import EditEditionModal, {
+  type EditEditionValues,
+} from '#lib/components/ui/games/EditEditionModal.svelte';
 import EditGameModal from '#lib/components/ui/games/EditGameModal.svelte';
 import EditTranslationModal, {
   type EditTranslationValues,
 } from '#lib/components/ui/games/EditTranslationModal.svelte';
 import ReportGameModal from '#lib/components/ui/games/ReportGameModal.svelte';
+import { cn } from '#lib/utils/cn.ts';
 import { enhance } from '$app/forms';
 import { goto } from '$app/navigation';
 import type { PageData } from './$types.js';
@@ -26,6 +30,12 @@ interface RefreshSummary {
 }
 let refreshing = $state(false);
 let refreshMessage = $state<{ error: boolean; text: string } | null>(null);
+//? L'édition en cours de modification (même principe que la traduction ci-dessous).
+let editedEdition = $state<{
+  id: string;
+  label: string;
+  values: EditEditionValues;
+} | null>(null);
 //? La traduction en cours de modification (sa fenêtre n'est montée que le temps d'être ouverte).
 let editedTranslation = $state<{
   id: string;
@@ -92,7 +102,16 @@ const getHostname = (link: string) => {
     </div>
   </section>
 
-  <section class="flex w-full gap-4 rounded-xl bg-base-100 p-4">
+  {#if !data.game.active}
+    <p class="rounded-xl bg-warning/20 p-4 text-sm font-bold" role="status">
+      Ce jeu est désactivé : il n'apparaît plus sur le site, seule
+      l'administration le voit encore.
+    </p>
+  {/if}
+
+  <section
+    class="flex w-full flex-wrap gap-4 rounded-xl bg-base-100 p-4 items-center"
+  >
     {#if data.access.editGame}
       {#if data.access.refreshGame}
         <form
@@ -133,6 +152,15 @@ const getHostname = (link: string) => {
       {/if}
       <Button label="Modifier le jeu" onclick={() => (editOpen = true)} />
     {/if}
+    {#if data.access.setActive}
+      {@render activeToggle(
+        'game',
+        String(data.game.id),
+        data.game.active,
+        data.game.active ? 'Désactiver le jeu' : 'Réactiver le jeu',
+        `Désactiver « ${data.game.name} » ? Le jeu et toutes ses traductions disparaîtront du site jusqu'à sa réactivation.`,
+      )}
+    {/if}
     <Button
       label="Signaler un problème"
       inline
@@ -166,7 +194,39 @@ const getHostname = (link: string) => {
 
     {#each data.game.gameEditions as edition}
       <div class="flex flex-col gap-2">
-        <span class="font-bold">{edition.name}</span>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class={cn('font-bold', !edition.active && 'opacity-60')}>
+            {edition.name}
+          </span>
+          {#if !edition.active}
+            {@render inactiveBadge('Désactivée')}
+          {/if}
+          {#if edition.edit}
+            {@const values = edition.edit}
+            <Button
+              label="Modifier l'édition"
+              inline
+              size="small"
+              classes="ml-auto"
+              onclick={() =>
+                (editedEdition = {
+                  id: edition.id,
+                  label: edition.name,
+                  values,
+                })}
+            />
+          {/if}
+          {#if data.access.setActive}
+            {@render activeToggle(
+              'edition',
+              edition.id,
+              edition.active,
+              edition.active ? "Désactiver l'édition" : "Réactiver l'édition",
+              `Désactiver l'édition « ${edition.name} » ? Ses traductions disparaîtront du site jusqu'à sa réactivation.`,
+              edition.edit ? '' : 'ml-auto',
+            )}
+          {/if}
+        </div>
 
         <div
           class="flex flex-col divide-y divide-base-content/10 overflow-hidden rounded-xl bg-base-200"
@@ -175,7 +235,12 @@ const getHostname = (link: string) => {
             <div
               class="flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between"
             >
-              <div class="flex flex-col gap-1">
+              <div
+                class={cn(
+                  'flex flex-col gap-1',
+                  !translation.active && 'opacity-60',
+                )}
+              >
                 <div class="flex flex-wrap items-center gap-2">
                   <span class="font-bold">{translation.version}</span>
                   <ColorBadge
@@ -187,6 +252,9 @@ const getHostname = (link: string) => {
                       item={translation.type}
                       label={translation.typeLabel}
                     />
+                  {/if}
+                  {#if !translation.active}
+                    {@render inactiveBadge('Désactivée')}
                   {/if}
                 </div>
 
@@ -249,8 +317,19 @@ const getHostname = (link: string) => {
                       })}
                   />
                 {/if}
+                {#if data.access.setActive}
+                  {@render activeToggle(
+                    'translation',
+                    translation.id,
+                    translation.active,
+                    translation.active ? 'Désactiver' : 'Réactiver',
+                    null,
+                  )}
+                {/if}
               </div>
             </div>
+          {:else}
+            <p class="p-4 text-sm text-base-content/70">Aucune traduction.</p>
           {/each}
         </div>
       </div>
@@ -276,6 +355,17 @@ const getHostname = (link: string) => {
   />
 {/if}
 
+{#if editedEdition && data.editionForm}
+  <EditEditionModal
+    editionId={editedEdition.id}
+    label={editedEdition.label}
+    values={editedEdition.values}
+    statuses={data.editionForm.statuses}
+    canManageAutoCheck={data.editionForm.canManageAutoCheck}
+    onclose={() => (editedEdition = null)}
+  />
+{/if}
+
 {#if editedTranslation && data.translationForm}
   <EditTranslationModal
     translationId={editedTranslation.id}
@@ -289,6 +379,42 @@ const getHostname = (link: string) => {
     onclose={() => (editedTranslation = null)}
   />
 {/if}
+
+{#snippet inactiveBadge(
+  label: string,
+)}
+  <span class="rounded-lg bg-warning px-2 py-0.5 text-xs font-bold text-black">
+    {label}
+  </span>
+{/snippet}
+
+<!-- Désactiver masque du site sans rien supprimer ; `warning` : la question posée avant de masquer. -->
+{#snippet activeToggle(
+  kind: 'game' | 'edition' | 'translation',
+  id: string,
+  active: boolean,
+  label: string,
+  warning: string | null,
+  classes = '',
+)}
+  <form
+    method="POST"
+    action="?/setActive"
+    class={classes}
+    use:enhance={({ cancel }) => {
+      if (active && warning && !confirm(warning)) cancel();
+
+      return async ({ update }) => {
+        await update({ reset: false });
+      };
+    }}
+  >
+    <input type="hidden" name="kind" value={kind}>
+    <input type="hidden" name="id" value={id}>
+    <input type="hidden" name="active" value={String(!active)}>
+    <Button {label} type="submit" inline size="small" />
+  </form>
+{/snippet}
 
 {#snippet downloadLink(
   link: string,

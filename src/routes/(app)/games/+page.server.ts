@@ -4,10 +4,15 @@ import type {
 } from '#lib/games/games-filter.ts';
 import { VIEW_ACTIVE_ONLY } from '#lib/server/config.ts';
 import { Game, GameTags, OriginWebsite, orm } from '#lib/server/db/index.ts';
+import { canSetActive } from '#lib/server/game-access.ts';
+import type { PageServerLoad } from './$types';
 
-export const load = async () => {
+export const load: PageServerLoad = async ({ locals }) => {
+  //? Les jeux désactivés restent listés pour qui peut les réactiver (depuis leur fiche).
+  const activeOnly = VIEW_ACTIVE_ONLY && !canSetActive(locals.user);
+
   const [games, origins, tags] = await Promise.all([
-    orm.em.find(Game, VIEW_ACTIVE_ONLY ? { active: true } : {}, {
+    orm.em.find(Game, activeOnly ? { active: true } : {}, {
       populate: [
         'gameEditions.gameTranslations.gameTranslationTranslators.user',
       ],
@@ -40,8 +45,13 @@ export const load = async () => {
         }),
     );
 
-    const row: GamesFilterableGame & { id: number; image: string | null } = {
+    const row: GamesFilterableGame & {
+      id: number;
+      image: string | null;
+      active: boolean;
+    } = {
       id: game.id,
+      active: game.active,
       name: game.name,
       threadId: game.threadId ?? null,
       image: game.imageInternal ?? game.imageExternal ?? null,

@@ -67,6 +67,13 @@ export const PERMISSIONS = {
     group: 'Administration',
     requires: 'admin.access',
   },
+  'content.activation': {
+    label: 'Activer et désactiver du contenu',
+    description:
+      'Désactiver ou réactiver un jeu, une édition ou une traduction depuis la fiche du jeu, et voir le contenu désactivé. Désactiver masque du site sans rien supprimer.',
+    group: 'Administration',
+    requires: 'admin.access',
+  },
   'game.create': {
     label: 'Créer des jeux',
     description: 'Ajouter un nouveau jeu.',
