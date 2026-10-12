@@ -10,6 +10,7 @@ import {
 import Button from '#lib/components/ui/Button.svelte';
 import Menu from '#lib/components/ui/Menu.svelte';
 import Modal from '#lib/components/ui/Modal.svelte';
+import RoleBadge from '#lib/components/ui/RoleBadge.svelte';
 import { cn } from '#lib/utils/cn.ts';
 import { submitForm } from '#lib/utils/form.ts';
 import { enhance } from '$app/forms';
@@ -258,7 +259,9 @@ const message = $derived(
                 {user.email ?? '—'}
               </td>
             {/if}
-            <td class="px-4 py-2 text-center">{user.role.label}</td>
+            <td class="px-4 py-2 text-center">
+              <RoleBadge label={user.role.label} style={user.role.badgeStyle} />
+            </td>
             <td class="px-4 py-2 text-center font-mono text-sm">
               {user.discord ?? '—'}
             </td>

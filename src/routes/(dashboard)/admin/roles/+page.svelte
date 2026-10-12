@@ -1,6 +1,7 @@
 <script lang="ts">
 import Button from '#lib/components/ui/Button.svelte';
 import Modal from '#lib/components/ui/Modal.svelte';
+import RoleBadge from '#lib/components/ui/RoleBadge.svelte';
 import {
   applyDependenciesToChecks,
   getDependentPermissions,
@@ -8,6 +9,13 @@ import {
   PERMISSIONS,
   type Permission,
 } from '#lib/permissions.ts';
+import {
+  ROLE_STYLE_LABELS,
+  ROLE_STYLES,
+  type RoleStyle,
+  roleNameClass,
+  SUPER_ROLE_STYLE,
+} from '#lib/role-style.ts';
 import { cn } from '#lib/utils/cn.ts';
 import { enhance } from '$app/forms';
 import type { ActionData, PageData } from './$types';
@@ -30,7 +38,19 @@ const quotasEditable = $derived(
 );
 const permissionsLocked = $derived(role.isSuper || !role.canManage);
 
+//? Le dégradé animé reste au rôle super admin.
+const pickableStyles = ROLE_STYLES.filter(
+  (style) => style !== SUPER_ROLE_STYLE,
+);
+
 let createOpen = $state(false);
+let createStyle = $state<RoleStyle>('default');
+//? Couleur en cours de choix : l'aperçu la suit avant l'enregistrement.
+let style = $state<RoleStyle>('default');
+
+$effect(() => {
+  style = role.badgeStyle;
+});
 let checks = $state<Record<string, boolean>>({});
 
 //? Les cases suivent le rôle affiché, y compris après un enregistrement.
@@ -100,7 +120,14 @@ const plural = (count: number, word: string) =>
             )}
           >
             <span class="flex min-w-0 flex-col">
-              <span class="truncate font-bold">{item.label}</span>
+              <span
+                class={cn(
+                  'w-fit max-w-full truncate font-bold',
+                  roleNameClass(item.badgeStyle),
+                )}
+              >
+                {item.label}
+              </span>
               <span class="text-xs opacity-60">
                 {#if data.canEditPriority}
                   Force {item.priority} ·
@@ -132,7 +159,9 @@ const plural = (count: number, word: string) =>
       <section class={cardStyle}>
         <div class="flex items-start justify-between gap-2">
           <div class="flex flex-col gap-1">
-            <h4 class="text-lg font-bold">{role.label}</h4>
+            <h4 class={cn('w-fit text-lg font-bold', roleNameClass(style))}>
+              {role.label}
+            </h4>
             <p class="font-mono text-sm opacity-70">{role.name}</p>
             <div class="flex gap-1">
               {#if role.isSystem}
@@ -204,6 +233,32 @@ const plural = (count: number, word: string) =>
               readonly={role.isSystem || !role.canManage}
             >{role.description}</textarea>
           </label>
+
+          <div class="flex flex-wrap items-end gap-4">
+            <label class="flex flex-col gap-1 text-sm font-bold">
+              Couleur
+              <select
+                class="{fieldStyle} h-9 w-64 cursor-pointer"
+                name="badgeStyle"
+                bind:value={style}
+                disabled={role.isSuper || !role.canManage}
+              >
+                {#each role.isSuper
+                  ? ROLE_STYLES
+                  : pickableStyles as option (option)}
+                  <option value={option}>{ROLE_STYLE_LABELS[option]}</option>
+                {/each}
+              </select>
+            </label>
+            <span class="flex h-9 items-center gap-3 text-sm">
+              <span class={cn('font-bold', roleNameClass(style))}>Pseudo</span>
+              <RoleBadge label={role.label} {style} />
+            </span>
+          </div>
+          <p class="text-xs opacity-60">
+            Couleur du badge du rôle et du pseudo de ses membres, sur l'accueil,
+            les profils et l'administration.
+          </p>
 
           <fieldset class="flex flex-wrap gap-4" disabled={!quotasEditable}>
             <label class="flex flex-col gap-1 text-sm font-bold">
@@ -343,6 +398,7 @@ const plural = (count: number, word: string) =>
       async ({ update }) => {
         await update();
         createOpen = false;
+        createStyle = 'default';
       }}
   >
     <label class="flex flex-col gap-1 text-sm font-bold">
@@ -357,6 +413,24 @@ const plural = (count: number, word: string) =>
         maxlength="500"
       ></textarea>
     </label>
+    <div class="flex flex-wrap items-end gap-4">
+      <label class="flex flex-col gap-1 text-sm font-bold">
+        Couleur
+        <select
+          class="{fieldStyle} h-9 w-64 cursor-pointer"
+          name="badgeStyle"
+          bind:value={createStyle}
+        >
+          {#each pickableStyles as option (option)}
+            <option value={option}>{ROLE_STYLE_LABELS[option]}</option>
+          {/each}
+        </select>
+      </label>
+      <span class="flex h-9 items-center gap-3 text-sm">
+        <span class={cn('font-bold', roleNameClass(createStyle))}>Pseudo</span>
+        <RoleBadge label="Rôle" style={createStyle} />
+      </span>
+    </div>
     <div class="flex justify-end gap-2">
       <Button label="Annuler" inline onclick={() => (createOpen = false)} />
       <Button label="Créer" type="submit" />

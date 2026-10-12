@@ -3,12 +3,15 @@ import { ArrowDownAZ, ArrowUpAZ, ImageOff, PenOff } from '@lucide/svelte';
 import type { Snippet } from 'svelte';
 import Button from '#lib/components/ui/Button.svelte';
 import MarkdownContent from '#lib/components/ui/MarkdownContent.svelte';
+import RoleBadge from '#lib/components/ui/RoleBadge.svelte';
 import type { MarkdownBlock } from '#lib/markdown/content.ts';
+import { roleNameClass } from '#lib/role-style.ts';
 import type {
   loadProfileTranslations,
   ProfileSort,
   ProfileTranslationsQuery,
 } from '#lib/server/profile.ts';
+import { cn } from '#lib/utils/cn.ts';
 import { goto } from '$app/navigation';
 
 export type ProfileField = 'avatar' | 'banner' | 'description';
@@ -17,6 +20,7 @@ interface Props {
   profile: {
     name: string;
     roleLabel: string;
+    roleStyle: string;
     avatar: string | null;
     banner: string | null;
     description: string | null;
@@ -108,8 +112,19 @@ const editButton =
       {/if}
     </div>
 
-    <h2 class="mt-4 text-center font-bold wrap-break-word">{profile.name}</h2>
-    <h3>{profile.roleLabel}</h3>
+    <h2
+      class={cn(
+        'mt-4 max-w-full text-center font-bold wrap-break-word',
+        roleNameClass(profile.roleStyle),
+      )}
+    >
+      {profile.name}
+    </h2>
+    <RoleBadge
+      label={profile.roleLabel}
+      style={profile.roleStyle}
+      class="mt-1"
+    />
     {#if publicPath}
       <a
         href={publicPath}

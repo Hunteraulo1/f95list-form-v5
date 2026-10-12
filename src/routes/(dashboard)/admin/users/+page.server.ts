@@ -219,6 +219,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
           id: user.role.id,
           name: user.role.name,
           label: user.role.label,
+          badgeStyle: user.role.badgeStyle,
         },
         translations: counts.get(user.id) ?? 0,
         createdAt: user.createdAt.toISOString(),

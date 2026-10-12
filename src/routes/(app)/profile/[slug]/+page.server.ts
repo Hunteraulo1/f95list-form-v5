@@ -29,6 +29,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
       name: user.name,
       slug: user.slug,
       roleLabel: user.role.label,
+      roleStyle: user.role.badgeStyle,
       avatar: user.avatar ?? null,
       banner: user.banner ?? null,
       description: user.description ?? null,

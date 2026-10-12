@@ -297,6 +297,8 @@ export const RoleSchema = defineEntity({
     //? Quotas API appliqués aux utilisateurs de ce rôle.
     apiKeyLimit: p.integer().unsigned().default(10),
     apiDailyQuota: p.integer().unsigned().default(1000),
+    //? Couleur du badge du rôle et du pseudo de ses membres (voir `$lib/role-style`).
+    badgeStyle: p.string().length(32).default('default'),
     ...timestamps(),
   },
 });

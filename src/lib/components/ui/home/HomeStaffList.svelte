@@ -1,4 +1,6 @@
 <script lang="ts">
+import RoleBadge from '#lib/components/ui/RoleBadge.svelte';
+import { roleNameClass } from '#lib/role-style.ts';
 import { cn } from '#lib/utils/cn.ts';
 
 interface Props {
@@ -10,6 +12,7 @@ interface Props {
     slug: string;
     avatar: string | null;
     roleLabel: string;
+    roleStyle: string;
   }[];
 }
 
@@ -45,12 +48,15 @@ const { title, classes, staff }: Props = $props();
               </div>
             {/if}
             <div class="flex w-full min-w-0 flex-col items-center gap-1">
-              <h4 class="w-full truncate font-bold">{member.name}</h4>
-              <span
-                class="max-w-full truncate rounded-lg bg-primary px-2 py-0.5 text-xs font-bold text-neutral-content"
+              <h4
+                class={cn(
+                  'max-w-full truncate font-bold',
+                  roleNameClass(member.roleStyle),
+                )}
               >
-                {member.roleLabel}
-              </span>
+                {member.name}
+              </h4>
+              <RoleBadge label={member.roleLabel} style={member.roleStyle} />
             </div>
           </article>
         </a>

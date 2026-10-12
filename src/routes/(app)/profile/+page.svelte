@@ -101,6 +101,7 @@ const descriptionError = $derived(
   profile={{
     name: user.name,
     roleLabel: user.role.label,
+    roleStyle: user.role.badgeStyle,
     avatar: user.avatar,
     banner: user.banner,
     description: user.description,

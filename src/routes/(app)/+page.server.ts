@@ -75,13 +75,14 @@ interface StaffRow {
   slug: string;
   avatar: string | null;
   roleLabel: string;
+  roleStyle: string;
 }
 
 //? L'équipe : les comptes réels dont le rôle donne accès à l'administration (et le super admin, qui
 //? a tous les droits sans qu'ils soient listés). Du rôle le plus fort au plus faible.
 const listStaff = () =>
   orm.em.getConnection().execute<StaffRow[]>(
-    `select u.name, u.slug, u.avatar, r.label as roleLabel
+    `select u.name, u.slug, u.avatar, r.label as roleLabel, r.badge_style as roleStyle
      from user u
      join role r on r.id = u.role_id
      where u.zitadel_id is not null

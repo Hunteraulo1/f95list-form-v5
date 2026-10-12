@@ -4,6 +4,7 @@ import { MikroORM } from '@mikro-orm/mariadb';
 import { config as loadEnv } from 'dotenv';
 import mikroOrmConfig from '../../../../mikro-orm.config';
 import { PERMISSION_KEYS, SUPER_ROLE_PRIORITY } from '../../permissions';
+import { DEFAULT_ROLE_STYLES } from '../../role-style';
 import { SlugAllocator } from '../../slug';
 import { DEV_USER_ID } from '../config';
 import {
@@ -67,7 +68,13 @@ export const main = async () => {
     { name: 'moderator', label: 'Modérateur', priority: 60 },
     { name: 'admin', label: 'Admin', priority: 100 },
     { name: 'superadmin', label: 'Super admin', priority: SUPER_ROLE_PRIORITY },
-  ].map((role) => em.create(Role, { ...role, isSystem: true }));
+  ].map((role) =>
+    em.create(Role, {
+      ...role,
+      isSystem: true,
+      badgeStyle: DEFAULT_ROLE_STYLES[role.name] ?? 'default',
+    }),
+  );
 
   //? Le rôle « superadmin » a toutes les permissions sans ligne ici (voir #lib/permissions) ;
   //? l'admin les reçoit explicitement, le modérateur une partie seulement.

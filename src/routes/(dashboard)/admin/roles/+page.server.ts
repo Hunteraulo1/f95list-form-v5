@@ -7,6 +7,12 @@ import {
   SUPER_ROLE,
 } from '#lib/permissions.ts';
 import {
+  isRoleStyle,
+  type RoleStyle,
+  SUPER_ROLE_STYLE,
+  toRoleStyle,
+} from '#lib/role-style.ts';
+import {
   MAX_API_DAILY_QUOTA,
   MAX_API_KEY_LIMIT,
   parseQuota,
@@ -53,6 +59,12 @@ const slugify = (input: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 64);
+
+//? La couleur choisie dans un formulaire ; celle du super admin lui est réservée.
+const parseRoleStyle = (value: FormDataEntryValue | null): RoleStyle | null =>
+  isRoleStyle(value) && value !== SUPER_ROLE_STYLE ? value : null;
+
+const STYLE_ERROR = 'Couleur de rôle inconnue.';
 
 const loadRoleWithPermissions = async (id: string) => {
   const role = await orm.em.findOne(Role, { id });
@@ -105,6 +117,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         users: await orm.em.count(User, { role: role.id }),
         apiKeyLimit: role.apiKeyLimit,
         apiDailyQuota: role.apiDailyQuota,
+        badgeStyle: toRoleStyle(role.badgeStyle),
         permissions,
         canManage: check.allowed,
         blockedReason: check.allowed ? null : check.message,
@@ -161,6 +174,11 @@ export const actions: Actions = {
         message: `La description ne peut pas dépasser ${DESCRIPTION_MAX_LENGTH} caractères.`,
       });
     }
+    const badgeStyle = data.has('badgeStyle')
+      ? parseRoleStyle(data.get('badgeStyle'))
+      : 'default';
+    if (!badgeStyle) return fail(400, { message: STYLE_ERROR });
+
     if (await orm.em.findOne(Role, { name })) {
       return fail(409, {
         message: 'Un rôle avec cet identifiant existe déjà.',
@@ -186,6 +204,7 @@ export const actions: Actions = {
       description: description || null,
       isSystem: false,
       priority: 0,
+      badgeStyle,
     });
     await orm.em.flush();
 
@@ -239,6 +258,14 @@ export const actions: Actions = {
 
     role.apiKeyLimit = apiKeyLimit;
     role.apiDailyQuota = apiDailyQuota;
+
+    //? La couleur se règle sur tous les rôles, système compris, sauf celle du super admin.
+    if (!isSuperRole && data.has('badgeStyle')) {
+      const badgeStyle = parseRoleStyle(data.get('badgeStyle'));
+      if (!badgeStyle) return fail(400, { message: STYLE_ERROR });
+
+      role.badgeStyle = badgeStyle;
+    }
 
     //? Libellé et description : rôles personnalisés uniquement.
     if (!role.isSystem) {

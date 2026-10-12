@@ -36,7 +36,13 @@ export interface SessionUser {
   discord: string | null;
   theme: 'system' | 'light' | 'dark';
   discordNotification: boolean;
-  role: { id: string; name: string; label: string; priority: number };
+  role: {
+    id: string;
+    name: string;
+    label: string;
+    priority: number;
+    badgeStyle: string;
+  };
   permissions: Permission[];
 }
 
@@ -69,6 +75,7 @@ const loadUser = async (id: string): Promise<SessionUser | null> => {
       name: user.role.name,
       label: user.role.label,
       priority: user.role.priority,
+      badgeStyle: user.role.badgeStyle,
     },
     permissions,
   };
